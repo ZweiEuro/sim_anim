@@ -1,0 +1,93 @@
+% 3DCGR Latex Template for Assignment Docs
+% Florian Michelic and Reinhold Preiner, October 2021
+%-------------------------------------------------------------------
+
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage[english]{babel}
+ \usepackage{hyperref}
+\usepackage[nottoc]{tocbibind}
+\usepackage{subfig}
+\usepackage{graphicx}
+
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor = black,
+}
+
+\usepackage{comment}
+
+\title{	
+	\large Simulation \& Animation - SS 2022\\
+	\Huge{Name of Your Game}\\
+	\huge{Game Concept}
+}
+\author{\parbox{\textwidth}{\centering
+	Firstname Lastname, Matriculation Number, your.email@student.tugraz.at\\%
+	Firstname Lastname, Matriculation Number, your.email@student.tugraz.at\\%
+}}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Game Concept}
+
+Here you describe the general idea of your game, its objective, the setup and content of the game field/scene as well as containing objects, items and controls.
+If given, list references to games that inspire your game.
+
+Show at least one figure of a schematic mockup (see Figure~\ref{fig:mockup}) that sufficiently visualizes the idea of the game, its major objects and items, and gameplay mechanism (hand drawn sketch is sufficient). 
+
+\begin{figure*}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{img/mockup.png}
+\caption{Mockup of the game scene (source: ''Flight control``)}
+\label{fig:mockup}
+\end{figure*}
+
+Use the bibliography in \emph{references.bib} to cite external sources, URLs, or related literature. This is how you cite a reference~\cite{McGuire2012}.
+
+\section{Platform}
+
+Here you specify the platform you intend to use. Web: which JS lib, etc. Standalone: which language and/or rendering framework. Use appropriate references.
+
+
+\section{List of techniques}
+
+Name the techniques you intend to implement, and a detailed description of how they add to the game. Are they an integral part of the game mechanics, or just decoration? Individual tech specifications can be accompanied by further figures.
+
+Note: 2 techs per group member, at least 1 tech of class 1a -- 1d per member.
+
+\subsection{Tech 1}
+
+Specification. 
+
+\subsection{Tech 2}
+
+Specification
+
+\subsection{Tech 3}
+
+Specification
+
+\subsection{Tech 4}
+
+Specification \\
+
+Add further techs in case of a group of three.
+
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
+
