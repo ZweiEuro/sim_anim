@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(Name "test")
+set(Name "magic_eight")
 
 project(${Name} CXX)
 
@@ -11,5 +11,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 file(GLOB sources src/*.cpp)
-add_executable(test ${sources})
-target_include_directories(test PRIVATE include/)
+add_executable(${Name} ${sources})
+target_link_libraries(${Name} allegro)
+target_include_directories(${Name} PRIVATE include/)
