@@ -1,5 +1,7 @@
 #include "GameManager/GameManager.hpp"
 #include <stdio.h>
+#include "spdlog/spdlog.h"
+
 namespace mg8
 {
   GameManager *GameManager::_instance = nullptr;
@@ -14,6 +16,7 @@ namespace mg8
   }
   GameManager::GameManager()
   {
-    printf("Game manager instanced\n");
+
+    // spdlog::info("Game manager instanced");
   }
 }

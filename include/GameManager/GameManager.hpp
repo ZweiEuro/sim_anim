@@ -12,6 +12,9 @@ namespace mg8
 
   public:
     static GameManager *instance();
+
+    void operator=(GameManager const &) = delete;
+    GameManager(GameManager const &) = delete;
   };
 
 }

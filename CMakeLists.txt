@@ -10,7 +10,21 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+
+
+
+#source files
 file(GLOB_RECURSE sources src/*.cpp)
 add_executable(${Name} ${sources})
-target_link_libraries(${Name} allegro)
+
+#lib files
+add_subdirectory(libs)
+
+#header files 
 target_include_directories(${Name} PRIVATE include/)
+
+# Libraries
+find_package(spdlog REQUIRED)
+target_link_libraries(${Name} PRIVATE allegro spdlog::spdlog)
+
+
