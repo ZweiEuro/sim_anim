@@ -6,22 +6,29 @@
         {
             "label": "setup build",
             "type": "shell",
-            "command": "mkdir -p ${workspaceFolder}/build && cd ${workspaceFolder}/build && cmake .. && make ."
+            "command": "mkdir -p '${workspaceFolder}/build' && cd '${workspaceFolder}/build' && cmake .. && make .",
+            "problemMatcher": []
         },
         {
             "label": "build",
             "type": "shell",
-            "command" :"cd ${workspaceFolder}/build && make"
+            "command": "cd '${workspaceFolder}/build' && make",
+            "problemMatcher": [
+                "$gcc"
+            ]
         },
         {
             "label": "run",
             "type": "shell",
-            "command" :"cd ${workspaceFolder}/build && ./magic_eight"
+            "command": "cd '${workspaceFolder}/build' && ./magic_eight"
         },
         {
             "label": "build and run",
             "type": "shell",
-            "command" :"cd ${workspaceFolder}/build && make && ./magic_eight"
-        },
+            "command": "cd '${workspaceFolder}/build' && make && ./magic_eight",
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }
     ]
 }
