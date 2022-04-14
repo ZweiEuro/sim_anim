@@ -1,3 +1,24 @@
 {
-  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json"
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+  "files.associations": {
+    "istream": "cpp",
+    "ostream": "cpp",
+    "*.inc": "cpp",
+    "new": "cpp",
+    "*.ipp": "cpp",
+    "array": "cpp",
+    "*.tcc": "cpp",
+    "bitset": "cpp",
+    "string": "cpp",
+    "vector": "cpp",
+    "string_view": "cpp",
+    "functional": "cpp",
+    "iomanip": "cpp",
+    "limits": "cpp",
+    "ratio": "cpp",
+    "sstream": "cpp",
+    "stop_token": "cpp",
+    "streambuf": "cpp",
+    "tuple": "cpp"
+  }
 }

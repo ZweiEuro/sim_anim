@@ -6,7 +6,7 @@ set(Name "magic_eight")
 project(${Name} CXX)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -25,6 +25,6 @@ target_include_directories(${Name} PRIVATE include/)
 
 # Libraries
 find_package(spdlog REQUIRED)
-target_link_libraries(${Name} PRIVATE allegro spdlog::spdlog)
+target_link_libraries(${Name} PRIVATE allegro spdlog::spdlog Threads::Threads)
 
 
