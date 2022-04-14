@@ -1,6 +1,6 @@
 #include "GameManager/GameManager.hpp"
-#include <stdio.h>
-#include "spdlog/spdlog.h"
+
+#include <cstring>
 
 namespace mg8
 {
@@ -16,6 +16,7 @@ namespace mg8
   }
   GameManager::GameManager()
   {
+    std::memset((void *)_game_objects, 0, config_max_object_count * sizeof(GameObject *));
 
     // spdlog::info("Game manager instanced");
   }
