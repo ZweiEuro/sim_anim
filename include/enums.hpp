@@ -9,12 +9,12 @@ namespace mg8
 
   // enum classes are _NOT CASTABLE_
 
-  enum class MG8_EVENTS
+  enum MG8_EVENTS
   {
     CONTROL_SHUTDOWN = ALLEGRO_GET_EVENT_TYPE('m', 'g', '8', '_') + 1
   };
 
-  enum class MG8_SUBSYSTEMS
+  enum MG8_SUBSYSTEMS
   {
     GAMEMANAGER = 0,
     INPUT_MANAGER,

@@ -38,7 +38,7 @@ namespace mg8
     mutex_guard_ptr<GameObject> getGameObjects(); // locks internally, needs to be unlocked
 
     void loop(); // main management loop, this is where the main ends up in
-    void send_user_event();
+    void send_user_event(MG8_SUBSYSTEMS target_system, MG8_EVENTS event);
 
     // Fails if get source is not yet valid
     static ALLEGRO_EVENT_SOURCE *get_GameManager_event_source_to(MG8_SUBSYSTEMS target_system);

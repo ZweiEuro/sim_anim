@@ -97,7 +97,9 @@ namespace mg8
   {
     // Display a black screen
 
-    while (true)
+    bool exit = false;
+
+    while (!exit)
     {
       ALLEGRO_EVENT event;
       ALLEGRO_TIMEOUT timeout;
@@ -118,7 +120,16 @@ namespace mg8
           redraw = true;
           break;
         case USER_BASE_EVENT:
-          spdlog::info("User event subtype: {}", *(int *)event.user.data1);
+          switch ((int)event.user.data1)
+          {
+          case CONTROL_SHUTDOWN:
+            exit = true;
+            break;
+          default:
+            spdlog::info("Renderer Unknown User event subtype: {}", (int)event.user.data1);
+
+            break;
+          }
 
           break;
         default:
@@ -126,16 +137,20 @@ namespace mg8
           break;
         }
       }
+      else
+      {             // the al_is_empty is not needed anymore since get_event is false if the timeout triggered
+        if (redraw) //&& al_is_event_queue_empty(m_renderer_event_queue))
+        {
+          // Redraw
+          al_clear_to_color(al_map_rgb(0, 0, 0));
+          al_flip_display();
+          redraw = false;
+        }
+      }
 
       // Check if we need to redraw, only redraw if the queue is now empty
-      if (redraw && al_is_event_queue_empty(m_renderer_event_queue))
-      {
-        // Redraw
-        al_clear_to_color(al_map_rgb(0, 0, 0));
-        al_flip_display();
-        redraw = false;
-      }
     }
+    unsetup();
     spdlog::info("render thread exitted");
     return;
   }

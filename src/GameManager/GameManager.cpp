@@ -67,16 +67,16 @@ namespace mg8
     switch (target_system)
     {
     case MG8_SUBSYSTEMS::GAMEMANAGER:
-      ret = &m_GameManager_event_source_to_InputManager;
+      ret = &m_GameManager_event_source_to_GameManager;
       break;
     case MG8_SUBSYSTEMS::INPUT_MANAGER:
-      ret = &m_GameManager_event_source_to_Renderer;
+      ret = &m_GameManager_event_source_to_InputManager;
       break;
     case MG8_SUBSYSTEMS::PHYSICS_MANAGER:
       ret = &m_GameManager_event_source_to_PhysicsManager;
       break;
     case MG8_SUBSYSTEMS::RENDERER:
-      ret = &m_GameManager_event_source_to_GameManager;
+      ret = &m_GameManager_event_source_to_Renderer;
       break;
 
     default:
@@ -88,8 +88,9 @@ namespace mg8
 
   void GameManager::loop()
   {
+    bool exit = false;
 
-    while (true)
+    while (!exit)
     {
       ALLEGRO_EVENT event;
       ALLEGRO_TIMEOUT timeout;
@@ -107,10 +108,19 @@ namespace mg8
         case ALLEGRO_EVENT_DISPLAY_CLOSE:
           spdlog::info("GameManager Event display closed");
 
+          // shutdown renderer
+          send_user_event(MG8_SUBSYSTEMS::RENDERER, CONTROL_SHUTDOWN);
+          Renderer::instance()->get_renderer_thread()->join();
+          // shutdown physics
+
+          // shutdown input
+
+          // exit
+          exit = true;
           break;
 
         case USER_BASE_EVENT:
-          spdlog::info("GameManager Event subtype: {}", *(int *)event.user.data1);
+          spdlog::info("GameManager Event subtype: {}", (int)event.user.data1);
 
           break;
         default:
@@ -120,5 +130,15 @@ namespace mg8
       }
     }
   }
+  void GameManager::send_user_event(MG8_SUBSYSTEMS target_system, MG8_EVENTS event)
+  {
+    ALLEGRO_EVENT ev = {};
+    ev.user.data1 = (int)event;
+    ev.type = USER_BASE_EVENT;
 
+    if (!al_emit_user_event(get_GameManager_event_source_to(target_system), &ev, NULL))
+    {
+      spdlog::warn("Event {} would not have been received by system {}", event, target_system);
+    }
+  }
 }
