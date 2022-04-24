@@ -2,6 +2,13 @@
 #include "configuration.hpp"
 
 #include <spdlog/spdlog.h>
+#include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_image.h>
+
+#include <string>
+#include <iostream>
+#include <filesystem>
+namespace fs = std::filesystem;
 
 namespace mg8
 {
@@ -76,6 +83,11 @@ namespace mg8
       abort();
     }
 
+    //enable anti-aliasing
+    al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
+    al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
+    al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
+
     m_display = al_create_display(config_start_resolution_w, config_start_resolution_h);
     if (!m_display)
     {
@@ -90,6 +102,18 @@ namespace mg8
       abort();
     }
 
+    if(!al_init_image_addon())
+    {
+      spdlog::error("Failed to init image addon.");
+      abort();
+    }
+    table = al_load_bitmap("billiard.bmp");
+    if (!al_init_primitives_addon())
+    {
+      spdlog::error("Failed to init primitives addon.");
+      abort();
+    }
+
     al_register_event_source(m_display_event_queue, al_get_display_event_source(m_display));
     al_register_event_source(m_display_event_queue, al_get_timer_event_source(m_display_refresh_timer));
   }
@@ -97,6 +121,22 @@ namespace mg8
   void Renderer::render_loop()
   {
     static std::atomic_bool running = false; // should only be running once or we're gonna have weird drawing artefacts
+
+    //ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+    //al_append_path_component(path, "..");
+    //al_set_path_filename(path, "billiard.bmp");
+    //ALLEGRO_BITMAP* table = al_load_bitmap(al_path_cstr(path, '/'));
+    
+    if (!table)
+    {
+      //std::string path = "../../img";
+      //for (const auto & entry : fs::directory_iterator(path))
+      //    std::cout << entry.path() << std::endl;
+      spdlog::error("Failed to load the billiard table top view image.");
+      //spdlog::error(al_path_cstr(path, '/'));
+      abort();
+    }
+    
 
     if (running.exchange(true))
     {
@@ -149,6 +189,11 @@ namespace mg8
       {
         // Redraw
         al_clear_to_color(al_map_rgb(0, 0, 0));
+
+        //draw image -> billiard table
+        al_draw_bitmap(table, 100, 100, 0);
+        //try to let a circle bounce around within the image of the billiard table
+        al_draw_circle(450, 370, 30, al_map_rgb_f(1, 0, 1), 2);
         al_flip_display();
         redraw = false;
       }

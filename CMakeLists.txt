@@ -25,6 +25,6 @@ target_include_directories(${Name} PRIVATE include/)
 
 # Libraries
 find_package(spdlog REQUIRED)
-target_link_libraries(${Name} PRIVATE allegro spdlog::spdlog Threads::Threads)
+target_link_libraries(${Name} PRIVATE allegro allegro_image allegro_primitives spdlog::spdlog Threads::Threads)
 
 

@@ -17,6 +17,8 @@ namespace mg8
     ALLEGRO_EVENT_QUEUE *m_display_event_queue = nullptr;
     ALLEGRO_TIMER *m_display_refresh_timer = nullptr;
 
+    ALLEGRO_BITMAP* table = nullptr;
+
     std::thread *m_rendering_thread = nullptr;
     std::atomic_bool m_render = true; // allow the draw thread to draw or end on next refrash
 
