@@ -5,10 +5,11 @@
 #include "enums.hpp"
 
 #include <spdlog/spdlog.h>
-
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_image.h>
 namespace mg8
 {
-
+  ALLEGRO_BITMAP *image = nullptr;
   Renderer *Renderer::m_instance = nullptr;
 
   Renderer *Renderer::instance()
@@ -23,12 +24,18 @@ namespace mg8
 
   Renderer::~Renderer()
   {
+    al_destroy_bitmap(image);
     spdlog::error("Renderer destroyed? This is a singleton and shouldn't happen.");
   }
 
   Renderer::Renderer()
   {
     spdlog::info("Renderer instanced");
+
+    assert(al_init_image_addon() && "could not init image addon");
+
+    ALLEGRO_BITMAP *mysha = al_load_bitmap("mysha.png");
+    assert(mysha && "could not load static image bitmap");
 
     assert(!m_rendering_thread.joinable() && "rendering thread exists but init was called ?");
     m_rendering_resources_lock.lock();
@@ -143,6 +150,9 @@ namespace mg8
         {
           // Redraw
           al_clear_to_color(al_map_rgb(0, 0, 0));
+
+          al_draw_bitmap(image, 100, 100, 0);
+
           al_flip_display();
           redraw = false;
         }
