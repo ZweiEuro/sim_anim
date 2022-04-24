@@ -1,6 +1,7 @@
 #include "Renderer/Renderer.hpp"
 #include "GameManager/GameManager.hpp"
 #include "util/scope_guard.hpp"
+#include "util/file.hpp"
 #include "configuration.hpp"
 #include "enums.hpp"
 
@@ -32,18 +33,23 @@ namespace mg8
   {
     spdlog::info("Renderer instanced");
 
+    // TEST
     assert(al_init_image_addon() && "could not init image addon");
 
-    ALLEGRO_BITMAP *mysha = al_load_bitmap("mysha.png");
-    assert(mysha && "could not load static image bitmap");
+    image = al_load_bitmap("mysha.png");
+    assert(image && "could not load static image bitmap");
+
+    spdlog::info("img file : {}", mg8::get_filepath("mysha.png").c_str());
+
+    // END
 
     assert(!m_rendering_thread.joinable() && "rendering thread exists but init was called ?");
     m_rendering_resources_lock.lock();
 
     this->m_rendering_thread = std::thread([=]() -> void
-                                           { 
-                                                   this->setup(); // thread objects are automatically friend so private fct can be called
-                                                   this->render_loop(); });
+                                           {
+      this->setup(); // thread objects are automatically friend so private fct can be called
+      this->render_loop(); });
   }
 
   void Renderer::unsetup()
@@ -148,8 +154,9 @@ namespace mg8
       {             // the al_is_empty is not needed anymore since get_event is false if the timeout triggered
         if (redraw) //&& al_is_event_queue_empty(m_renderer_event_queue))
         {
+          spdlog::info("redraw");
           // Redraw
-          al_clear_to_color(al_map_rgb(0, 0, 0));
+          al_clear_to_color(al_map_rgb(100, 0, 0));
 
           al_draw_bitmap(image, 100, 100, 0);
 
