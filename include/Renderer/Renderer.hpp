@@ -34,7 +34,7 @@ namespace mg8
 
     ALLEGRO_DISPLAY *get_current_display(); // guarded
 
-    std::thread *get_renderer_thread()
+    std::thread *get_thread()
     {
       return &m_rendering_thread;
     }

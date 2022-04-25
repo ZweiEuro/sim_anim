@@ -1,5 +1,6 @@
 #include "GameManager/GameManager.hpp"
 #include "Renderer/Renderer.hpp"
+#include "InputManager/InputManager.hpp"
 #include "enums.hpp"
 
 #include <allegro5/allegro.h>
@@ -49,8 +50,18 @@ namespace mg8
     // subscribe to display events
     al_register_event_source(m_GameManager_event_queue, al_get_display_event_source(display));
 
+    // start input manager
+    InputManager::instance();
+
     // done
     spdlog::info("Game manager instanced");
+
+    // fluff stuff
+
+    escape_button_listener = std::thread([=]() -> void
+                                         {
+                                           InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
+                                           send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); });
   }
 
   GameManager::~GameManager()
@@ -99,42 +110,41 @@ namespace mg8
     while (!exit)
     {
       ALLEGRO_EVENT event;
-      ALLEGRO_TIMEOUT timeout;
 
-      al_init_timeout(&timeout, 0.06);
-
-      // Fetch the event (if one exists)
-      bool get_event = al_wait_for_event_until(m_GameManager_event_queue, &event, &timeout);
+      al_wait_for_event(m_GameManager_event_queue, &event);
 
       // Handle the event
-      if (get_event)
+      switch (event.type)
       {
-        switch (event.type)
+      case ALLEGRO_EVENT_DISPLAY_CLOSE:
+        exit = true;
+        break;
+
+      case USER_BASE_EVENT:
+        switch ((int)event.user.data1)
         {
-        case ALLEGRO_EVENT_DISPLAY_CLOSE:
-          spdlog::info("GameManager Event display closed");
-
-          // shutdown renderer
-          send_user_event(MG8_SUBSYSTEMS::RENDERER, CONTROL_SHUTDOWN);
-          Renderer::instance()->get_renderer_thread()->join();
-          // shutdown physics
-
-          // shutdown input
-
-          // exit
+        case CONTROL_SHUTDOWN:
           exit = true;
           break;
-
-        case USER_BASE_EVENT:
-          spdlog::info("GameManager Event subtype: {}", (int)event.user.data1);
-
-          break;
         default:
-          spdlog::info("Gamemanager unsupported event received: {}", event.type);
+          spdlog::info("GameManager User event unknown subtype: {}", (int)event.user.data1);
           break;
         }
+        break;
+      default:
+        spdlog::info("Gamemanager unsupported event received: {}", event.type);
+        break;
       }
     }
+
+    // shutdown renderer
+    send_user_event(MG8_SUBSYSTEMS::RENDERER, CONTROL_SHUTDOWN);
+    Renderer::instance()->get_thread()->join();
+    // shutdown physics
+
+    // shutdown input
+    send_user_event(MG8_SUBSYSTEMS::INPUT_MANAGER, CONTROL_SHUTDOWN);
+    InputManager::instance()->get_thread()->join();
   }
   void GameManager::send_user_event(MG8_SUBSYSTEMS target_system, MG8_EVENTS event)
   {
@@ -142,7 +152,7 @@ namespace mg8
     ev.user.data1 = (int)event;
     ev.type = USER_BASE_EVENT;
 
-    if (!al_emit_user_event(get_GameManager_event_source_to(target_system), &ev, NULL))
+    if (!al_emit_user_event(get_GameManager_event_source_to(target_system), &ev, nullptr))
     {
       spdlog::warn("Event {} would not have been received by system {}", event, target_system);
     }

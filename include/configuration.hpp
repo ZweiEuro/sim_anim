@@ -10,4 +10,6 @@ namespace mg8
   const float config_fps = 5.0;
   const int config_start_resolution_w = 640;
   const int config_start_resolution_h = 480;
+
+  const float config_mouse_position_refresh_per_second = 5;
 }
