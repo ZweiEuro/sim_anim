@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 namespace mg8
 {
+  std::atomic_int GameObject::m_objects_created = 0;
 
   void GameObject::CheckObjectCreation()
   {

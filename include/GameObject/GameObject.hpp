@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/vector.hpp"
+#include <atomic>
 
 namespace mg8
 {
@@ -8,7 +9,7 @@ namespace mg8
   class GameObject
   {
   private:
-    int m_objects_created = 0;
+    static std::atomic_int m_objects_created;
 
     void CheckObjectCreation();
 
