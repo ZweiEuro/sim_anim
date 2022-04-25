@@ -6,7 +6,7 @@
         {
             "label": "setup build",
             "type": "shell",
-            "command": "mkdir -p '${workspaceFolder}/build' && cd '${workspaceFolder}/build' && cmake .. && make .",
+            "command": "mkdir -p '${workspaceFolder}/build' && cd '${workspaceFolder}/build' && ln -s ../res ./res && cmake .. && make .",
             "problemMatcher": []
         },
         {

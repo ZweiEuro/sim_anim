@@ -1,26 +1,22 @@
 #include "Renderer/Renderer.hpp"
+#include "GameManager/GameManager.hpp"
+#include "util/scope_guard.hpp"
+#include "util/file.hpp"
 #include "configuration.hpp"
+#include "enums.hpp"
 
 #include <spdlog/spdlog.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
 
-#include <string>
-#include <iostream>
-#include <filesystem>
-namespace fs = std::filesystem;
-
 namespace mg8
 {
-
   Renderer *Renderer::m_instance = nullptr;
 
   Renderer *Renderer::instance()
   {
     if (!m_instance)
     {
-      // very round about way to make sure the renderer thread is the one constructing all the renderer stuff that is needed
-
       m_instance = new Renderer();
     }
 
@@ -35,45 +31,88 @@ namespace mg8
   Renderer::Renderer()
   {
     spdlog::info("Renderer instanced");
+
+    assert(!m_rendering_thread.joinable() && "rendering thread exists but init was called ?");
+    m_rendering_resources_lock.lock();
+
+    this->m_rendering_thread = std::thread([=]() -> void
+                                           {
+      this->setup(); // thread objects are automatically friend so private fct can be called
+      this->render_loop(); });
   }
 
-  void Renderer::start_rendering()
-  {
-    if (m_rendering_thread != nullptr)
-    {
-      spdlog::warn("rendering started but already running in thread");
-      return;
-    }
+  void Renderer::draw_table(){
+    /*
+    *  image coodinate axis
+    * (0,0)---------------> x-axis
+    *     | 
+    *     |
+    *     |
+    *     |
+    *     v
+    *     y-axis
+    */
 
-    m_instance->m_rendering_thread = new std::thread([]() -> void
-                                                     { Renderer::instance()->render_loop(); });
-  }
+    float hole_radius = 10.0;
+    float table_border_width = 20;
 
-  void Renderer::stop_rendering()
-  {
+    float outer_border_x_offset = 20;
+    float inner_border_x_offset = outer_border_x_offset + table_border_width;
 
-    if (m_rendering_thread == nullptr)
-    {
-      spdlog::warn("Rendering not running anywhere");
-      return;
-    }
+    float pool_table_width = (float)config_start_resolution_w - 2 * outer_border_x_offset;
+    float pool_table_height = pool_table_width/2.0;
+    
+    float outer_border_y_offset = ((float)config_start_resolution_h - pool_table_height) / 2.0;
+    float inner_border_y_offset = outer_border_y_offset + table_border_width;
+    
+    //outer brown border of table
+    al_draw_filled_rounded_rectangle(outer_border_x_offset, outer_border_y_offset, (float)config_start_resolution_w - outer_border_x_offset, 
+      (float)config_start_resolution_h - outer_border_y_offset, hole_radius, hole_radius, al_map_rgb(102, 51, 0));
 
-    m_rendering_thread->join();
-  }
+    //inner green field of the table
+    al_draw_filled_rectangle(inner_border_x_offset, inner_border_y_offset, (float)config_start_resolution_w - inner_border_x_offset, 
+      (float)config_start_resolution_h - inner_border_y_offset, al_map_rgb(0, 102, 0));
+
+    //left upper hole
+    al_draw_filled_circle(inner_border_x_offset + hole_radius/4, inner_border_y_offset + hole_radius/4, hole_radius, al_map_rgb(0, 0, 0));
+
+    //left lower hole
+    al_draw_filled_circle(inner_border_x_offset + hole_radius/4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius/4, hole_radius, al_map_rgb(0, 0, 0));
+
+    //right upper hole
+    al_draw_filled_circle((float)config_start_resolution_w - inner_border_x_offset - hole_radius/4, inner_border_y_offset + hole_radius/4, hole_radius, al_map_rgb(0, 0, 0));
+
+    //right lower hole
+    al_draw_filled_circle((float)config_start_resolution_w - inner_border_x_offset - hole_radius/4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius/4, hole_radius, al_map_rgb(0, 0, 0));
+
+    //center upper hole
+    al_draw_filled_circle((float)config_start_resolution_w / 2.0, inner_border_y_offset, hole_radius, al_map_rgb(0, 0, 0));
+
+    //center lower hole
+    al_draw_filled_circle((float)config_start_resolution_w / 2.0, (float)config_start_resolution_h - inner_border_y_offset, hole_radius, al_map_rgb(0, 0, 0));
+  };
+
   void Renderer::unsetup()
   {
     spdlog::info("Renderer unsetupped");
+    m_rendering_resources_lock.lock();
+
+    al_stop_timer(m_display_refresh_timer);
 
     al_destroy_timer(m_display_refresh_timer);
     m_display_refresh_timer = nullptr;
-    al_destroy_event_queue(m_display_event_queue);
-    m_display_event_queue = nullptr;
+    al_destroy_event_queue(m_renderer_event_queue);
+    m_renderer_event_queue = nullptr;
     al_destroy_display(m_display);
     m_display = nullptr;
   }
 
   void Renderer::setup()
   {
+    assert(!m_display && "Rendering setup but display already allocated");
+    assert(!m_display_refresh_timer && "Rendering setup but Timer already allocated");
+    assert(!m_renderer_event_queue && "Rendering setup but display_event_queue already allocated");
+
     spdlog::info("Renderer setupped");
 
     m_display_refresh_timer = al_create_timer(1.0 / config_fps);
@@ -95,8 +134,8 @@ namespace mg8
       abort();
     }
 
-    m_display_event_queue = al_create_event_queue();
-    if (!m_display_event_queue)
+    m_renderer_event_queue = al_create_event_queue();
+    if (!m_renderer_event_queue)
     {
       spdlog::error("Failed to create display event queue.");
       abort();
@@ -107,54 +146,30 @@ namespace mg8
       spdlog::error("Failed to init image addon.");
       abort();
     }
-    table = al_load_bitmap("billiard.bmp");
+    
     if (!al_init_primitives_addon())
     {
       spdlog::error("Failed to init primitives addon.");
       abort();
     }
 
-    al_register_event_source(m_display_event_queue, al_get_display_event_source(m_display));
-    al_register_event_source(m_display_event_queue, al_get_timer_event_source(m_display_refresh_timer));
+    al_register_event_source(m_renderer_event_queue, al_get_timer_event_source(m_display_refresh_timer));
+    al_register_event_source(m_renderer_event_queue, GameManager::get_GameManager_event_source_to(MG8_SUBSYSTEMS::RENDERER));
+
+    al_clear_to_color(al_map_rgb(0, 0, 0)); // initial clear
+    al_flip_display();
+    m_rendering_resources_lock.unlock();
+
+    al_start_timer(m_display_refresh_timer);
   }
 
   void Renderer::render_loop()
   {
-    static std::atomic_bool running = false; // should only be running once or we're gonna have weird drawing artefacts
+    // Display a black screen
 
-    //ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
-    //al_append_path_component(path, "..");
-    //al_set_path_filename(path, "billiard.bmp");
-    //ALLEGRO_BITMAP* table = al_load_bitmap(al_path_cstr(path, '/'));
-    
-    if (!table)
-    {
-      //std::string path = "../../img";
-      //for (const auto & entry : fs::directory_iterator(path))
-      //    std::cout << entry.path() << std::endl;
-      spdlog::error("Failed to load the billiard table top view image.");
-      //spdlog::error(al_path_cstr(path, '/'));
-      abort();
-    }
-    
+    bool exit = false;
 
-    if (running.exchange(true))
-    {
-      spdlog::error("Two threads are inside the render loop!");
-      abort();
-    }
-    else
-    {
-      setup();
-      // Display a black screen
-      al_clear_to_color(al_map_rgb(0, 0, 0));
-      al_flip_display();
-
-      // Start the timer
-      al_start_timer(m_display_refresh_timer);
-    }
-
-    while (m_render.load())
+    while (!exit)
     {
       ALLEGRO_EVENT event;
       ALLEGRO_TIMEOUT timeout;
@@ -164,7 +179,7 @@ namespace mg8
       al_init_timeout(&timeout, 0.06);
 
       // Fetch the event (if one exists)
-      bool get_event = al_wait_for_event_until(m_display_event_queue, &event, &timeout);
+      bool get_event = al_wait_for_event_until(m_renderer_event_queue, &event, &timeout);
 
       // Handle the event
       if (get_event)
@@ -174,34 +189,49 @@ namespace mg8
         case ALLEGRO_EVENT_TIMER:
           redraw = true;
           break;
-        case ALLEGRO_EVENT_DISPLAY_CLOSE:
-          spdlog::info("Display close event");
-          running = false;
+        case USER_BASE_EVENT:
+          switch ((int)event.user.data1)
+          {
+          case CONTROL_SHUTDOWN:
+            exit = true;
+            break;
+          default:
+            spdlog::info("Renderer Unknown User event subtype: {}", (int)event.user.data1);
+
+            break;
+          }
+
           break;
         default:
-          spdlog::info("Unsupported Display received: %d", event.type);
+          spdlog::info("Renderer unknown event received: {}", event.type);
           break;
+        }
+      }
+      else
+      {             // the al_is_empty is not needed anymore since get_event is false if the timeout triggered
+        if (redraw) //&& al_is_event_queue_empty(m_renderer_event_queue))
+        {
+          spdlog::info("redraw");
+          // Redraw
+          al_clear_to_color(al_map_rgb(100, 0, 0));
+
+          draw_table();
+
+          al_flip_display();
+          redraw = false;
         }
       }
 
       // Check if we need to redraw, only redraw if the queue is now empty
-      if (redraw && al_is_event_queue_empty(m_display_event_queue))
-      {
-        // Redraw
-        al_clear_to_color(al_map_rgb(0, 0, 0));
-
-        //draw image -> billiard table
-        al_draw_bitmap(table, 100, 100, 0);
-        //try to let a circle bounce around within the image of the billiard table
-        al_draw_circle(450, 370, 30, al_map_rgb_f(1, 0, 1), 2);
-        al_flip_display();
-        redraw = false;
-      }
     }
+    unsetup();
     spdlog::info("render thread exitted");
-
-    running = false;
     return;
   }
 
+  ALLEGRO_DISPLAY *Renderer::get_current_display()
+  {
+    auto guard = ScopeGuard(m_rendering_resources_lock);
+    return m_display;
+  }
 }

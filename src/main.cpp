@@ -10,6 +10,7 @@
  */
 #include "GameManager/GameManager.hpp"
 #include "Renderer/Renderer.hpp"
+#include "enums.hpp"
 
 #include <stdio.h>
 #include <allegro5/allegro.h>
@@ -25,12 +26,10 @@ int main(int argc, char *argv[])
 		abort();
 	}
 
-	mg8::GameManager::instance();
-	mg8::Renderer::instance()->start_rendering();
+	spdlog::info("Base event id: {}", USER_BASE_EVENT);
 
-	spdlog::info("Trying to get exit lock'");
+	mg8::GameManager::instance()->loop();
 
-	mg8::GameManager::instance()->getGameExitPermission();
 	spdlog::info("Exit");
 	spdlog::shutdown();
 	return 0;
