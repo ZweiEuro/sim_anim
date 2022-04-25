@@ -25,6 +25,8 @@ namespace mg8
     return m_instance;
   }
 
+  static std::atomic_bool event_sources_created = false;
+
   GameManager::GameManager()
   {
 
@@ -36,6 +38,7 @@ namespace mg8
     al_init_user_event_source(&m_GameManager_event_source_to_Renderer);
     al_init_user_event_source(&m_GameManager_event_source_to_PhysicsManager);
     al_init_user_event_source(&m_GameManager_event_source_to_GameManager);
+    event_sources_created = true;
 
     // gamemanager event queue but do not subscribe to itself
     m_GameManager_event_queue = al_create_event_queue();
@@ -62,6 +65,9 @@ namespace mg8
 
   ALLEGRO_EVENT_SOURCE *GameManager::get_GameManager_event_source_to(MG8_SUBSYSTEMS target_system)
   {
+
+    assert(event_sources_created.load() && "Renderer not yet instanced, no event sources");
+
     ALLEGRO_EVENT_SOURCE *ret = nullptr;
 
     switch (target_system)

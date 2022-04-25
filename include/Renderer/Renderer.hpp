@@ -22,6 +22,7 @@ namespace mg8
     std::mutex m_rendering_resources_lock; // control all rendering resources and only give it free when they all are assigned and valid, if they are invalid the lock is taken
 
     void setup(); // called first by the main render thread
+    void render_loop();
     void unsetup();
     Renderer();
 
@@ -30,7 +31,6 @@ namespace mg8
     ~Renderer();
 
     void stop_rendering();
-    void render_loop();
 
     ALLEGRO_DISPLAY *get_current_display(); // guarded
 

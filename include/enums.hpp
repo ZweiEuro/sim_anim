@@ -11,7 +11,7 @@ namespace mg8
 
   enum MG8_EVENTS
   {
-    CONTROL_SHUTDOWN = ALLEGRO_GET_EVENT_TYPE('m', 'g', '8', '_') + 1
+    CONTROL_SHUTDOWN = USER_BASE_EVENT + 1
   };
 
   enum MG8_SUBSYSTEMS
