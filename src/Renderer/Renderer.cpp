@@ -64,6 +64,11 @@ namespace mg8
     
     float outer_border_y_offset = ((float)config_start_resolution_h - pool_table_height) / 2.0;
     float inner_border_y_offset = outer_border_y_offset + table_border_width;
+
+    _TestBilliardTable.left_border_pos = inner_border_x_offset + _TestBall.radius/2;
+    _TestBilliardTable.right_border_pos = (float)config_start_resolution_w - inner_border_x_offset - _TestBall.radius/2;
+    _TestBilliardTable.upper_border_pos = inner_border_y_offset + _TestBall.radius/2;
+    _TestBilliardTable.lower_border_pos = (float)config_start_resolution_h - inner_border_y_offset - _TestBall.radius/2;
     
     //outer brown border of table
     al_draw_filled_rounded_rectangle(outer_border_x_offset, outer_border_y_offset, (float)config_start_resolution_w - outer_border_x_offset, 
@@ -213,9 +218,33 @@ namespace mg8
         {
           spdlog::info("redraw");
           // Redraw
-          al_clear_to_color(al_map_rgb(100, 0, 0));
+          _TestBall.x += _TestBall.dx;
+          _TestBall.y += _TestBall.dy;
 
+          if (_TestBall.x < _TestBilliardTable.left_border_pos)
+          {
+            _TestBall.x = _TestBilliardTable.left_border_pos + (_TestBilliardTable.left_border_pos - _TestBall.x);
+            _TestBall.dx *= -1;
+          }
+          if (_TestBall.x > _TestBilliardTable.right_border_pos)
+          {
+            _TestBall.x = _TestBilliardTable.right_border_pos - (_TestBall.x - _TestBilliardTable.right_border_pos);
+            _TestBall.dx *= -1;
+          }
+          if (_TestBall.y < _TestBilliardTable.upper_border_pos)
+          {
+            _TestBall.y = _TestBilliardTable.upper_border_pos + (_TestBilliardTable.upper_border_pos - _TestBall.y);
+            _TestBall.dy *= -1;
+          }
+          if (_TestBall.y > _TestBilliardTable.lower_border_pos)
+          {
+            _TestBall.y = _TestBilliardTable.lower_border_pos - (_TestBall.y - _TestBilliardTable.lower_border_pos);
+            _TestBall.dy *= -1;
+          }        
+
+          al_clear_to_color(al_map_rgb(100, 0, 0));
           draw_table();
+          al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 1));
 
           al_flip_display();
           redraw = false;

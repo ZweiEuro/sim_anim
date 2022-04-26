@@ -11,6 +11,21 @@
 namespace mg8
 {
 
+  struct TestBall{
+    float x = (float)config_start_resolution_w/2.0f;
+    float y = (float)config_start_resolution_h/2.0f;
+    float dx = 10;
+    float dy = 10;
+    float radius = 9;
+  };
+
+  struct TestBilliardTable{
+    float left_border_pos = 0;
+    float right_border_pos = (float)config_start_resolution_w;
+    float upper_border_pos = 0;
+    float lower_border_pos = (float)config_start_resolution_h;
+  };
+
   class Renderer
   {
   private:
@@ -28,6 +43,9 @@ namespace mg8
     void unsetup();
     void draw_table();
     Renderer();
+
+    TestBall _TestBall;
+    TestBilliardTable _TestBilliardTable;
 
   public:
     static Renderer *instance();
