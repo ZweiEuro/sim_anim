@@ -6,6 +6,7 @@
 
 #include <allegro5/allegro.h>
 #include <mutex>
+#include <thread>
 namespace mg8
 {
 
@@ -27,6 +28,10 @@ namespace mg8
     static ALLEGRO_EVENT_QUEUE *m_GameManager_event_queue; // main queue for the GameManager
 
     GameManager();
+
+    // fluff, not really necessary
+
+    std::thread escape_button_listener;
 
   public:
     static GameManager *instance();

@@ -6,13 +6,13 @@
         {
             "label": "setup build",
             "type": "shell",
-            "command": "mkdir -p '${workspaceFolder}/build' && cd '${workspaceFolder}/build' && ln -s ../res ./res && cmake .. && make .",
+            "command": "mkdir -p '${workspaceFolder}/build' && cd '${workspaceFolder}/build' && ln -s ../res ./res && cmake .. && make . -j8",
             "problemMatcher": []
         },
         {
             "label": "build",
             "type": "shell",
-            "command": "cd '${workspaceFolder}/build' && make",
+            "command": "cd '${workspaceFolder}/build' && make -j8",
             "problemMatcher": [
                 "$gcc"
             ]
@@ -25,7 +25,7 @@
         {
             "label": "build and run",
             "type": "shell",
-            "command": "cd '${workspaceFolder}/build' && make && ./magic_eight",
+            "command": "cd '${workspaceFolder}/build' && make -j8 && ./magic_eight",
             "problemMatcher": [
                 "$gcc"
             ]
