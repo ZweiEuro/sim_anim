@@ -173,6 +173,9 @@ namespace mg8
                                            send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); });
     auto objects = getGameObjects();
 
+    // ball moving right
     objects->emplace_back(new Ball({(float)config_start_resolution_w / 2.0f, (float)config_start_resolution_h / 2.0f}, {1, 0}, 10));
+    // not moving
+    objects->emplace_back(new Ball({(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
   }
 }
