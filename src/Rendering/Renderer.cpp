@@ -178,84 +178,76 @@ namespace mg8
     while (!exit)
     {
       ALLEGRO_EVENT event;
-      ALLEGRO_TIMEOUT timeout;
       static bool redraw = true;
 
-      // Initialize timeout
-      al_init_timeout(&timeout, 0.06);
-
-      // Fetch the event (if one exists)
-      bool get_event = al_wait_for_event_until(m_renderer_event_queue, &event, &timeout);
+      al_wait_for_event(m_renderer_event_queue, &event);
 
       // Handle the event
-      if (get_event)
+
+      switch (event.type)
       {
-        switch (event.type)
+      case ALLEGRO_EVENT_TIMER:
+        redraw = true;
+        break;
+      case USER_BASE_EVENT:
+        switch ((int)event.user.data1)
         {
-        case ALLEGRO_EVENT_TIMER:
-          redraw = true;
-          break;
-        case USER_BASE_EVENT:
-          switch ((int)event.user.data1)
-          {
-          case CONTROL_SHUTDOWN:
-            exit = true;
-            break;
-          default:
-            spdlog::info("Renderer Unknown User event subtype: {}", (int)event.user.data1);
-
-            break;
-          }
-
+        case CONTROL_SHUTDOWN:
+          exit = true;
           break;
         default:
-          spdlog::info("Renderer unknown event received: {}", event.type);
+          spdlog::info("Renderer Unknown User event subtype: {}", (int)event.user.data1);
+
           break;
         }
+
+        break;
+      default:
+        spdlog::info("Renderer unknown event received: {}", event.type);
+        break;
       }
-      else
-      {             // the al_is_empty is not needed anymore since get_event is false if the timeout triggered
-        if (redraw) //&& al_is_event_queue_empty(m_renderer_event_queue))
-        {
-          // Redraw
-          /*  _TestBall.x += _TestBall.dx;
-            _TestBall.y += _TestBall.dy;
+      // the al_is_empty is not needed anymore since get_event is false if the timeout triggered
+      if (redraw) //&& al_is_event_queue_empty(m_renderer_event_queue))
+      {
+        redraw = false;
 
-            if (_TestBall.x < _TestBilliardTable.left_border_pos)
-            {
-              _TestBall.x = _TestBilliardTable.left_border_pos + (_TestBilliardTable.left_border_pos - _TestBall.x);
-              _TestBall.dx *= -1;
-            }
-            if (_TestBall.x > _TestBilliardTable.right_border_pos)
-            {
-              _TestBall.x = _TestBilliardTable.right_border_pos - (_TestBall.x - _TestBilliardTable.right_border_pos);
-              _TestBall.dx *= -1;
-            }
-            if (_TestBall.y < _TestBilliardTable.upper_border_pos)
-            {
-              _TestBall.y = _TestBilliardTable.upper_border_pos + (_TestBilliardTable.upper_border_pos - _TestBall.y);
-              _TestBall.dy *= -1;
-            }
-            if (_TestBall.y > _TestBilliardTable.lower_border_pos)
-            {
-              _TestBall.y = _TestBilliardTable.lower_border_pos - (_TestBall.y - _TestBilliardTable.lower_border_pos);
-              _TestBall.dy *= -1;
-            }        */
+        // Redraw
+        /*  _TestBall.x += _TestBall.dx;
+          _TestBall.y += _TestBall.dy;
 
-          al_clear_to_color(al_map_rgb(100, 0, 0));
-          // draw_table();
-          // al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 255));
-          auto objects = GameManager::instance()->getGameObjects();
-          //  spdlog::info("redraw {} objects", objects->size());
-
-          for (const auto &obj : *objects)
+          if (_TestBall.x < _TestBilliardTable.left_border_pos)
           {
-            obj->draw();
+            _TestBall.x = _TestBilliardTable.left_border_pos + (_TestBilliardTable.left_border_pos - _TestBall.x);
+            _TestBall.dx *= -1;
           }
+          if (_TestBall.x > _TestBilliardTable.right_border_pos)
+          {
+            _TestBall.x = _TestBilliardTable.right_border_pos - (_TestBall.x - _TestBilliardTable.right_border_pos);
+            _TestBall.dx *= -1;
+          }
+          if (_TestBall.y < _TestBilliardTable.upper_border_pos)
+          {
+            _TestBall.y = _TestBilliardTable.upper_border_pos + (_TestBilliardTable.upper_border_pos - _TestBall.y);
+            _TestBall.dy *= -1;
+          }
+          if (_TestBall.y > _TestBilliardTable.lower_border_pos)
+          {
+            _TestBall.y = _TestBilliardTable.lower_border_pos - (_TestBall.y - _TestBilliardTable.lower_border_pos);
+            _TestBall.dy *= -1;
+          }        */
 
-          al_flip_display();
-          redraw = false;
+        al_clear_to_color(al_map_rgb(100, 0, 0));
+        // draw_table();
+        // al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 255));
+        auto objects = GameManager::instance()->getGameObjects();
+        //  spdlog::info("redraw {} objects", objects->size());
+
+        for (const auto &obj : *objects)
+        {
+          obj->draw();
         }
+
+        al_flip_display();
       }
 
       // Check if we need to redraw, only redraw if the queue is now empty

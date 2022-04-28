@@ -1,6 +1,7 @@
 #include "GameCore/GameManager.hpp"
 #include "Rendering/Renderer.hpp"
 #include "Input/InputManager.hpp"
+#include "Physics/PhysicsManager.hpp"
 #include "enums.hpp"
 
 #include <allegro5/allegro.h>
@@ -52,6 +53,9 @@ namespace mg8
 
     // start input manager
     InputManager::instance();
+
+    // start physics
+    PhysicsManager::instance();
 
     // done
     spdlog::info("Game manager instanced");
@@ -140,7 +144,10 @@ namespace mg8
     // shutdown renderer
     send_user_event(MG8_SUBSYSTEMS::RENDERER, CONTROL_SHUTDOWN);
     Renderer::instance()->get_thread()->join();
+
     // shutdown physics
+    send_user_event(MG8_SUBSYSTEMS::PHYSICS_MANAGER, CONTROL_SHUTDOWN);
+    PhysicsManager::instance()->get_thread()->join();
 
     // shutdown input
     send_user_event(MG8_SUBSYSTEMS::INPUT_MANAGER, CONTROL_SHUTDOWN);
