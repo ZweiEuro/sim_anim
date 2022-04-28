@@ -70,6 +70,11 @@ namespace mg8
         spdlog::info("key pressed {}", al_keycode_to_name(event.keyboard.keycode));
         al_emit_user_event(&m_InputManager_event_source, &event, nullptr);
         break;
+      case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
+        spdlog::info("mouse pressed pressed Button {}({} > 2 = other) @ {} {}", event.mouse.button == 1 ? "left" : "right", event.mouse.button, event.mouse.x, event.mouse.y);
+        al_emit_user_event(&m_InputManager_event_source, &event, nullptr);
+        break;
+      case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
       case ALLEGRO_EVENT_KEY_CHAR:
       case ALLEGRO_EVENT_KEY_UP:
         // ignore all type events or key up events
@@ -111,7 +116,28 @@ namespace mg8
     {
       ALLEGRO_EVENT event;
       al_wait_for_event(queue, &event);
-      exit = (event.keyboard.keycode == keycode);
+      if (event.type == ALLEGRO_EVENT_KEY_DOWN)
+      {
+        exit = (event.keyboard.keycode == keycode);
+      }
+    }
+    al_unregister_event_source(queue, &m_InputManager_event_source);
+    al_destroy_event_queue(queue);
+  }
+
+  void InputManager::wait_for_mouse_button(int button)
+  {
+    auto queue = al_create_event_queue();
+    al_register_event_source(queue, &m_InputManager_event_source);
+    bool exit = false;
+    while (!exit)
+    {
+      ALLEGRO_EVENT event;
+      al_wait_for_event(queue, &event);
+      if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
+      {
+        exit = (event.mouse.button & button);
+      }
     }
     al_unregister_event_source(queue, &m_InputManager_event_source);
     al_destroy_event_queue(queue);
