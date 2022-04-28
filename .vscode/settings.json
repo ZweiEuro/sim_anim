@@ -74,5 +74,7 @@
     "valarray": "cpp",
     "variant": "cpp",
     "core": "cpp"
-  }
+  },
+  "prettier.printWidth": 180,
+  "editor.formatOnSave": true
 }

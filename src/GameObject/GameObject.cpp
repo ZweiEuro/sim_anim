@@ -6,30 +6,18 @@
 #include <spdlog/spdlog.h>
 namespace mg8
 {
-  std::atomic_int GameObject::m_objects_created = 0;
 
-  void GameObject::CheckObjectCreation()
+  GameObject::GameObject(const MG8_OBJECT_TYPES type,
+                         const uint32_t collision,
+                         const vec2 position,
+                         const vec2 velocity) : m_type(type),
+                                                m_collision_mask(collision),
+                                                m_position(position),
+                                                m_velocity(velocity)
   {
-    m_objects_created++;
-    if (m_objects_created >= (int)config_max_object_count)
-    {
-      spdlog::warn("%d Objects are currently active, maximum is %d",
-                   m_objects_created, config_max_object_count);
-    }
-  }
-
-  GameObject::GameObject(const vec2 coords)
-  {
-    m_coords = coords;
-  }
-  GameObject::GameObject(const float x, const float y)
-  {
-    m_coords.x = x;
-    m_coords.y = y;
   }
 
   GameObject::~GameObject()
   {
-    m_objects_created--;
   }
 }

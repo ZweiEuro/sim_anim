@@ -41,17 +41,18 @@ namespace mg8
       this->render_loop(); });
   }
 
-  void Renderer::draw_table(){
+  void Renderer::draw_table()
+  {
     /*
-    *  image coodinate axis
-    * (0,0)---------------> x-axis
-    *     | 
-    *     |
-    *     |
-    *     |
-    *     v
-    *     y-axis
-    */
+     *  image coodinate axis
+     * (0,0)---------------> x-axis
+     *     |
+     *     |
+     *     |
+     *     |
+     *     v
+     *     y-axis
+     */
 
     float hole_radius = 10.0;
     float table_border_width = 20;
@@ -60,40 +61,40 @@ namespace mg8
     float inner_border_x_offset = outer_border_x_offset + table_border_width;
 
     float pool_table_width = (float)config_start_resolution_w - 2 * outer_border_x_offset;
-    float pool_table_height = pool_table_width/2.0;
-    
+    float pool_table_height = pool_table_width / 2.0;
+
     float outer_border_y_offset = ((float)config_start_resolution_h - pool_table_height) / 2.0;
     float inner_border_y_offset = outer_border_y_offset + table_border_width;
 
-    _TestBilliardTable.left_border_pos = inner_border_x_offset + _TestBall.radius/2;
-    _TestBilliardTable.right_border_pos = (float)config_start_resolution_w - inner_border_x_offset - _TestBall.radius/2;
-    _TestBilliardTable.upper_border_pos = inner_border_y_offset + _TestBall.radius/2;
-    _TestBilliardTable.lower_border_pos = (float)config_start_resolution_h - inner_border_y_offset - _TestBall.radius/2;
-    
-    //outer brown border of table
-    al_draw_filled_rounded_rectangle(outer_border_x_offset, outer_border_y_offset, (float)config_start_resolution_w - outer_border_x_offset, 
-      (float)config_start_resolution_h - outer_border_y_offset, hole_radius, hole_radius, al_map_rgb(102, 51, 0));
+    _TestBilliardTable.left_border_pos = inner_border_x_offset + _TestBall.radius / 2;
+    _TestBilliardTable.right_border_pos = (float)config_start_resolution_w - inner_border_x_offset - _TestBall.radius / 2;
+    _TestBilliardTable.upper_border_pos = inner_border_y_offset + _TestBall.radius / 2;
+    _TestBilliardTable.lower_border_pos = (float)config_start_resolution_h - inner_border_y_offset - _TestBall.radius / 2;
 
-    //inner green field of the table
-    al_draw_filled_rectangle(inner_border_x_offset, inner_border_y_offset, (float)config_start_resolution_w - inner_border_x_offset, 
-      (float)config_start_resolution_h - inner_border_y_offset, al_map_rgb(0, 102, 0));
+    // outer brown border of table
+    al_draw_filled_rounded_rectangle(outer_border_x_offset, outer_border_y_offset, (float)config_start_resolution_w - outer_border_x_offset,
+                                     (float)config_start_resolution_h - outer_border_y_offset, hole_radius, hole_radius, al_map_rgb(102, 51, 0));
 
-    //left upper hole
-    al_draw_filled_circle(inner_border_x_offset + hole_radius/4, inner_border_y_offset + hole_radius/4, hole_radius, al_map_rgb(0, 0, 0));
+    // inner green field of the table
+    al_draw_filled_rectangle(inner_border_x_offset, inner_border_y_offset, (float)config_start_resolution_w - inner_border_x_offset,
+                             (float)config_start_resolution_h - inner_border_y_offset, al_map_rgb(0, 102, 0));
 
-    //left lower hole
-    al_draw_filled_circle(inner_border_x_offset + hole_radius/4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius/4, hole_radius, al_map_rgb(0, 0, 0));
+    // left upper hole
+    al_draw_filled_circle(inner_border_x_offset + hole_radius / 4, inner_border_y_offset + hole_radius / 4, hole_radius, al_map_rgb(0, 0, 0));
 
-    //right upper hole
-    al_draw_filled_circle((float)config_start_resolution_w - inner_border_x_offset - hole_radius/4, inner_border_y_offset + hole_radius/4, hole_radius, al_map_rgb(0, 0, 0));
+    // left lower hole
+    al_draw_filled_circle(inner_border_x_offset + hole_radius / 4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius / 4, hole_radius, al_map_rgb(0, 0, 0));
 
-    //right lower hole
-    al_draw_filled_circle((float)config_start_resolution_w - inner_border_x_offset - hole_radius/4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius/4, hole_radius, al_map_rgb(0, 0, 0));
+    // right upper hole
+    al_draw_filled_circle((float)config_start_resolution_w - inner_border_x_offset - hole_radius / 4, inner_border_y_offset + hole_radius / 4, hole_radius, al_map_rgb(0, 0, 0));
 
-    //center upper hole
+    // right lower hole
+    al_draw_filled_circle((float)config_start_resolution_w - inner_border_x_offset - hole_radius / 4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius / 4, hole_radius, al_map_rgb(0, 0, 0));
+
+    // center upper hole
     al_draw_filled_circle((float)config_start_resolution_w / 2.0, inner_border_y_offset, hole_radius, al_map_rgb(0, 0, 0));
 
-    //center lower hole
+    // center lower hole
     al_draw_filled_circle((float)config_start_resolution_w / 2.0, (float)config_start_resolution_h - inner_border_y_offset, hole_radius, al_map_rgb(0, 0, 0));
   };
 
@@ -127,7 +128,7 @@ namespace mg8
       abort();
     }
 
-    //enable anti-aliasing
+    // enable anti-aliasing
     al_set_new_display_option(ALLEGRO_SAMPLE_BUFFERS, 1, ALLEGRO_SUGGEST);
     al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
     al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
@@ -146,12 +147,12 @@ namespace mg8
       abort();
     }
 
-    if(!al_init_image_addon())
+    if (!al_init_image_addon())
     {
       spdlog::error("Failed to init image addon.");
       abort();
     }
-    
+
     if (!al_init_primitives_addon())
     {
       spdlog::error("Failed to init primitives addon.");
@@ -216,35 +217,41 @@ namespace mg8
       {             // the al_is_empty is not needed anymore since get_event is false if the timeout triggered
         if (redraw) //&& al_is_event_queue_empty(m_renderer_event_queue))
         {
-          spdlog::info("redraw");
           // Redraw
-          _TestBall.x += _TestBall.dx;
-          _TestBall.y += _TestBall.dy;
+          /*  _TestBall.x += _TestBall.dx;
+            _TestBall.y += _TestBall.dy;
 
-          if (_TestBall.x < _TestBilliardTable.left_border_pos)
-          {
-            _TestBall.x = _TestBilliardTable.left_border_pos + (_TestBilliardTable.left_border_pos - _TestBall.x);
-            _TestBall.dx *= -1;
-          }
-          if (_TestBall.x > _TestBilliardTable.right_border_pos)
-          {
-            _TestBall.x = _TestBilliardTable.right_border_pos - (_TestBall.x - _TestBilliardTable.right_border_pos);
-            _TestBall.dx *= -1;
-          }
-          if (_TestBall.y < _TestBilliardTable.upper_border_pos)
-          {
-            _TestBall.y = _TestBilliardTable.upper_border_pos + (_TestBilliardTable.upper_border_pos - _TestBall.y);
-            _TestBall.dy *= -1;
-          }
-          if (_TestBall.y > _TestBilliardTable.lower_border_pos)
-          {
-            _TestBall.y = _TestBilliardTable.lower_border_pos - (_TestBall.y - _TestBilliardTable.lower_border_pos);
-            _TestBall.dy *= -1;
-          }        
+            if (_TestBall.x < _TestBilliardTable.left_border_pos)
+            {
+              _TestBall.x = _TestBilliardTable.left_border_pos + (_TestBilliardTable.left_border_pos - _TestBall.x);
+              _TestBall.dx *= -1;
+            }
+            if (_TestBall.x > _TestBilliardTable.right_border_pos)
+            {
+              _TestBall.x = _TestBilliardTable.right_border_pos - (_TestBall.x - _TestBilliardTable.right_border_pos);
+              _TestBall.dx *= -1;
+            }
+            if (_TestBall.y < _TestBilliardTable.upper_border_pos)
+            {
+              _TestBall.y = _TestBilliardTable.upper_border_pos + (_TestBilliardTable.upper_border_pos - _TestBall.y);
+              _TestBall.dy *= -1;
+            }
+            if (_TestBall.y > _TestBilliardTable.lower_border_pos)
+            {
+              _TestBall.y = _TestBilliardTable.lower_border_pos - (_TestBall.y - _TestBilliardTable.lower_border_pos);
+              _TestBall.dy *= -1;
+            }        */
 
           al_clear_to_color(al_map_rgb(100, 0, 0));
-          draw_table();
-          al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 1));
+          // draw_table();
+          // al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 255));
+          auto objects = GameManager::instance()->getGameObjects();
+          //  spdlog::info("redraw {} objects", objects->size());
+
+          for (const auto &obj : *objects)
+          {
+            obj->draw();
+          }
 
           al_flip_display();
           redraw = false;

@@ -7,6 +7,9 @@
 #include <cstring>
 #include <spdlog/spdlog.h>
 
+// Game objects
+#include "GameObject/Ball.hpp"
+
 namespace mg8
 {
   GameManager *GameManager::m_instance = nullptr;
@@ -30,9 +33,6 @@ namespace mg8
 
   GameManager::GameManager()
   {
-
-    // memory structure setup
-    std::memset((void *)m_game_objects, 0, config_max_object_count * sizeof(GameObject *));
 
     // setup program control events, create all source to subsystems
     al_init_user_event_source(&m_GameManager_event_source_to_InputManager);
@@ -58,10 +58,7 @@ namespace mg8
 
     // fluff stuff
 
-    escape_button_listener = std::thread([=]() -> void
-                                         {
-                                           InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
-                                           send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); });
+    setup_game();
   }
 
   GameManager::~GameManager()
@@ -69,9 +66,9 @@ namespace mg8
     spdlog::error("GameManager destroyed? This is a singleton and shouldn't happen.");
   }
 
-  mutex_guard_ptr<GameObject> GameManager::getGameObjects()
+  mutex_guard_ptr<std::vector<std::shared_ptr<GameObject>>> GameManager::getGameObjects()
   {
-    return mutex_guard_ptr<GameObject>(l_game_objects, m_game_objects);
+    return mutex_guard_ptr<std::vector<std::shared_ptr<GameObject>>>(l_game_objects, &m_game_objects);
   }
 
   ALLEGRO_EVENT_SOURCE *GameManager::get_GameManager_event_source_to(MG8_SUBSYSTEMS target_system)
@@ -117,6 +114,7 @@ namespace mg8
       switch (event.type)
       {
       case ALLEGRO_EVENT_DISPLAY_CLOSE:
+        spdlog::info("GM DISPLAY close event");
         exit = true;
         break;
 
@@ -125,6 +123,8 @@ namespace mg8
         {
         case CONTROL_SHUTDOWN:
           exit = true;
+          spdlog::info("GM control shutdown");
+
           break;
         default:
           spdlog::info("GameManager User event unknown subtype: {}", (int)event.user.data1);
@@ -156,5 +156,16 @@ namespace mg8
     {
       spdlog::warn("Event {} would not have been received by system {}", event, target_system);
     }
+  }
+
+  void GameManager::setup_game()
+  {
+    escape_button_listener = std::thread([=]() -> void
+                                         {
+                                           InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
+                                           send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); });
+    auto objects = getGameObjects();
+
+    objects->emplace_back(new Ball({(float)config_start_resolution_w / 2.0f, (float)config_start_resolution_h / 2.0f}, {1, 0}, 10));
   }
 }
