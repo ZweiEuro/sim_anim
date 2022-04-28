@@ -1,5 +1,5 @@
 
-#include "GameObject/GameObject.hpp"
+#include "GameObjects/GameObject.hpp"
 #include "math/vector.hpp"
 #include "configuration.hpp"
 

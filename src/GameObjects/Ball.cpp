@@ -1,4 +1,4 @@
-#include "GameObject/Ball.hpp"
+#include "GameObjects/Ball.hpp"
 #include <allegro5/allegro_primitives.h>
 
 #include "configuration.hpp"

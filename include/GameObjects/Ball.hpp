@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject/GameObject.hpp"
+#include "GameObjects/GameObject.hpp"
 #include <allegro5/color.h>
 namespace mg8
 {

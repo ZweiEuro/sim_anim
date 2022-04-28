@@ -1,5 +1,5 @@
-#include "Renderer/Renderer.hpp"
-#include "GameManager/GameManager.hpp"
+#include "Rendering/Renderer.hpp"
+#include "GameCore/GameManager.hpp"
 #include "util/scope_guard.hpp"
 #include "util/file.hpp"
 #include "configuration.hpp"

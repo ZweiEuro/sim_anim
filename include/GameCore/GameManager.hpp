@@ -1,6 +1,6 @@
 #pragma once
 #include "configuration.hpp"
-#include "GameObject/GameObject.hpp"
+#include "GameObjects/GameObject.hpp"
 #include "util/guard_ptr.hpp"
 #include "enums.hpp"
 
@@ -52,6 +52,6 @@ namespace mg8
     static ALLEGRO_EVENT_SOURCE *get_GameManager_event_source_to(MG8_SUBSYSTEMS target_system);
 
     void setup_game();
-    };
+  };
 
 }

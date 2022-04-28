@@ -1,6 +1,6 @@
-#include "GameManager/GameManager.hpp"
-#include "Renderer/Renderer.hpp"
-#include "InputManager/InputManager.hpp"
+#include "GameCore/GameManager.hpp"
+#include "Rendering/Renderer.hpp"
+#include "Input/InputManager.hpp"
 #include "enums.hpp"
 
 #include <allegro5/allegro.h>
@@ -8,7 +8,7 @@
 #include <spdlog/spdlog.h>
 
 // Game objects
-#include "GameObject/Ball.hpp"
+#include "GameObjects/Ball.hpp"
 
 namespace mg8
 {

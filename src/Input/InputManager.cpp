@@ -1,6 +1,6 @@
-#include "InputManager/InputManager.hpp"
+#include "Input/InputManager.hpp"
 
-#include "GameManager/GameManager.hpp"
+#include "GameCore/GameManager.hpp"
 #include "configuration.hpp"
 #include "util/scope_guard.hpp"
 

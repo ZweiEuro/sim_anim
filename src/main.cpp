@@ -8,8 +8,8 @@
  *
  * http://www.damienradtke.org/building-a-mario-clone-with-allegro
  */
-#include "GameManager/GameManager.hpp"
-#include "Renderer/Renderer.hpp"
+#include "GameCore/GameManager.hpp"
+#include "Rendering/Renderer.hpp"
 #include "enums.hpp"
 
 #include <stdio.h>
