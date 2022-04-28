@@ -66,8 +66,8 @@ namespace mg8
         l_mouse_state.unlock();
 
         break;
-      case ALLEGRO_KEY_DOWN:
-        spdlog::info("key pressed {}", event.keyboard.keycode);
+      case ALLEGRO_EVENT_KEY_DOWN:
+        spdlog::info("key pressed {}", al_keycode_to_name(event.keyboard.keycode));
         al_emit_user_event(&m_InputManager_event_source, &event, nullptr);
         break;
       case ALLEGRO_EVENT_KEY_CHAR:
@@ -110,8 +110,8 @@ namespace mg8
     while (!exit)
     {
       ALLEGRO_EVENT event;
-      al_wait_for_event(m_InputManager_event_queue, &event);
-      exit = event.keyboard.keycode == keycode;
+      al_wait_for_event(queue, &event);
+      exit = (event.keyboard.keycode == keycode);
     }
     al_unregister_event_source(queue, &m_InputManager_event_source);
     al_destroy_event_queue(queue);
