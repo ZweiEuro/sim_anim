@@ -244,7 +244,7 @@ namespace mg8
 
           al_clear_to_color(al_map_rgb(100, 0, 0));
           draw_table();
-          al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 1));
+          al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 100));
 
           al_flip_display();
           redraw = false;
