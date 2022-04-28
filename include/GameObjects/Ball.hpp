@@ -18,5 +18,8 @@ namespace mg8
         uint32_t collision = 0);
 
     virtual void draw() const;
+    virtual void move(vec2 delta_move);
+
+    bool collides_with(const GameObject *comp) const;
   };
 }

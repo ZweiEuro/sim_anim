@@ -23,12 +23,15 @@ namespace mg8
   class GameObject
   {
   public:
-    vec2 m_velocity = {0, 0}; // Object direction of movement in 3D space
+    vec2 m_velocity = {0, 0}; // Object direction of movement in 2D space
 
     MG8_OBJECT_TYPES m_type = TYPE_UNDEFINED;
     uint32_t m_collision_mask = TYPE_UNDEFINED; // & of object types
 
     virtual void draw() const = 0;
+    virtual void move(vec2 delta_position) = 0;
+
+    bool collides_with(const GameObject *comp) const;
 
     GameObject(const MG8_OBJECT_TYPES type,
                const uint32_t collision = 0,

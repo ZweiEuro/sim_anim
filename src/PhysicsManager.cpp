@@ -2,9 +2,10 @@
 #include "GameCore/GameManager.hpp"
 
 #include <spdlog/spdlog.h>
-
+#include <chrono>
 namespace mg8
 {
+
   PhysicsManager *PhysicsManager::m_instance = nullptr;
 
   PhysicsManager *PhysicsManager::instance()
@@ -48,7 +49,15 @@ namespace mg8
       ALLEGRO_EVENT event;
       static bool recalculate = true;
 
-      al_wait_for_event(m_PhysicsManager_event_queue, &event);
+      static double delta_ms = 0;
+
+      {
+        auto start = std::chrono::high_resolution_clock::now();
+        al_wait_for_event(m_PhysicsManager_event_queue, &event);
+        auto end = std::chrono::high_resolution_clock::now();
+
+        delta_ms = std::chrono::duration<double, std::milli>(end - start).count() / 1000; // why is chrono like this -.-
+      }
 
       // Handle the event
 
@@ -78,6 +87,24 @@ namespace mg8
       {
         recalculate = false;
         auto objects = GameManager::instance()->getGameObjects();
+        // movement resolve
+        for (const auto &A : *objects)
+        {
+          A->move(A->m_velocity * delta_ms);
+        }
+        continue;
+
+        // Collision resolve
+        for (const auto &A : *objects)
+          for (const auto &B : *objects)
+          {
+            if (A == B)
+            {
+              continue;
+            }
+            if (A->collides_with(B.get()))
+              spdlog::info("collision");
+          }
 
         // do collision stuff here
       }

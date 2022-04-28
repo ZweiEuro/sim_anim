@@ -14,6 +14,15 @@ namespace mg8
     {
     }
 
+    vec2 operator*(float scale)
+    {
+      return {x * scale, y * scale};
+    }
+
+    vec2 operator+(vec2 other)
+    {
+      return {x + other.x, y + other.y};
+    }
   } vec2;
 
   typedef struct circle
@@ -26,19 +35,30 @@ namespace mg8
     {
     }
 
+    void setPosition(vec2 new_position)
+    {
+      pos = new_position;
+    }
   } circle;
 
-  typedef struct poly
+  typedef struct rect
   {
   public:
-    int count;
-    vec2 verts[MAX_POLYGON_VER_COUNT];
-    vec2 norms[MAX_POLYGON_VER_COUNT];
-    poly()
+    vec2 pos; // upper left corner
+    float width;
+    float height;
+
+    rect()
     {
       assert(false && "WIP");
     }
-  } poly;
+
+    bool point_inside(vec2 point) const;
+    void setPosition(vec2 new_position)
+    {
+      pos = new_position;
+    }
+  } rect;
 
   typedef struct ray
   {
@@ -48,5 +68,7 @@ namespace mg8
     float distance; // distance along d from position p to find endpoint of ray
   } ray;
 
-  int circleCircleCollision(circle A, circle B);
+  bool circleCircleCollision(const circle *A, const circle *B);
+  bool circleRectCollision(const circle *A, const rect *B);
+  bool rectRectCollision(const rect *A, const rect *B);
 }
