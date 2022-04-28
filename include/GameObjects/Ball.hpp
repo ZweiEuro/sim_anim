@@ -4,13 +4,13 @@
 namespace mg8
 {
 
-  class Ball : public virtual GameObject
+  class Ball : public virtual GameObject, public circle
   {
   public:
-    float m_radius = 100;
     ALLEGRO_COLOR m_color = {0, 0, 0, 255};
 
     Ball(
+        MG8_OBJECT_TYPES type,
         vec2 position = {0, 0},
         vec2 velocity = {0, 0},
         int radius = 1,

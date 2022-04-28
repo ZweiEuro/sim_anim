@@ -2,7 +2,7 @@
 #include <allegro5/allegro.h>
 #include <mutex>
 #include <thread>
-#include "math/vector.hpp"
+#include "math/math.hpp"
 
 namespace mg8
 {

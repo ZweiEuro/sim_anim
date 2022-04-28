@@ -174,8 +174,8 @@ namespace mg8
     auto objects = getGameObjects();
 
     // ball moving right
-    objects->emplace_back(new Ball({(float)config_start_resolution_w / 2.0f, (float)config_start_resolution_h / 2.0f}, {1, 0}, 10));
+    objects->emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f, (float)config_start_resolution_h / 2.0f}, {1, 0}, 10));
     // not moving
-    objects->emplace_back(new Ball({(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
+    objects->emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
   }
 }
