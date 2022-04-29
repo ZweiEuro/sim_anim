@@ -88,25 +88,26 @@ namespace mg8
         recalculate = false;
         auto objects = GameManager::instance()->getGameObjects();
         // movement resolve
-        for (const auto &A : *objects)
+        for (auto &A : objects)
         {
           A->move(A->m_velocity * delta_ms);
         }
-        continue;
 
         // Collision resolve
-        for (const auto &A : *objects)
-          for (const auto &B : *objects)
+        for (auto &A : objects)
+          for (auto &B : objects)
           {
             if (A == B)
             {
               continue;
             }
-            if (A->collides_with(B.get()))
+            if (A->collides_with(B))
               spdlog::info("collision");
           }
 
         // do collision stuff here
+
+        GameManager::instance()->releaseGameObjects();
       }
     }
     spdlog::info("[Physics] exitted");

@@ -14,5 +14,5 @@ namespace mg8
   const float config_mouse_position_refresh_per_second = 5;
 
   // Physics:
-  const float config_physics_updates_per_second = 60;
+  const float config_physics_updates_per_second = 200;
 }

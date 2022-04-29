@@ -70,9 +70,29 @@ namespace mg8
     spdlog::error("GameManager destroyed? This is a singleton and shouldn't happen.");
   }
 
-  mutex_guard_ptr<std::vector<std::shared_ptr<GameObject>>> GameManager::getGameObjects()
+  std::vector<GameObject *> &GameManager::getGameObjects(bool exclusive)
   {
-    return mutex_guard_ptr<std::vector<std::shared_ptr<GameObject>>>(l_game_objects, &m_game_objects);
+    if (exclusive)
+    {
+      l_game_objects.lock();
+    }
+    else
+    {
+      l_game_objects.lock_shared();
+    }
+    return m_game_objects;
+  }
+
+  void GameManager::releaseGameObjects(bool exclusive)
+  {
+    if (exclusive)
+    {
+      l_game_objects.unlock();
+    }
+    else
+    {
+      l_game_objects.unlock_shared();
+    }
   }
 
   ALLEGRO_EVENT_SOURCE *GameManager::get_GameManager_event_source_to(MG8_SUBSYSTEMS target_system)
@@ -167,15 +187,27 @@ namespace mg8
 
   void GameManager::setup_game()
   {
-    escape_button_listener = std::thread([=]() -> void
-                                         {
-                                           InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
-                                           send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); });
-    auto objects = getGameObjects();
+    std::thread([=]() -> void
+                {
+                InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
+                send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); })
+        .detach();
+
+    std::thread([=]() -> void
+                {
+                  while(true) {
+                    vec2 pos = InputManager::instance()->wait_for_mouse_button(1);
+                    auto &objects = getGameObjects(true);
+                    objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, pos, {100, 0}, 10));
+                    releaseGameObjects(true);
+                } })
+        .detach();
+
+    auto &objects = getGameObjects(true);
 
     // ball moving right
-    objects->emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f, (float)config_start_resolution_h / 2.0f}, {100, 0}, 10));
     // not moving
-    objects->emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
+    objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
+    releaseGameObjects(true);
   }
 }

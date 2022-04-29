@@ -100,7 +100,6 @@ namespace mg8
 
   void Renderer::unsetup()
   {
-    spdlog::info("Renderer unsetupped");
     m_rendering_resources_lock.lock();
 
     al_stop_timer(m_display_refresh_timer);
@@ -111,6 +110,7 @@ namespace mg8
     m_renderer_event_queue = nullptr;
     al_destroy_display(m_display);
     m_display = nullptr;
+    spdlog::info("[Render Thread] unnsetupped");
   }
 
   void Renderer::setup()
@@ -183,7 +183,6 @@ namespace mg8
       al_wait_for_event(m_renderer_event_queue, &event);
 
       // Handle the event
-
       switch (event.type)
       {
       case ALLEGRO_EVENT_TIMER:
@@ -193,17 +192,18 @@ namespace mg8
         switch ((int)event.user.data1)
         {
         case CONTROL_SHUTDOWN:
+
           exit = true;
           break;
         default:
-          spdlog::info("Renderer Unknown User event subtype: {}", (int)event.user.data1);
+          spdlog::info("[Render Thread] Unknown User event subtype: {}", (int)event.user.data1);
 
           break;
         }
 
         break;
       default:
-        spdlog::info("Renderer unknown event received: {}", event.type);
+        spdlog::info("[Render Thread] unknown event received: {}", event.type);
         break;
       }
       // the al_is_empty is not needed anymore since get_event is false if the timeout triggered
@@ -239,13 +239,14 @@ namespace mg8
         al_clear_to_color(al_map_rgb(100, 0, 0));
         // draw_table();
         // al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 255));
-        auto objects = GameManager::instance()->getGameObjects();
+        auto &objects = GameManager::instance()->getGameObjects();
         //  spdlog::info("redraw {} objects", objects->size());
 
-        for (const auto &obj : *objects)
+        for (const auto &obj : objects)
         {
           obj->draw();
         }
+        GameManager::instance()->releaseGameObjects();
 
         al_flip_display();
       }
@@ -253,7 +254,7 @@ namespace mg8
       // Check if we need to redraw, only redraw if the queue is now empty
     }
     unsetup();
-    spdlog::info("render thread exitted");
+    spdlog::info("[Render Thread] exitted");
     return;
   }
 

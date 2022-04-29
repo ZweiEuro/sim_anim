@@ -35,6 +35,6 @@ namespace mg8
     }
 
     void wait_for_key(int keycode); // block until key is pressed
-    void wait_for_mouse_button(int button);
+    vec2 wait_for_mouse_button(int button);
   };
 }

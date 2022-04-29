@@ -5,7 +5,7 @@
 #include "enums.hpp"
 
 #include <allegro5/allegro.h>
-#include <mutex>
+#include <shared_mutex>
 #include <thread>
 #include <vector>
 #include <memory>
@@ -18,8 +18,8 @@ namespace mg8
   private:
     static GameManager *m_instance;
 
-    std::mutex l_game_objects;
-    std::vector<std::shared_ptr<GameObject>> m_game_objects = {};
+    std::shared_timed_mutex l_game_objects;
+    std::vector<GameObject *> m_game_objects = {};
 
     // Events need to be fired to each system from a new source so they don't starve each other
     static ALLEGRO_EVENT_SOURCE m_GameManager_event_source_to_InputManager; // the queue the input thread listens to
@@ -32,10 +32,6 @@ namespace mg8
 
     GameManager();
 
-    // fluff, not really necessary
-
-    std::thread escape_button_listener;
-
   public:
     static GameManager *instance();
 
@@ -43,7 +39,8 @@ namespace mg8
     GameManager(GameManager const &) = delete;
     ~GameManager();
 
-    mutex_guard_ptr<std::vector<std::shared_ptr<GameObject>>> getGameObjects(); // locks internally, needs to be unlocked
+    std::vector<GameObject *> &getGameObjects(bool exclusive = false); // locks internally, needs to be unlocked
+    void releaseGameObjects(bool exclusive = false);
 
     void loop(); // main management loop, this is where the main ends up in
     void send_user_event(MG8_SUBSYSTEMS target_system, MG8_EVENTS event);

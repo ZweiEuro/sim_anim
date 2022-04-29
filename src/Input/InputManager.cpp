@@ -125,11 +125,12 @@ namespace mg8
     al_destroy_event_queue(queue);
   }
 
-  void InputManager::wait_for_mouse_button(int button)
+  vec2 InputManager::wait_for_mouse_button(int button)
   {
     auto queue = al_create_event_queue();
     al_register_event_source(queue, &m_InputManager_event_source);
     bool exit = false;
+    vec2 ret = {};
     while (!exit)
     {
       ALLEGRO_EVENT event;
@@ -137,9 +138,15 @@ namespace mg8
       if (event.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
       {
         exit = (event.mouse.button & button);
+        if (exit)
+        {
+          ret = {event.mouse.x, event.mouse.y};
+        }
       }
     }
     al_unregister_event_source(queue, &m_InputManager_event_source);
     al_destroy_event_queue(queue);
+
+    return ret;
   }
 }
