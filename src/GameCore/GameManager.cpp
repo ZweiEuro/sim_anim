@@ -189,18 +189,23 @@ namespace mg8
   {
     std::thread([=]() -> void
                 {
-                InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
-                send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); })
+                  InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
+                  send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); })
         .detach();
 
     std::thread([=]() -> void
                 {
-                  while(true) {
-                    vec2 pos = InputManager::instance()->wait_for_mouse_button(1);
-                    auto &objects = getGameObjects(true);
-                    objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, pos, {100, 0}, 10));
-                    releaseGameObjects(true);
-                } })
+                    while(true) {
+                      vec2i pos;
+
+                      auto ok = InputManager::instance()->wait_for_mouse_button(1, pos);
+                      if(!ok){
+                        return;
+                      }
+                      auto &objects = getGameObjects(true);
+                      objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, pos, {100, 0}, 10));
+                      releaseGameObjects(true);
+                  } })
         .detach();
 
     auto &objects = getGameObjects(true);

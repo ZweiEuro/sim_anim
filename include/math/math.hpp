@@ -3,18 +3,18 @@
 #include "assert.h"
 namespace mg8
 {
-
-  typedef class vec2
+  template <typename T>
+  class vec2
   {
   public:
-    float x;
-    float y;
+    T x;
+    T y;
 
-    vec2(float x = 0, float y = 0) : x(x), y(y)
+    vec2(T x = 0, T y = 0) : x(x), y(y)
     {
     }
 
-    vec2 operator*(float scale)
+    vec2 operator*(T scale)
     {
       return {x * scale, y * scale};
     }
@@ -23,19 +23,27 @@ namespace mg8
     {
       return {x + other.x, y + other.y};
     }
-  } vec2;
+
+    template <typename T2>
+    operator vec2<T2>() const
+    {
+      return vec2<T2>((T2)x, (T2)y);
+    }
+  };
+  using vec2f = vec2<float>;
+  using vec2i = vec2<int>;
 
   typedef struct circle
   {
   public:
-    vec2 pos;
+    vec2f pos;
     float rad;
 
-    circle(vec2 pos, float rad) : pos(pos), rad(rad)
+    circle(vec2f pos, float rad) : pos(pos), rad(rad)
     {
     }
 
-    void setPosition(vec2 new_position)
+    void setPosition(vec2f new_position)
     {
       pos = new_position;
     }
@@ -44,7 +52,7 @@ namespace mg8
   typedef struct rect
   {
   public:
-    vec2 pos; // upper left corner
+    vec2f pos; // upper left corner
     float width;
     float height;
 
@@ -53,8 +61,8 @@ namespace mg8
       assert(false && "WIP");
     }
 
-    bool point_inside(vec2 point) const;
-    void setPosition(vec2 new_position)
+    bool point_inside(vec2f point) const;
+    void setPosition(vec2f new_position)
     {
       pos = new_position;
     }
@@ -63,8 +71,8 @@ namespace mg8
   typedef struct ray
   {
   public:
-    vec2 pos;       // position
-    vec2 dir;       // direction (normalized)
+    vec2f pos;      // position
+    vec2f dir;      // direction (normalized)
     float distance; // distance along d from position p to find endpoint of ray
   } ray;
 

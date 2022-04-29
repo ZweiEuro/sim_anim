@@ -14,7 +14,7 @@ namespace mg8
     ALLEGRO_EVENT_QUEUE *m_InputManager_event_queue; // main queue for the GameManager
 
     ALLEGRO_EVENT_SOURCE m_InputManager_event_source; // where the manager tells "wait for keys" if something was pressed or not
-    vec2 m_mouse_state;
+    vec2i m_mouse_state;
     std::mutex l_mouse_state;
 
     std::thread m_input_thread;
@@ -27,14 +27,14 @@ namespace mg8
   public:
     static InputManager *instance();
 
-    vec2 get_mouse_position();
+    vec2i get_mouse_position();
 
     std::thread *get_thread()
     {
       return &m_input_thread;
     }
 
-    void wait_for_key(int keycode); // block until key is pressed
-    vec2 wait_for_mouse_button(int button);
+    bool wait_for_key(int keycode); // block until key is pressed
+    bool wait_for_mouse_button(int button, vec2i &mouse_pos);
   };
 }

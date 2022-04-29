@@ -9,9 +9,9 @@ namespace mg8
 
   GameObject::GameObject(const MG8_OBJECT_TYPES type,
                          const uint32_t collision,
-                         const vec2 velocity) : m_velocity(velocity),
-                                                m_type(type),
-                                                m_collision_mask(collision)
+                         const vec2f velocity) : m_velocity(velocity),
+                                                 m_type(type),
+                                                 m_collision_mask(collision)
 
   {
   }

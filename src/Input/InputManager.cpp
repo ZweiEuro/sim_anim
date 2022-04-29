@@ -84,22 +84,23 @@ namespace mg8
         {
         case CONTROL_SHUTDOWN:
           exit = true;
+          al_emit_user_event(&m_InputManager_event_source, &event, nullptr);
           break;
         default:
-          spdlog::info("Input thread User event subtype: {}", (int)event.user.data1);
+          spdlog::info("[Input] User event subtype: {}", (int)event.user.data1);
           break;
         }
         break;
       default:
-        spdlog::info("Input thread event received: {}", event.type);
+        spdlog::info("[Input] event received: {}", event.type);
         break;
       }
     }
-    spdlog::info("Input thread exitted");
+    spdlog::info("[Input] exitted");
     return;
   }
 
-  vec2 InputManager::get_mouse_position()
+  vec2i InputManager::get_mouse_position()
   {
     l_mouse_state.lock();
     auto ret = m_mouse_state;
@@ -107,7 +108,7 @@ namespace mg8
     return ret;
   }
 
-  void InputManager::wait_for_key(int keycode)
+  bool InputManager::wait_for_key(int keycode)
   {
     auto queue = al_create_event_queue();
     al_register_event_source(queue, &m_InputManager_event_source);
@@ -120,17 +121,34 @@ namespace mg8
       {
         exit = (event.keyboard.keycode == keycode);
       }
+      else if (event.type == USER_BASE_EVENT) // controlled abort
+      {
+        switch ((int)event.user.data1)
+        {
+        case CONTROL_SHUTDOWN:
+          spdlog::info("wait_for_key shutdown while waiting for event");
+
+          al_unregister_event_source(queue, &m_InputManager_event_source);
+          al_destroy_event_queue(queue);
+          return false;
+          break;
+        default:
+          spdlog::info("wait_for_key got unhandled user event: {}", (int)event.user.data1);
+          break;
+        }
+        break;
+      }
     }
     al_unregister_event_source(queue, &m_InputManager_event_source);
     al_destroy_event_queue(queue);
+    return true;
   }
 
-  vec2 InputManager::wait_for_mouse_button(int button)
+  bool InputManager::wait_for_mouse_button(int button, vec2i &mouse_pos)
   {
     auto queue = al_create_event_queue();
     al_register_event_source(queue, &m_InputManager_event_source);
     bool exit = false;
-    vec2 ret = {};
     while (!exit)
     {
       ALLEGRO_EVENT event;
@@ -140,13 +158,30 @@ namespace mg8
         exit = (event.mouse.button & button);
         if (exit)
         {
-          ret = {event.mouse.x, event.mouse.y};
+          mouse_pos = {event.mouse.x, event.mouse.y};
         }
+      }
+      else if (event.type == USER_BASE_EVENT) // controlled abort
+      {
+        switch ((int)event.user.data1)
+        {
+        case CONTROL_SHUTDOWN:
+          spdlog::info("wait_for_mouse_button shutdown while waiting for event");
+
+          al_unregister_event_source(queue, &m_InputManager_event_source);
+          al_destroy_event_queue(queue);
+          return false;
+          break;
+        default:
+          spdlog::info("wait_for_mouse_button got unhandled user event: {}", (int)event.user.data1);
+          break;
+        }
+        break;
       }
     }
     al_unregister_event_source(queue, &m_InputManager_event_source);
     al_destroy_event_queue(queue);
 
-    return ret;
+    return true;
   }
 }

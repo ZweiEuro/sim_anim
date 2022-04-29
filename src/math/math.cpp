@@ -2,23 +2,23 @@
 namespace mg8
 {
 
-  bool rect::point_inside(vec2 point) const
+  bool rect::point_inside(vec2f point) const
   {
     return (pos.x <= point.x && point.x <= pos.x + width) && (pos.y >= point.y && point.y >= pos.y - height);
   }
 
-  vec2 sub(vec2 a, vec2 b)
+  vec2f sub(vec2f a, vec2f b)
   {
     a.x -= b.x;
     a.y -= b.y;
     return a;
   }
-  float dot(vec2 a, vec2 b) { return a.x * b.x + a.y * b.y; }
+  float dot(vec2f a, vec2f b) { return a.x * b.x + a.y * b.y; }
 
   bool circleCircleCollision(const circle *A, const circle *B)
   {
     assert(A && B && "Circle circle collision with nullptr");
-    vec2 c = sub(B->pos, A->pos);
+    vec2f c = sub(B->pos, A->pos);
     float d2 = dot(c, c);
     float r2 = A->rad + B->rad;
     r2 = r2 * r2;
@@ -41,7 +41,7 @@ namespace mg8
 
     // very trivial approach: Check for every point in A if its between the Y and X coordinates of B
 
-    vec2 a = B->pos, b = B->pos, c = B->pos, d = B->pos;
+    vec2f a = B->pos, b = B->pos, c = B->pos, d = B->pos;
 
     b.x += B->width;  // top right
     c.y -= B->height; // bottom left
