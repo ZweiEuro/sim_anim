@@ -197,13 +197,20 @@ namespace mg8
                 {
                     while(true) {
                       vec2i pos;
+                      vec2i dir;
 
                       auto ok = InputManager::instance()->wait_for_mouse_button(1, pos);
                       if(!ok){
                         return;
                       }
+
+                      ok = InputManager::instance()->wait_for_mouse_button(1, dir);
+                      if (!ok)
+                      {
+                        return;
+                      }
                       auto &objects = getGameObjects(true);
-                      objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, pos, {100, 0}, 10));
+                      objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, pos, (dir - pos).dir() * 100, 10));
                       releaseGameObjects(true);
                   } })
         .detach();

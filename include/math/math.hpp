@@ -1,6 +1,7 @@
 #pragma once
 #include "configuration.hpp"
 #include "assert.h"
+#include <cmath>
 namespace mg8
 {
   template <typename T>
@@ -14,20 +15,35 @@ namespace mg8
     {
     }
 
-    vec2 operator*(T scale)
+    template <typename T2>
+    vec2 operator*(T2 scale)
     {
-      return {x * scale, y * scale};
+      return {(T)((double)x * (double)scale), (T)((double)y * (double)scale)};
     }
 
     vec2 operator+(vec2 other)
     {
       return {x + other.x, y + other.y};
     }
+    vec2 operator-(vec2 other)
+    {
+      return {x - other.x, y - other.y};
+    }
 
     template <typename T2>
     operator vec2<T2>() const
     {
       return vec2<T2>((T2)x, (T2)y);
+    }
+
+    float mag()
+    {
+      return std::sqrt(x * x + y * y);
+    }
+
+    vec2<float> dir()
+    {
+      return {((float)x) / mag(), ((float)y) / mag()};
     }
   };
   using vec2f = vec2<float>;
