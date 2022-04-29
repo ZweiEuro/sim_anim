@@ -31,6 +31,5 @@ int main(int argc, char *argv[])
 	mg8::GameManager::instance()->loop();
 
 	spdlog::info("Exit");
-	spdlog::shutdown();
 	return 0;
 }

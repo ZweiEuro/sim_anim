@@ -110,7 +110,7 @@ namespace mg8
     m_renderer_event_queue = nullptr;
     al_destroy_display(m_display);
     m_display = nullptr;
-    spdlog::info("[Render Thread] unnsetupped");
+    spdlog::info("[Render] unnsetupped");
   }
 
   void Renderer::setup()
@@ -196,14 +196,14 @@ namespace mg8
           exit = true;
           break;
         default:
-          spdlog::info("[Render Thread] Unknown User event subtype: {}", (int)event.user.data1);
+          spdlog::info("[Render] Unknown User event subtype: {}", (int)event.user.data1);
 
           break;
         }
 
         break;
       default:
-        spdlog::info("[Render Thread] unknown event received: {}", event.type);
+        spdlog::info("[Render] unknown event received: {}", event.type);
         break;
       }
       // the al_is_empty is not needed anymore since get_event is false if the timeout triggered
@@ -254,7 +254,7 @@ namespace mg8
       // Check if we need to redraw, only redraw if the queue is now empty
     }
     unsetup();
-    spdlog::info("[Render Thread] exitted");
+    spdlog::info("[Render] exitted");
     return;
   }
 

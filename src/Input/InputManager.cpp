@@ -84,7 +84,9 @@ namespace mg8
         {
         case CONTROL_SHUTDOWN:
           exit = true;
-          al_emit_user_event(&m_InputManager_event_source, &event, nullptr);
+          // emit once per listener
+          while (al_emit_user_event(&m_InputManager_event_source, &event, nullptr))
+            ;
           break;
         default:
           spdlog::info("[Input] User event subtype: {}", (int)event.user.data1);
@@ -126,8 +128,7 @@ namespace mg8
         switch ((int)event.user.data1)
         {
         case CONTROL_SHUTDOWN:
-          spdlog::info("wait_for_key shutdown while waiting for event");
-
+          spdlog::info("wait_for_key shutdown while waiting for key: {}", al_keycode_to_name(keycode));
           al_unregister_event_source(queue, &m_InputManager_event_source);
           al_destroy_event_queue(queue);
           return false;
@@ -166,7 +167,7 @@ namespace mg8
         switch ((int)event.user.data1)
         {
         case CONTROL_SHUTDOWN:
-          spdlog::info("wait_for_mouse_button shutdown while waiting for event");
+          spdlog::info("wait_for_mouse_button shutdown while waiting for event for button {}", button);
 
           al_unregister_event_source(queue, &m_InputManager_event_source);
           al_destroy_event_queue(queue);
