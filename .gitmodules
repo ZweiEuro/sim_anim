@@ -1,0 +1,3 @@
+[submodule "libs/Agui"]
+	path = libs/Agui
+	url = git@github.com:jmasterx/Agui.git
