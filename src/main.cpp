@@ -13,19 +13,14 @@
 #include "enums.hpp"
 
 #include <stdio.h>
-#include <allegro5/allegro.h>
+
 #include <spdlog/spdlog.h>
+#include <assert.h>
 
 const float FPS = 60;
 
 int main(int argc, char *argv[])
 {
-	if (!al_init())
-	{
-		spdlog::error("Failed to initialize allegro.");
-		abort();
-	}
-
 	spdlog::info("Base event id: {}", USER_BASE_EVENT);
 
 	mg8::GameManager::instance()->loop();

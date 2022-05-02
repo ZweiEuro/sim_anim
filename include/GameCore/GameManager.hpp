@@ -33,6 +33,7 @@ namespace mg8
     GameManager();
 
   public:
+    static bool initializeAllegro();
     static GameManager *instance();
 
     void operator=(GameManager const &) = delete;

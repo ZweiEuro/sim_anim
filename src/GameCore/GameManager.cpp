@@ -5,6 +5,10 @@
 #include "enums.hpp"
 
 #include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
+
 #include <cstring>
 #include <spdlog/spdlog.h>
 
@@ -13,6 +17,7 @@
 
 namespace mg8
 {
+
   GameManager *GameManager::m_instance = nullptr;
   ALLEGRO_EVENT_QUEUE *GameManager::m_GameManager_event_queue = nullptr;
 
@@ -25,6 +30,8 @@ namespace mg8
   {
     if (!m_instance)
     {
+      initializeAllegro();
+
       m_instance = new GameManager();
     }
     return m_instance;
@@ -141,7 +148,8 @@ namespace mg8
         spdlog::info("GM DISPLAY close event");
         exit = true;
         break;
-
+      case ALLEGRO_EVENT_DISPLAY_RESIZE: // handled in renderer
+        break;
       case USER_BASE_EVENT:
         switch ((int)event.user.data1)
         {
@@ -222,4 +230,19 @@ namespace mg8
     objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
     releaseGameObjects(true);
   }
+
+  bool GameManager::initializeAllegro()
+  {
+    // Initialize Allegro
+    assert(al_init() && "al_init failed");
+    assert(al_init_image_addon() && "al_init_image_addon failed");
+    assert(al_init_font_addon() && "al_init_image_addon failed");
+    assert(al_init_ttf_addon() && "al_init_ttf_addon failed");
+    assert(al_init_primitives_addon() && "al_init_primitives_addon failed");
+    assert(al_install_mouse() && "al_install_mouse failed");
+    assert(al_install_keyboard() && "al_install_keyboard failed");
+
+    return true;
+  }
+
 }

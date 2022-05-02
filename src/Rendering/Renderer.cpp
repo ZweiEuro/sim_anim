@@ -133,12 +133,17 @@ namespace mg8
     al_set_new_display_option(ALLEGRO_SAMPLES, 8, ALLEGRO_SUGGEST);
     al_set_new_bitmap_flags(ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
 
+    if (config_allow_resize)
+    {
+      al_set_new_display_flags(ALLEGRO_RESIZABLE);
+    }
     m_display = al_create_display(config_start_resolution_w, config_start_resolution_h);
     if (!m_display)
     {
       spdlog::error("Failed to create display.");
       abort();
     }
+    al_set_window_title(m_display, "Magic 8");
 
     m_renderer_event_queue = al_create_event_queue();
     if (!m_renderer_event_queue)
@@ -147,20 +152,9 @@ namespace mg8
       abort();
     }
 
-    if (!al_init_image_addon())
-    {
-      spdlog::error("Failed to init image addon.");
-      abort();
-    }
-
-    if (!al_init_primitives_addon())
-    {
-      spdlog::error("Failed to init primitives addon.");
-      abort();
-    }
-
     al_register_event_source(m_renderer_event_queue, al_get_timer_event_source(m_display_refresh_timer));
     al_register_event_source(m_renderer_event_queue, GameManager::get_GameManager_event_source_to(MG8_SUBSYSTEMS::RENDERER));
+    al_register_event_source(m_renderer_event_queue, al_get_display_event_source(m_display));
 
     al_clear_to_color(al_map_rgb(0, 0, 0)); // initial clear
     al_flip_display();
@@ -185,8 +179,17 @@ namespace mg8
       // Handle the event
       switch (event.type)
       {
+      case ALLEGRO_EVENT_DISPLAY_RESIZE:
+        m_display_width = event.display.width;
+        m_display_height = event.display.height;
+        al_resize_display(m_display, m_display_width, m_display_height);
+        spdlog::info("resized to w: {} h: {}", m_display_width, m_display_height);
+        redraw = true;
+        break;
       case ALLEGRO_EVENT_TIMER:
         redraw = true;
+        break;
+      case ALLEGRO_EVENT_DISPLAY_CLOSE: // handled in game manager
         break;
       case USER_BASE_EVENT:
         switch ((int)event.user.data1)
