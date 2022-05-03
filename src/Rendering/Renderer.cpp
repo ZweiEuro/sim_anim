@@ -1,5 +1,6 @@
 #include "Rendering/Renderer.hpp"
 #include "GameCore/GameManager.hpp"
+#include "Rendering/SettingsGui.hpp"
 #include "util/scope_guard.hpp"
 #include "util/file.hpp"
 #include "configuration.hpp"
@@ -9,6 +10,9 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
 
+#include <Agui/Agui.hpp>
+#include <Agui/Backends/Allegro5/Allegro5.hpp>
+#include <Agui/Backends/Allegro5/Allegro5Input.hpp>
 namespace mg8
 {
   Renderer *Renderer::m_instance = nullptr;
@@ -18,6 +22,8 @@ namespace mg8
     if (!m_instance)
     {
       m_instance = new Renderer();
+
+      m_instance->m_guiComponents.push_back(SettingsGUI::instance());
     }
 
     return m_instance;
@@ -31,6 +37,12 @@ namespace mg8
   Renderer::Renderer()
   {
     spdlog::info("Renderer instanced");
+
+    // Set the input handler
+    agui::Color::setPremultiplyAlpha(true);
+
+    inputHandler = new agui::Allegro5Input();
+    graphicsHandler = new agui::Allegro5Graphics();
 
     assert(!m_rendering_thread.joinable() && "rendering thread exists but init was called ?");
     m_rendering_resources_lock.lock();
@@ -137,20 +149,17 @@ namespace mg8
     {
       al_set_new_display_flags(ALLEGRO_RESIZABLE);
     }
+
     m_display = al_create_display(config_start_resolution_w, config_start_resolution_h);
-    if (!m_display)
-    {
-      spdlog::error("Failed to create display.");
-      abort();
-    }
+    assert(m_display && "Failed to create display.");
+
+    al_show_mouse_cursor(m_display);
+    al_set_new_bitmap_flags(ALLEGRO_VIDEO_BITMAP);
+
     al_set_window_title(m_display, "Magic 8");
 
     m_renderer_event_queue = al_create_event_queue();
-    if (!m_renderer_event_queue)
-    {
-      spdlog::error("Failed to create display event queue.");
-      abort();
-    }
+    assert(m_renderer_event_queue && "Failed to create display event queue.");
 
     al_register_event_source(m_renderer_event_queue, al_get_timer_event_source(m_display_refresh_timer));
     al_register_event_source(m_renderer_event_queue, GameManager::get_GameManager_event_source_to(MG8_SUBSYSTEMS::RENDERER));
@@ -183,7 +192,15 @@ namespace mg8
         m_display_width = event.display.width;
         m_display_height = event.display.height;
         al_resize_display(m_display, m_display_width, m_display_height);
+        al_acknowledge_resize(event.display.source);
+
         spdlog::info("resized to w: {} h: {}", m_display_width, m_display_height);
+
+        for (auto &gui : m_guiComponents)
+        {
+          gui->resizeToDisplay();
+        }
+
         redraw = true;
         break;
       case ALLEGRO_EVENT_TIMER:
@@ -239,9 +256,11 @@ namespace mg8
             _TestBall.dy *= -1;
           }        */
 
-        al_clear_to_color(al_map_rgb(100, 0, 0));
-        // draw_table();
-        // al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 255));
+        // al_clear_to_color(al_map_rgb(100, 0, 0));
+        al_clear_to_color(al_map_rgb(240, 240, 240));
+
+        //  draw_table();
+        //  al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 255));
         auto &objects = GameManager::instance()->getGameObjects();
         //  spdlog::info("redraw {} objects", objects->size());
 
@@ -251,6 +270,7 @@ namespace mg8
         }
         GameManager::instance()->releaseGameObjects();
 
+        renderGUI();
         al_flip_display();
       }
 
@@ -264,6 +284,40 @@ namespace mg8
   ALLEGRO_DISPLAY *Renderer::get_current_display()
   {
     auto guard = ScopeGuard(m_rendering_resources_lock);
+    assert(m_display);
+
     return m_display;
   }
+
+  void Renderer::renderGUI()
+  {
+    for (size_t i = 0; i < m_guiComponents.size(); i++)
+    {
+      if (i == 0 && !render_settings)
+        continue;
+
+      auto &gui = m_guiComponents[i];
+      gui->render();
+    }
+  }
+  void Renderer::logicGUI()
+  {
+    for (size_t i = 0; i < m_guiComponents.size(); i++)
+    {
+      if (i == 0 && !render_settings)
+        continue;
+
+      auto &gui = m_guiComponents[i];
+      gui->logic();
+    }
+  }
+
+  void Renderer::resizeGUI()
+  {
+    for (auto &gui : m_guiComponents)
+    {
+      gui->resizeToDisplay();
+    }
+  }
+
 }

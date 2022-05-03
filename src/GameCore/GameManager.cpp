@@ -2,6 +2,7 @@
 #include "Rendering/Renderer.hpp"
 #include "Input/InputManager.hpp"
 #include "Physics/PhysicsManager.hpp"
+
 #include "enums.hpp"
 
 #include <allegro5/allegro.h>
@@ -43,6 +44,15 @@ namespace mg8
   GameManager::GameManager()
   {
 
+    // setup static system wide stuff
+
+    agui::Image::setImageLoader(new agui::Allegro5ImageLoader);
+    agui::Font::setFontLoader(new agui::Allegro5FontLoader);
+
+    defaultFont = agui::Font::load("res/fonts/DejaVuSans.ttf", 16);
+    assert(defaultFont && "Default font failed to load");
+    agui::Widget::setGlobalFont(defaultFont);
+
     // setup program control events, create all source to subsystems
     al_init_user_event_source(&m_GameManager_event_source_to_InputManager);
     al_init_user_event_source(&m_GameManager_event_source_to_Renderer);
@@ -67,8 +77,6 @@ namespace mg8
 
     // done
     spdlog::info("Game manager instanced");
-
-    // fluff stuff
 
     setup_game();
   }
