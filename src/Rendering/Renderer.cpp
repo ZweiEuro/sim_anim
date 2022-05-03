@@ -22,8 +22,6 @@ namespace mg8
     if (!m_instance)
     {
       m_instance = new Renderer();
-
-      m_instance->m_guiComponents.push_back(SettingsGUI::instance());
     }
 
     return m_instance;
@@ -170,6 +168,8 @@ namespace mg8
     m_rendering_resources_lock.unlock();
 
     al_start_timer(m_display_refresh_timer);
+
+    m_instance->m_guiComponents.push_back(SettingsGUI::instance());
   }
 
   void Renderer::render_loop()
@@ -203,6 +203,12 @@ namespace mg8
 
         redraw = true;
         break;
+
+      case ALLEGRO_EVENT_DISPLAY_SWITCH_IN:
+      case ALLEGRO_EVENT_DISPLAY_SWITCH_OUT:
+        resizeGUI();
+        break;
+
       case ALLEGRO_EVENT_TIMER:
         redraw = true;
         break;
@@ -256,8 +262,8 @@ namespace mg8
             _TestBall.dy *= -1;
           }        */
 
-        // al_clear_to_color(al_map_rgb(100, 0, 0));
-        al_clear_to_color(al_map_rgb(240, 240, 240));
+        al_clear_to_color(al_map_rgb(100, 100, 100));
+        // al_clear_to_color(al_map_rgb(240, 240, 240));
 
         //  draw_table();
         //  al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 255));

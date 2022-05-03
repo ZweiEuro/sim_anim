@@ -18,7 +18,6 @@ namespace mg8
 
   SettingsGUI::SettingsGUI()
   {
-
     setInput(Renderer::instance()->get_agui_input_handler());
     setGraphics(Renderer::instance()->get_agui_graphics_handler());
 
