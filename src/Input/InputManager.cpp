@@ -3,6 +3,7 @@
 #include "GameCore/GameManager.hpp"
 #include "configuration.hpp"
 #include "util/scope_guard.hpp"
+#include "Rendering/Renderer.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -55,6 +56,7 @@ namespace mg8
       al_wait_for_event(m_InputManager_event_queue, &event);
 
       // Handle the event
+      Renderer::instance()->get_agui_input_handler()->processEvent(event);
 
       switch (event.type)
       {

@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
+
+#include <Agui/Agui.hpp>
+#include <Agui/Backends/Allegro5/Allegro5.hpp>
+
 #include "configuration.hpp"
 #include <thread>
 #include <atomic>
@@ -40,15 +44,23 @@ namespace mg8
     std::thread m_rendering_thread;        // created _once_ and then never again or only reused. the events from the gamemanager queu can be used to restart it cleanly without needing to manage a new thread
     std::mutex m_rendering_resources_lock; // control all rendering resources and only give it free when they all are assigned and valid, if they are invalid the lock is taken
 
+    // display properties
+    int m_display_width = config_start_resolution_w;
+    int m_display_height = config_start_resolution_h;
+
+    // GUI shizzle
+    agui::Allegro5Input *inputHandler = NULL;
+    agui::Allegro5Graphics *graphicsHandler = NULL;
+
+    std::vector<agui::Gui *> m_guiComponents;
+    void renderGUI();
+
+    // functions
     void setup(); // called first by the main render thread
     void render_loop();
     void unsetup();
     void draw_table();
     Renderer();
-
-    // display resizing
-    int m_display_width = config_start_resolution_w;
-    int m_display_height = config_start_resolution_h;
 
     // testing stuff
 
@@ -61,12 +73,27 @@ namespace mg8
 
     void stop_rendering();
 
+    // getter and setter
     ALLEGRO_DISPLAY *get_current_display(); // guarded
-
     std::thread *get_thread()
     {
       return &m_rendering_thread;
     }
+    agui::Allegro5Input *get_agui_input_handler()
+    {
+      assert(inputHandler);
+      return inputHandler;
+    }
+    agui::Allegro5Graphics *get_agui_graphics_handler()
+    {
+      assert(graphicsHandler);
+      return graphicsHandler;
+    }
+
+    void logicGUI();
+    void resizeGUI();
+
+    bool render_settings = true;
   };
 
 }

@@ -23,6 +23,8 @@
 #include <vector>
 #include <ctime>
 #include <iostream>
+#include <thread>
+#include <spdlog/spdlog.h>
 namespace mg8
 {
 
@@ -37,18 +39,21 @@ namespace mg8
         slider->setBackColor(agui::Color(slider->getValue(), slider->getValue(), slider->getValue()));
         return;
       }
-      al_show_native_message_box(al_get_current_display(),
-                                 "Agui Action Listener",
-                                 "",
-                                 "An Action Event has occured!",
-                                 NULL, 0);
+
+      spdlog::info("button pushed");
+
+      /*   al_show_native_message_box(al_get_current_display(),
+                                    "Agui Action Listener",
+                                    "",
+                                    "An Action Event has occured!",
+                                    NULL, 0);*/
     }
   };
 
-  class WidgetCreator
+  class SettingsGUI : public agui::Gui
   {
   private:
-    static WidgetCreator *_instance;
+    static SettingsGUI *_instance;
 
     SimpleActionListener simpleAL;
     agui::FlowLayout flow;
@@ -57,7 +62,6 @@ namespace mg8
     agui::DropDown dropDown;
     agui::TextField textField;
     agui::Frame frame;
-    agui::Gui *mGui;
     agui::RadioButton rButton[3];
     agui::RadioButtonGroup rGroup;
     agui::Slider slider;
@@ -68,19 +72,9 @@ namespace mg8
     agui::ScrollPane scrollPane;
     agui::Button scrollButtons[15];
 
-    ALLEGRO_EVENT_QUEUE *queue = NULL;
-    bool done = false;
-    agui::Gui *gui = NULL;
-    agui::Allegro5Input *inputHandler = NULL;
-    agui::Allegro5Graphics *graphicsHandler = NULL;
-
-    agui::Font *defaultFont = NULL;
-
-    WidgetCreator();
-    ~WidgetCreator();
+    SettingsGUI();
 
   public:
-    static WidgetCreator *
-    instance();
+    static SettingsGUI *instance();
   };
 }

@@ -13,7 +13,7 @@ namespace mg8
 
     std::thread m_collision_check_thread;
 
-    void check_collision();
+    void physics_loop();
     PhysicsManager();
 
   public:

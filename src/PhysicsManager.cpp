@@ -1,5 +1,6 @@
 #include "Physics/PhysicsManager.hpp"
 #include "GameCore/GameManager.hpp"
+#include "Rendering/Renderer.hpp"
 
 #include <spdlog/spdlog.h>
 #include <chrono>
@@ -36,10 +37,10 @@ namespace mg8
     al_start_timer(m_physics_refresh_timer);
 
     m_collision_check_thread = std::thread([=]() -> void
-                                           { this->check_collision(); });
+                                           { this->physics_loop(); });
   }
 
-  void PhysicsManager::check_collision()
+  void PhysicsManager::physics_loop()
   { // Display a black screen
 
     bool exit = false;
@@ -64,6 +65,7 @@ namespace mg8
       switch (event.type)
       {
       case ALLEGRO_EVENT_TIMER:
+        Renderer::instance()->logicGUI();
         recalculate = true;
         break;
       case USER_BASE_EVENT:

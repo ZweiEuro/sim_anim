@@ -5,6 +5,7 @@
 #include "enums.hpp"
 
 #include <allegro5/allegro.h>
+#include <Agui/Font.hpp>
 #include <shared_mutex>
 #include <thread>
 #include <vector>
@@ -29,6 +30,8 @@ namespace mg8
 
     // this should always exist so other systems can register it, if it isn't by the time its asked the getter will fail
     static ALLEGRO_EVENT_QUEUE *m_GameManager_event_queue; // main queue for the GameManager
+
+    agui::Font *defaultFont = nullptr;
 
     GameManager();
 
