@@ -8,6 +8,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include "allegro5/allegro_native_dialog.h"
 
 #include <cstring>
 #include <spdlog/spdlog.h>
@@ -241,6 +242,7 @@ namespace mg8
     assert(al_init_primitives_addon() && "al_init_primitives_addon failed");
     assert(al_install_mouse() && "al_install_mouse failed");
     assert(al_install_keyboard() && "al_install_keyboard failed");
+    assert(al_init_native_dialog_addon() && "al_init_native_dialog_addon failed");
 
     return true;
   }

@@ -30,9 +30,10 @@ target_link_libraries(${Name} PRIVATE
   allegro
   allegro_image
   allegro_primitives
-  allegro_image
   allegro_ttf
   allegro_font
+  allegro_dialog
+  agui
   spdlog::spdlog Threads::Threads)
 
 
