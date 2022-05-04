@@ -39,8 +39,8 @@ namespace mg8
     // Set the input handler
     agui::Color::setPremultiplyAlpha(true);
 
-    inputHandler = new agui::Allegro5Input();
-    graphicsHandler = new agui::Allegro5Graphics();
+    m_inputHandler = new agui::Allegro5Input();
+    m_graphicsHandler = new agui::Allegro5Graphics();
 
     assert(!m_rendering_thread.joinable() && "rendering thread exists but init was called ?");
     m_rendering_resources_lock.lock();

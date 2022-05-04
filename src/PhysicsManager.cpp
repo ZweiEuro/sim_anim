@@ -2,6 +2,8 @@
 #include "GameCore/GameManager.hpp"
 #include "Rendering/Renderer.hpp"
 
+#include "Rendering/SettingsGui.hpp"
+
 #include <spdlog/spdlog.h>
 #include <chrono>
 namespace mg8
@@ -58,6 +60,7 @@ namespace mg8
         auto end = std::chrono::high_resolution_clock::now();
 
         delta_ms = std::chrono::duration<double, std::milli>(end - start).count() / 1000; // why is chrono like this -.-
+        delta_ms *= SettingsGUI::instance()->m_slider_value.load();
       }
 
       // Handle the event

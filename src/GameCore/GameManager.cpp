@@ -212,6 +212,17 @@ namespace mg8
 
     std::thread([=]() -> void
                 {
+                  while (true)
+                  {
+                    auto ok = InputManager::instance()->wait_for_key(ALLEGRO_KEY_S);
+                    if(!ok)
+                    return;
+                    Renderer::instance()->render_settings = !Renderer::instance()->render_settings;
+                  } })
+        .detach();
+
+    std::thread([=]() -> void
+                {
                     while(true) {
                       vec2i pos;
                       vec2i dir;
