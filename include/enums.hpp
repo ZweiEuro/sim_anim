@@ -20,5 +20,7 @@ namespace mg8
     INPUT_MANAGER,
     PHYSICS_MANAGER,
     RENDERER,
+    CONSOLE
   };
+
 }
