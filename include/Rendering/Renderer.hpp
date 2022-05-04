@@ -49,8 +49,8 @@ namespace mg8
     int m_display_height = config_start_resolution_h;
 
     // GUI shizzle
-    agui::Allegro5Input *inputHandler = NULL;
-    agui::Allegro5Graphics *graphicsHandler = NULL;
+    agui::Allegro5Input *m_inputHandler = NULL;
+    agui::Allegro5Graphics *m_graphicsHandler = NULL;
 
     std::vector<agui::Gui *> m_guiComponents;
     void renderGUI();
@@ -81,19 +81,29 @@ namespace mg8
     }
     agui::Allegro5Input *get_agui_input_handler()
     {
-      assert(inputHandler);
-      return inputHandler;
+      assert(m_inputHandler);
+      return m_inputHandler;
     }
     agui::Allegro5Graphics *get_agui_graphics_handler()
     {
-      assert(graphicsHandler);
-      return graphicsHandler;
+      assert(m_graphicsHandler);
+      return m_graphicsHandler;
+    }
+
+    bool mouse_hit_widget()
+    {
+      for (auto &gui : m_guiComponents)
+      {
+        if (gui->isWidgetUnderMouse())
+          return true;
+      }
+      return false;
     }
 
     void logicGUI();
     void resizeGUI();
 
-    bool render_settings = true;
+    std::atomic<bool> render_settings = true;
   };
 
 }

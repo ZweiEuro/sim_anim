@@ -56,7 +56,6 @@ namespace mg8
       al_wait_for_event(m_InputManager_event_queue, &event);
 
       // Handle the event
-      Renderer::instance()->get_agui_input_handler()->processEvent(event);
 
       switch (event.type)
       {
@@ -66,20 +65,42 @@ namespace mg8
         m_mouse_state.x = event.mouse.x;
         m_mouse_state.y = event.mouse.y;
         l_mouse_state.unlock();
+        Renderer::instance()->get_agui_input_handler()->processEvent(event);
 
         break;
       case ALLEGRO_EVENT_KEY_DOWN:
         spdlog::info("key pressed {}", al_keycode_to_name(event.keyboard.keycode));
         al_emit_user_event(&m_InputManager_event_source, &event, nullptr);
+
+        if (Renderer::instance()->mouse_hit_widget())
+        {
+          Renderer::instance()->get_agui_input_handler()->processEvent(event);
+        }
+        else
+        {
+          al_emit_user_event(&m_InputManager_event_source, &event, nullptr);
+        }
         break;
       case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
-        spdlog::info("mouse pressed pressed Button {}({} > 2 = other) @ {} {}", event.mouse.button == 1 ? "left" : "right", event.mouse.button, event.mouse.x, event.mouse.y);
-        al_emit_user_event(&m_InputManager_event_source, &event, nullptr);
+
+        if (Renderer::instance()->mouse_hit_widget())
+        {
+          Renderer::instance()->get_agui_input_handler()->processEvent(event);
+        }
+        else
+        {
+          spdlog::info("mouse pressed pressed Button {}({} > 2 = other) @ {} {}", event.mouse.button == 1 ? "left" : "right", event.mouse.button, event.mouse.x, event.mouse.y);
+
+          al_emit_user_event(&m_InputManager_event_source, &event, nullptr);
+        }
+
         break;
       case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
       case ALLEGRO_EVENT_KEY_CHAR:
       case ALLEGRO_EVENT_KEY_UP:
         // ignore all type events or key up events
+        Renderer::instance()->get_agui_input_handler()->processEvent(event);
+
         break;
       case USER_BASE_EVENT:
         switch ((int)event.user.data1)
@@ -97,6 +118,8 @@ namespace mg8
         break;
       default:
         spdlog::info("[Input] event received: {}", event.type);
+        Renderer::instance()->get_agui_input_handler()->processEvent(event);
+
         break;
       }
     }

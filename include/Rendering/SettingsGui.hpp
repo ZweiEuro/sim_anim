@@ -16,6 +16,8 @@
 #include <Agui/Widgets/Tab/TabbedPane.hpp>
 #include <Agui/Widgets/ListBox/ListBox.hpp>
 #include <Agui/Widgets/ScrollPane/ScrollPane.hpp>
+#include <Agui/Widgets/Label/Label.hpp>
+
 #include <Agui/FlowLayout.hpp>
 
 #include <allegro5/allegro_native_dialog.h>
@@ -28,6 +30,41 @@
 namespace mg8
 {
 
+  class SimpleActionListener;
+  class SettingsGUI : public agui::Gui
+  {
+  private:
+    static SettingsGUI *m_instance;
+
+    SimpleActionListener *m_action_listeneer = nullptr;
+    /*agui::FlowLayout flow;
+    agui::Button button;
+    agui::CheckBox checkBox;
+    agui::DropDown dropDown;
+    agui::TextField textField;
+    agui::RadioButton rButton[3];
+    agui::RadioButtonGroup rGroup;
+    agui::ExtendedTextBox exTextBox;
+    agui::TabbedPane tabbedPane;
+    agui::Tab tab[3];
+    agui::ListBox listBox;
+    agui::ScrollPane scrollPane;
+    agui::Button scrollButtons[15];*/
+
+    agui::Frame m_main_frame;
+
+    agui::Label m_slider_title;
+    agui::Slider m_slider_time_multiplier;
+
+    SettingsGUI();
+
+  public:
+    static SettingsGUI *instance();
+
+    std::atomic<float> m_slider_value = 1;
+    agui::Label m_slider_value_display;
+  };
+
   class SimpleActionListener : public agui::ActionListener
   {
   public:
@@ -36,7 +73,15 @@ namespace mg8
       agui::Slider *slider = dynamic_cast<agui::Slider *>(evt.getSource());
       if (slider)
       {
-        slider->setBackColor(agui::Color(slider->getValue(), slider->getValue(), slider->getValue()));
+        auto &val = SettingsGUI::instance()->m_slider_value;
+        val = ((float)slider->getValue()) / 100;
+        SettingsGUI::instance()->m_slider_value_display.setText(std::to_string(val.load()).c_str());
+        // SettingsGUI::instance()->m_slider_value_display.setText("0.05");
+
+        spdlog::info("set to {} from {}",
+                     SettingsGUI::instance()->m_slider_value_display.getText(),
+                     std::to_string(val.load()));
+
         return;
       }
 
@@ -50,31 +95,4 @@ namespace mg8
     }
   };
 
-  class SettingsGUI : public agui::Gui
-  {
-  private:
-    static SettingsGUI *_instance;
-
-    SimpleActionListener simpleAL;
-    agui::FlowLayout flow;
-    agui::Button button;
-    agui::CheckBox checkBox;
-    agui::DropDown dropDown;
-    agui::TextField textField;
-    agui::Frame frame;
-    agui::RadioButton rButton[3];
-    agui::RadioButtonGroup rGroup;
-    agui::Slider slider;
-    agui::ExtendedTextBox exTextBox;
-    agui::TabbedPane tabbedPane;
-    agui::Tab tab[3];
-    agui::ListBox listBox;
-    agui::ScrollPane scrollPane;
-    agui::Button scrollButtons[15];
-
-    SettingsGUI();
-
-  public:
-    static SettingsGUI *instance();
-  };
 }
