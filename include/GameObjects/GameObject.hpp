@@ -32,6 +32,7 @@ namespace mg8
     virtual void move(vec2f delta_position) = 0;
 
     bool collides_with(const GameObject *comp) const;
+    // virtual void handle_collision(GameObject *collision_with) = 0;
 
     GameObject(const MG8_OBJECT_TYPES type,
                const uint32_t collision = 0,

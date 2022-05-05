@@ -63,5 +63,4 @@ namespace mg8
       assert(false && "Object in collision has no base type");
     }
   }
-
 }

@@ -41,7 +41,12 @@ namespace mg8
       return std::sqrt(x * x + y * y);
     }
 
-    vec2<float> dir()
+    float dot(vec2 other)
+    {
+      return x * other.x + y * other.y;
+    }
+
+    vec2<float> dir() // i.e. normalize
     {
       return {((float)x) / mag(), ((float)y) / mag()};
     }

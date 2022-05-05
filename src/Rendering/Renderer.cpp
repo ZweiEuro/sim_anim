@@ -262,14 +262,8 @@ namespace mg8
             _TestBall.dy *= -1;
           }        */
 
-<<<<<<< HEAD:src/Renderer/Renderer.cpp
-          al_clear_to_color(al_map_rgb(100, 0, 0));
-          draw_table();
-          al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 100));
-=======
         al_clear_to_color(al_map_rgb(100, 100, 100));
         // al_clear_to_color(al_map_rgb(240, 240, 240));
->>>>>>> 46c1c137250b97fd200d5448885b8b2111a42ff1:src/Rendering/Renderer.cpp
 
         //  draw_table();
         //  al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 255));

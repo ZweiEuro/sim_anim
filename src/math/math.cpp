@@ -13,13 +13,14 @@ namespace mg8
     a.y -= b.y;
     return a;
   }
-  float dot(vec2f a, vec2f b) { return a.x * b.x + a.y * b.y; }
+  // float dot(vec2f a, vec2f b) { return a.x * b.x + a.y * b.y; }
 
   bool circleCircleCollision(const circle *A, const circle *B)
   {
     assert(A && B && "Circle circle collision with nullptr");
     vec2f c = sub(B->pos, A->pos);
-    float d2 = dot(c, c);
+    // float d2 = dot(c, c);
+    float d2 = c.dot(c);
     float r2 = A->rad + B->rad;
     r2 = r2 * r2;
     return d2 < r2;
