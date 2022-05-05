@@ -34,6 +34,7 @@ namespace mg8
       }
       else if (this_is_rect)
       {
+        spdlog::info("checking rect circ collision");
         return circleRectCollision(this_is_circle, this_is_rect);
       }
       else
@@ -47,6 +48,7 @@ namespace mg8
       auto this_is_rect = dynamic_cast<const rect *>(this);
       if (this_is_circle)
       {
+        spdlog::info("checking rect circ collision");
         return circleRectCollision(this_is_circle, comp_is_rect);
       }
       else if (this_is_rect)
