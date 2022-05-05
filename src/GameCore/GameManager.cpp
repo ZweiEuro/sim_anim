@@ -16,6 +16,7 @@
 
 // Game objects
 #include "GameObjects/Ball.hpp"
+#include "GameObjects/RigidBody.hpp"
 
 namespace mg8
 {
@@ -238,16 +239,25 @@ namespace mg8
                         return;
                       }
                       auto &objects = getGameObjects(true);
-                      objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, pos, (dir - pos).dir() * 100, 10));
+                      //objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, pos, (dir - pos).dir() * 100, 10));
+                      objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BILIARD_BALL, pos, (dir - pos).dir() * 100, 10));
                       releaseGameObjects(true);
                   } })
         .detach();
 
     auto &objects = getGameObjects(true);
-
+    // left border
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_TABLE_BORDER, {outer_border_x_offset, outer_border_y_offset + table_border_width}, {0, 0}, table_border_width, pool_table_height - 2 * table_border_width));
+    // upper border
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_TABLE_BORDER, {outer_border_x_offset, outer_border_y_offset}, {0, 0}, pool_table_width, table_border_width));
+    // right border
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - outer_border_x_offset - table_border_width, outer_border_y_offset + table_border_width}, {0, 0}, table_border_width, pool_table_height - 2 * table_border_width));
+    // lower border
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_TABLE_BORDER, {outer_border_x_offset, (float)config_start_resolution_h - outer_border_y_offset - table_border_width}, {0, 0}, pool_table_width, table_border_width));
     // ball moving right
     // not moving
-    objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
+    // objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
     releaseGameObjects(true);
   }
 

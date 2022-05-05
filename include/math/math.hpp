@@ -60,6 +60,7 @@ namespace mg8
     vec2f pos;
     float rad;
 
+    circle() {}
     circle(vec2f pos, float rad) : pos(pos), rad(rad)
     {
     }
@@ -79,7 +80,10 @@ namespace mg8
 
     rect()
     {
-      assert(false && "WIP");
+    }
+
+    rect(vec2f pos, float width, float height) : pos(pos), width(width), height(height)
+    {
     }
 
     bool point_inside(vec2f point) const;

@@ -1,4 +1,5 @@
 #include "math/math.hpp"
+#include <algorithm>
 namespace mg8
 {
 
@@ -28,9 +29,43 @@ namespace mg8
 
   bool circleRectCollision(const circle *A, const rect *B)
   {
-    assert(A && B && "Circle poly collision with nullptr");
-    return false;
-    // https://stackoverflow.com/a/402019/12258809
+
+    /*float x_near = std::clamp(A->pos.x, B->pos.x, B->pos.x + B->width);
+    float y_near = std::clamp(A->pos.y, B->pos.y, B->pos.y + B->height);
+
+    vec2f circle_rect_dist = vec2f(A->pos.x - x_near, A->pos.y - y_near);
+
+    // If dist < circle radius -> intersection = true
+    float dist_squared = (circle_rect_dist.x * circle_rect_dist.x) + (circle_rect_dist.y * circle_rect_dist.y);
+    return dist_squared < (A->rad * A->rad);*/
+
+    float dist_x = fabsf(A->pos.x - (B->pos.x - B->width / 2));
+    float dist_y = fabsf(A->pos.y - (B->pos.y - B->height / 2));
+
+    if (dist_x > (B->width / 2 + A->rad))
+    {
+      return false;
+    }
+    if (dist_y > (B->height / 2 + A->rad))
+    {
+      return false;
+    }
+
+    if (dist_x <= (B->width / 2))
+    {
+      return true;
+    }
+    if (dist_y <= (B->height / 2))
+    {
+      return true;
+    }
+
+    float dx = dist_x - B->width / 2;
+    float dy = dist_y - B->height / 2;
+    return (dx * dx + dy * dy <= (A->rad * A->rad));
+    // assert(A && B && "Circle poly collision with nullptr");
+    // return false;
+    //  https://stackoverflow.com/a/402019/12258809
 
     // use point in circle and point in  rect to realize
     // point in circle is easy with its radius. point distance to circle center, calculate length and if smaller than radius its inside if not its outside

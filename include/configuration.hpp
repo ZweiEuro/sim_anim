@@ -7,13 +7,26 @@ namespace mg8
 {
   // display
   const float config_fps = 60;
-  const int config_start_resolution_w = 1920;
-  const int config_start_resolution_h = 1200;
+  const int config_start_resolution_w = 1080;
+  const int config_start_resolution_h = 720;
   const bool config_allow_resize = false;
   // input
   const float config_mouse_position_refresh_per_second = 5;
 
   // Physics:
   const float config_physics_updates_per_second = 80;
+
+  // Table:
+  const float hole_radius = 10.0;
+  const float table_border_width = 20;
+
+  const float outer_border_x_offset = 20;
+  const float inner_border_x_offset = outer_border_x_offset + table_border_width;
+
+  const float pool_table_width = (float)config_start_resolution_w - 2 * outer_border_x_offset;
+  const float pool_table_height = pool_table_width / 2.0;
+
+  const float outer_border_y_offset = ((float)config_start_resolution_h - pool_table_height) / 2.0;
+  const float inner_border_y_offset = outer_border_y_offset + table_border_width;
 
 }

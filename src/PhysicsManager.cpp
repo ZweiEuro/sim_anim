@@ -2,7 +2,8 @@
 #include "GameCore/GameManager.hpp"
 #include "Rendering/Renderer.hpp"
 #include "GameObjects/Ball.hpp"
-
+#include "GameObjects/RigidBody.hpp"
+//#include "../src/GameObjects/RigidBody.cpp"
 #include "Rendering/SettingsGui.hpp"
 
 #include <spdlog/spdlog.h>
@@ -110,11 +111,11 @@ namespace mg8
             if (A->collides_with(B))
             {
               spdlog::info("collision");
-              if (A->m_type == TYPE_BILIARD_BALL && B->m_type == TYPE_BILIARD_BALL)
+              if (A->m_type == TYPE_RIGID_BODY && B->m_type == TYPE_RIGID_BODY)
               {
-                auto ball1 = dynamic_cast<Ball *>(A);
-                auto ball2 = dynamic_cast<Ball *>(B);
-                ball1->handle_collision(ball2);
+                auto obj1 = dynamic_cast<RigidBody *>(A);
+                auto obj2 = dynamic_cast<RigidBody *>(B);
+                obj1->handle_collision(obj2);
               }
             }
           }

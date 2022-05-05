@@ -9,7 +9,7 @@ namespace mg8
   enum MG8_OBJECT_TYPES : uint32_t
   {
     TYPE_UNDEFINED = 0,
-    TYPE_BILIARD_BALL = 1 << 0,
+    TYPE_RIGID_BODY = 1 << 0,
     TYPE_TABLE_HOLE = 1 << 1
   };
 
