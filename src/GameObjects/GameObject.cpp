@@ -2,6 +2,7 @@
 #include "GameObjects/GameObject.hpp"
 #include "math/math.hpp"
 #include "configuration.hpp"
+#include "GameObjects/RigidBody.hpp"
 
 #include <spdlog/spdlog.h>
 namespace mg8
@@ -22,12 +23,59 @@ namespace mg8
 
   bool GameObject::collides_with(const GameObject *comp) const
   {
-    auto comp_is_circle = dynamic_cast<const circle *>(comp);
+    if (comp->m_type == TYPE_RIGID_BODY && this->m_type == TYPE_RIGID_BODY)
+    {
+      auto obj1 = dynamic_cast<const RigidBody *>(this);
+      auto obj2 = dynamic_cast<const RigidBody *>(comp);
+
+      if (obj2->m_rigid_body_type == TYPE_BILIARD_BALL)
+      {
+        auto comp_is_circle = dynamic_cast<const circle *>(comp);
+        if (obj1->m_rigid_body_type == TYPE_BILIARD_BALL)
+        {
+          auto this_is_circle = dynamic_cast<const circle *>(this);
+          return circleCircleCollision(this_is_circle, comp_is_circle);
+        }
+        else if (obj1->m_rigid_body_type == TYPE_TABLE_BORDER)
+        {
+          auto this_is_rect = dynamic_cast<const rect *>(this);
+          return circleRectCollision(comp_is_circle, this_is_rect);
+        }
+        else
+        {
+          assert(false && "Object in collision has no base type");
+        }
+      }
+      else if (obj2->m_rigid_body_type == TYPE_TABLE_BORDER)
+      {
+        auto comp_is_rect = dynamic_cast<const rect *>(comp);
+        if (obj1->m_rigid_body_type == TYPE_BILIARD_BALL)
+        {
+          auto this_is_circle = dynamic_cast<const circle *>(this);
+          return circleRectCollision(this_is_circle, comp_is_rect);
+        }
+        else if (obj1->m_rigid_body_type == TYPE_TABLE_BORDER)
+        {
+          return false; // rect - rect collision leads to constant collision, as the table borders touch all the time
+          // auto this_is_rect = dynamic_cast<const rect *>(this);
+          // return rectRectCollision(this_is_rect, comp_is_rect);
+        }
+        else
+        {
+          assert(false && "Object in collision has no base type");
+        }
+      }
+    }
+
+    /*auto comp_is_circle = dynamic_cast<const circle *>(comp);
     auto comp_is_rect = dynamic_cast<const rect *>(comp);
+
+    spdlog::info("comp_is_circle: {}, comp_is_rect: {}", comp_is_circle ? true : false, comp_is_rect ? true : false);
     if (comp_is_circle)
     {
       auto this_is_circle = dynamic_cast<const circle *>(this);
       auto this_is_rect = dynamic_cast<const rect *>(this);
+      spdlog::info("this_is_circle: {}, this_is_rect: {}", this_is_circle ? true : false, this_is_rect ? true : false);
       if (this_is_circle)
       {
         return circleCircleCollision(this_is_circle, comp_is_circle);
@@ -63,6 +111,6 @@ namespace mg8
     else
     {
       assert(false && "Object in collision has no base type");
-    }
+    }*/
   }
 }

@@ -4,6 +4,7 @@
 #include "configuration.hpp"
 #include "math/math.hpp"
 #include <algorithm>
+#include <spdlog/spdlog.h>
 
 namespace mg8
 {
@@ -87,7 +88,80 @@ namespace mg8
 
   void RigidBody::handle_ball_border_collision(RigidBody *ball, RigidBody *border)
   {
+
+    vec2f normal_directions[] = {
+        vec2f(0.0f, 1.0f),  // up = 0
+        vec2f(1.0f, 0.0f),  // right = 1
+        vec2f(0.0f, -1.0f), // down = 2
+        vec2f(-1.0f, 0.0f)  // left = 3
+    };
+
     float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
+    float y_near = std::clamp(ball->circle::pos.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
+
+    vec2f v = vec2f(x_near - ball->circle::pos.x, y_near - ball->circle::pos.y);
+    float border_penetration = ball->circle::rad - v.mag();
+    vec2f r = v.dir() * border_penetration;
+
+    float max = 0.0f;
+    int best_match = -1;
+    for (size_t i = 0; i < 4; i++)
+    {
+      float dot_prod = r.dir().dot(normal_directions[i]);
+      if (dot_prod > max)
+      {
+        max = dot_prod;
+        best_match = i;
+      }
+    }
+
+    if (best_match == 1 || best_match == 3) // horizontal collision
+    {
+      ball->m_velocity.x = ball->m_velocity.x * -1 * border->m_restitution_coeff * ball->m_restitution_coeff;
+      float penetration = ball->circle::rad - fabsf(r.x);
+      if (best_match == 1) // right collision - move ball left
+      {
+        ball->circle::pos.x -= penetration;
+      }
+      else // left collision - move ball right
+      {
+        ball->circle::pos.x += penetration;
+      }
+    }
+    else // vertical collision
+    {
+      ball->m_velocity.y = ball->m_velocity.y * -1 * border->m_restitution_coeff * ball->m_restitution_coeff;
+      float penetration = ball->circle::rad - fabsf(r.y);
+      if (best_match == 0) // up collision - move ball down
+      {
+        ball->circle::pos.y -= penetration;
+      }
+      else // down collision - move ball up
+      {
+        ball->circle::pos.y += penetration;
+      }
+    }
+
+    /*
+    float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
+    float y_near = std::clamp(ball->circle::pos.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
+
+    vec2f ball_border_dist = vec2f(ball->circle::pos.x - x_near, ball->circle::pos.y - y_near);
+    vec2f ball_border_dist_normalized = ball_border_dist.dir();
+    vec2f ball_border_dist_perpendicular = vec2f(-ball_border_dist_normalized.y, ball_border_dist_normalized.x);
+
+    if (ball->m_velocity.dot(ball_border_dist) < 0)
+    {
+      vec2f normal_vec_len = ball_border_dist_normalized.dot(ball->m_velocity);
+      vec2f tangental_vec_len = ball_border_dist_perpendicular.dot(ball->m_velocity);
+
+      vec2f part1 = (tangental_vec_len * border->m_restitution_coeff).dot(ball_border_dist_perpendicular);
+      vec2f part2 = ((ball_border_dist_normalized * -1.0f) * ball->m_restitution_coeff).dot(normal_vec_len);
+
+      ball->m_velocity = part1 + part2;
+    }*/
+
+    /*float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
     float y_near = std::clamp(ball->circle::pos.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
 
     vec2f ball_border_dist = vec2f(ball->circle::pos.x - x_near, ball->circle::pos.y - y_near);
@@ -100,7 +174,7 @@ namespace mg8
 
     float border_penetration = ball->circle::rad - ball_border_dist.mag();
     vec2f border_penetration_vector = ball_border_dist.dir() * border_penetration;
-    ball->circle::pos = ball->circle::pos - border_penetration_vector;
+    ball->circle::pos = ball->circle::pos - border_penetration_vector;*/
   }
 
   // BilliardBall constructor

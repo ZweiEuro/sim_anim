@@ -257,7 +257,7 @@ namespace mg8
     // ball moving right
     // not moving
     // objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
+    // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BILIARD_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
     releaseGameObjects(true);
   }
 
