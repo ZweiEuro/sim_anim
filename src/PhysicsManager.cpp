@@ -3,7 +3,8 @@
 #include "Rendering/Renderer.hpp"
 #include "GameObjects/Ball.hpp"
 #include "GameObjects/RigidBody.hpp"
-//#include "../src/GameObjects/RigidBody.cpp"
+#include "GameObjects/Hole.hpp"
+#include "../src/GameObjects/Hole.cpp"
 #include "Rendering/SettingsGui.hpp"
 
 #include <spdlog/spdlog.h>
@@ -94,12 +95,17 @@ namespace mg8
       {
         recalculate = false;
         auto objects = GameManager::instance()->getGameObjects();
+        bool are_objects_moving = false;
         // movement resolve
         for (auto &A : objects)
         {
           A->move(A->m_velocity * delta_ms);
+          if (!are_objects_moving) // if one object is moving this is true;
+          {
+            are_objects_moving = A->is_moving();
+          }
         }
-
+        GameManager::instance()->objects_moving = are_objects_moving;
         // Collision resolve
         for (auto &A : objects)
           for (auto &B : objects)
@@ -115,6 +121,18 @@ namespace mg8
               {
                 auto obj1 = dynamic_cast<RigidBody *>(A);
                 auto obj2 = dynamic_cast<RigidBody *>(B);
+                obj1->handle_collision(obj2);
+              }
+              else if (A->m_type == TYPE_TABLE_HOLE && B->m_type == TYPE_RIGID_BODY)
+              {
+                auto obj1 = dynamic_cast<Hole *>(A);
+                auto obj2 = dynamic_cast<RigidBody *>(B);
+                obj1->handle_collision(obj2);
+              }
+              else if (B->m_type == TYPE_TABLE_HOLE && A->m_type == TYPE_RIGID_BODY)
+              {
+                auto obj1 = dynamic_cast<Hole *>(B);
+                auto obj2 = dynamic_cast<RigidBody *>(A);
                 obj1->handle_collision(obj2);
               }
             }

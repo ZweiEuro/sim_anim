@@ -21,6 +21,10 @@ namespace mg8
 
     std::shared_timed_mutex l_game_objects;
     std::vector<GameObject *> m_game_objects = {};
+    GameObject *m_white_ball = nullptr;
+
+    bool player_one_active = false;
+    bool player_two_active = false;
 
     // Events need to be fired to each system from a new source so they don't starve each other
     static ALLEGRO_EVENT_SOURCE m_GameManager_event_source_to_InputManager; // the queue the input thread listens to
@@ -36,6 +40,8 @@ namespace mg8
     GameManager();
 
   public:
+    bool objects_moving = false;
+
     static bool initializeAllegro();
     static GameManager *instance();
 

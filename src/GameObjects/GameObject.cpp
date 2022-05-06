@@ -21,6 +21,15 @@ namespace mg8
   {
   }
 
+  bool GameObject::is_moving() const
+  {
+    if (m_velocity.x > MOVEMENT_EPSILON || m_velocity.y > MOVEMENT_EPSILON)
+    {
+      return true;
+    }
+    return false;
+  }
+
   bool GameObject::collides_with(const GameObject *comp) const
   {
     if (comp->m_type == TYPE_RIGID_BODY && this->m_type == TYPE_RIGID_BODY)
@@ -28,15 +37,15 @@ namespace mg8
       auto obj1 = dynamic_cast<const RigidBody *>(this);
       auto obj2 = dynamic_cast<const RigidBody *>(comp);
 
-      if (obj2->m_rigid_body_type == TYPE_BILIARD_BALL)
+      if (obj2->m_rigid_body_type == TYPE_BALL)
       {
         auto comp_is_circle = dynamic_cast<const circle *>(comp);
-        if (obj1->m_rigid_body_type == TYPE_BILIARD_BALL)
+        if (obj1->m_rigid_body_type == TYPE_BALL)
         {
           auto this_is_circle = dynamic_cast<const circle *>(this);
           return circleCircleCollision(this_is_circle, comp_is_circle);
         }
-        else if (obj1->m_rigid_body_type == TYPE_TABLE_BORDER)
+        else if (obj1->m_rigid_body_type == TYPE_RECTANGLE)
         {
           auto this_is_rect = dynamic_cast<const rect *>(this);
           return circleRectCollision(comp_is_circle, this_is_rect);
@@ -46,15 +55,15 @@ namespace mg8
           assert(false && "Object in collision has no base type");
         }
       }
-      else if (obj2->m_rigid_body_type == TYPE_TABLE_BORDER)
+      else if (obj2->m_rigid_body_type == TYPE_RECTANGLE)
       {
         auto comp_is_rect = dynamic_cast<const rect *>(comp);
-        if (obj1->m_rigid_body_type == TYPE_BILIARD_BALL)
+        if (obj1->m_rigid_body_type == TYPE_BALL)
         {
           auto this_is_circle = dynamic_cast<const circle *>(this);
           return circleRectCollision(this_is_circle, comp_is_rect);
         }
-        else if (obj1->m_rigid_body_type == TYPE_TABLE_BORDER)
+        else if (obj1->m_rigid_body_type == TYPE_RECTANGLE)
         {
           return false; // rect - rect collision leads to constant collision, as the table borders touch all the time
           // auto this_is_rect = dynamic_cast<const rect *>(this);

@@ -1,31 +1,47 @@
 #include "GameObjects/RigidBody.hpp"
+#include "GameCore/GameManager.hpp"
 #include <allegro5/allegro_primitives.h>
+#include <allegro5/allegro_font.h>
 
 #include "configuration.hpp"
 #include "math/math.hpp"
 #include <algorithm>
 #include <spdlog/spdlog.h>
+#include <string>
 
 namespace mg8
 {
   void RigidBody::draw() const
   {
-    if (this->m_rigid_body_type == TYPE_BILIARD_BALL)
+    if (this->m_rigid_body_type == TYPE_BALL)
     {
       al_draw_filled_circle(circle::pos.x, circle::pos.y, rad, al_map_rgba(m_color.r, m_color.g, m_color.b, m_color.a));
+      if (this->m_gameobject_type == TYPE_WHITE_BALL)
+      {
+        ALLEGRO_FONT *font = al_create_builtin_font();
+        std::string s = "x: ";
+        std::string d = ", y: ";
+        std::string msg = s + std::to_string(this->m_velocity.x) + d + std::to_string(this->m_velocity.y);
+        al_draw_text(font, al_map_rgb(0, 0, 0), circle::pos.x + rad * 3, circle::pos.y + rad * 3, 0, msg.c_str());
+      }
     }
-    if (this->m_rigid_body_type == TYPE_TABLE_BORDER)
+    if (this->m_rigid_body_type == TYPE_RECTANGLE)
     {
-      al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, al_map_rgb(102, 51, 0));
+      al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, m_color);
     }
   }
   void RigidBody::move(vec2f delta_move)
   {
-    if (this->m_rigid_body_type == TYPE_BILIARD_BALL)
+    if (this->m_rigid_body_type == TYPE_BALL)
     {
+      if (this->m_velocity.x < MOVEMENT_EPSILON && this->m_velocity.y < MOVEMENT_EPSILON)
+      {
+        this->m_velocity = {0.0f, 0.0f};
+      }
       circle::setPosition(circle::pos + delta_move);
+      this->m_velocity = this->m_velocity - (this->m_velocity * table_friction);
     }
-    if (this->m_rigid_body_type == TYPE_TABLE_BORDER)
+    if (this->m_rigid_body_type == TYPE_RECTANGLE)
     {
       return;
     }
@@ -33,17 +49,17 @@ namespace mg8
 
   void RigidBody::handle_collision(RigidBody *collisioner)
   {
-    if (this->m_rigid_body_type == TYPE_BILIARD_BALL && collisioner->m_rigid_body_type == TYPE_BILIARD_BALL)
+    if (this->m_rigid_body_type == TYPE_BALL && collisioner->m_rigid_body_type == TYPE_BALL)
     {
       handle_ball_ball_collision(collisioner);
     }
-    else if (this->m_rigid_body_type == TYPE_BILIARD_BALL && collisioner->m_rigid_body_type == TYPE_TABLE_BORDER)
+    else if (this->m_rigid_body_type == TYPE_BALL && collisioner->m_rigid_body_type == TYPE_RECTANGLE)
     {
-      handle_ball_border_collision(this, collisioner);
+      handle_ball_rectangle_collision(this, collisioner);
     }
-    else if (this->m_rigid_body_type == TYPE_TABLE_BORDER && collisioner->m_rigid_body_type == TYPE_BILIARD_BALL)
+    else if (this->m_rigid_body_type == TYPE_RECTANGLE && collisioner->m_rigid_body_type == TYPE_BALL)
     {
-      handle_ball_border_collision(collisioner, this);
+      handle_ball_rectangle_collision(collisioner, this);
     }
     else
     {
@@ -86,7 +102,7 @@ namespace mg8
     otherBall->m_velocity = otherBall->m_velocity - impulse * inverseMass_other;
   }
 
-  void RigidBody::handle_ball_border_collision(RigidBody *ball, RigidBody *border)
+  void RigidBody::handle_ball_rectangle_collision(RigidBody *ball, RigidBody *border)
   {
 
     vec2f normal_directions[] = {
@@ -117,28 +133,28 @@ namespace mg8
 
     if (best_match == 1 || best_match == 3) // horizontal collision
     {
-      ball->m_velocity.x = ball->m_velocity.x * -1 * border->m_restitution_coeff * ball->m_restitution_coeff;
-      float penetration = ball->circle::rad - fabsf(r.x);
+      ball->m_velocity.x = ball->m_velocity.x * -1 * border->m_restitution_coeff;
+      ball->m_velocity.y = ball->m_velocity.y * border->m_restitution_coeff;
       if (best_match == 1) // right collision - move ball left
       {
-        ball->circle::pos.x -= penetration;
+        ball->circle::pos.x -= border_penetration;
       }
       else // left collision - move ball right
       {
-        ball->circle::pos.x += penetration;
+        ball->circle::pos.x += border_penetration;
       }
     }
     else // vertical collision
     {
-      ball->m_velocity.y = ball->m_velocity.y * -1 * border->m_restitution_coeff * ball->m_restitution_coeff;
-      float penetration = ball->circle::rad - fabsf(r.y);
+      ball->m_velocity.y = ball->m_velocity.y * -1 * border->m_restitution_coeff;
+      ball->m_velocity.x = ball->m_velocity.x * border->m_restitution_coeff;
       if (best_match == 0) // up collision - move ball down
       {
-        ball->circle::pos.y -= penetration;
+        ball->circle::pos.y -= border_penetration;
       }
       else // down collision - move ball up
       {
-        ball->circle::pos.y += penetration;
+        ball->circle::pos.y += border_penetration;
       }
     }
 
@@ -179,6 +195,7 @@ namespace mg8
 
   // BilliardBall constructor
   RigidBody::RigidBody(MG8_RIGID_BODY_OBJECT_TYPES rigid_body_type,
+                       MG8_GAMEOBJECT_TYPES gameobject_type,
                        vec2f position,
                        vec2f velocity,
                        int radius,
@@ -189,11 +206,12 @@ namespace mg8
                        uint32_t collision,
                        MG8_OBJECT_TYPES obj_type) : GameObject(obj_type, collision, velocity),
                                                     circle(position, radius),
-                                                    m_color(color), m_acceleration(acceleration), m_mass(mass), m_restitution_coeff(restitution_coeff), m_rigid_body_type(rigid_body_type)
+                                                    m_color(color), m_acceleration(acceleration), m_mass(mass), m_restitution_coeff(restitution_coeff), m_rigid_body_type(rigid_body_type), m_gameobject_type(gameobject_type)
   {
   }
   // TableBorder constructor
   RigidBody::RigidBody(MG8_RIGID_BODY_OBJECT_TYPES rigid_body_type,
+                       MG8_GAMEOBJECT_TYPES gameobject_type,
                        vec2f position,
                        vec2f velocity,
                        float width,
@@ -205,7 +223,7 @@ namespace mg8
                        uint32_t collision,
                        MG8_OBJECT_TYPES obj_type) : GameObject(obj_type, collision, velocity),
                                                     rect(position, width, height),
-                                                    m_color(color), m_acceleration(acceleration), m_mass(mass), m_restitution_coeff(restitution_coeff), m_rigid_body_type(rigid_body_type)
+                                                    m_color(color), m_acceleration(acceleration), m_mass(mass), m_restitution_coeff(restitution_coeff), m_rigid_body_type(rigid_body_type), m_gameobject_type(gameobject_type)
   {
   }
 }
