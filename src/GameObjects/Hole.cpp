@@ -35,7 +35,7 @@ namespace mg8
                     std::vector<GameObject *>::iterator object_to_delete = std::find(objects.begin(), objects.end(), collider);
                     if (object_to_delete != objects.end())
                     {
-                        delete *object_to_delete;
+                        // delete *object_to_delete;
                         objects.erase(object_to_delete);
                     }
 

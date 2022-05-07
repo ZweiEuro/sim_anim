@@ -22,5 +22,4 @@ namespace mg8
     RENDERER,
     CONSOLE
   };
-
 }

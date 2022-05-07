@@ -4,6 +4,15 @@
 #include <cmath>
 namespace mg8
 {
+  enum MG8_ROTATION_ANCHOR
+  {
+    CENTER = 0,
+    LEFT_UPPER_CORNER,
+    LEFT_LOWER_CORNER,
+    RIGHT_UPPER_CORNER,
+    RIGHT_LOWER_CORNER
+  };
+
   template <typename T>
   class vec2
   {
@@ -77,12 +86,14 @@ namespace mg8
     vec2f pos; // upper left corner
     float width;
     float height;
+    float rotation;
+    MG8_ROTATION_ANCHOR anchor;
 
     rect()
     {
     }
 
-    rect(vec2f pos, float width, float height) : pos(pos), width(width), height(height)
+    rect(vec2f pos, float width, float height, float rotation, MG8_ROTATION_ANCHOR anchor) : pos(pos), width(width), height(height), rotation(rotation), anchor(anchor)
     {
     }
 

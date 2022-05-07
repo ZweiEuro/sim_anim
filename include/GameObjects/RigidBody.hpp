@@ -66,6 +66,8 @@ namespace mg8
                   vec2f velocity = {0, 0},
                   float width = 1.0f,
                   float height = 1.0f,
+                  float rotation = 0.0f,
+                  MG8_ROTATION_ANCHOR rotation_anchor = CENTER,
                   vec2f acceleration = {0, 0},
                   float mass = 1.0f,
                   float restitution_coeff = 0.6,

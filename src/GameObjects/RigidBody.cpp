@@ -27,7 +27,48 @@ namespace mg8
     }
     if (this->m_rigid_body_type == TYPE_RECTANGLE)
     {
-      al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, m_color);
+      if (rect::rotation != 0.0f)
+      {
+        ALLEGRO_TRANSFORM t, original;
+        t = *al_get_current_transform();
+        original = t;
+
+        float anchor_x = 0;
+        float anchor_y = 0;
+        switch (rect::anchor)
+        {
+        case LEFT_UPPER_CORNER:
+          anchor_x = rect::pos.x;
+          anchor_y = rect::pos.y;
+          break;
+        case LEFT_LOWER_CORNER:
+          anchor_x = rect::pos.x;
+          anchor_y = rect::pos.y + rect::height;
+          break;
+        case RIGHT_UPPER_CORNER:
+          anchor_x = rect::pos.x + rect::width;
+          anchor_y = rect::pos.y;
+          break;
+        case RIGHT_LOWER_CORNER:
+          anchor_x = rect::pos.x + rect::width;
+          anchor_y = rect::pos.y + rect::height;
+          break;
+        default: // center
+          anchor_x = rect::pos.x + rect::width / 2;
+          anchor_y = rect::pos.y + rect::height / 2;
+          break;
+        }
+        al_translate_transform(&t, -anchor_x, -anchor_y);       // set rotation anchor
+        al_rotate_transform(&t, rect::rotation * M_PI / 180.0); // rotate
+        al_translate_transform(&t, anchor_x, anchor_y);
+        al_use_transform(&t);
+        al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, m_color);
+        al_use_transform(&original);
+      }
+      else
+      {
+        al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, m_color);
+      }
     }
   }
   void RigidBody::move(vec2f delta_move)
@@ -106,9 +147,9 @@ namespace mg8
   {
 
     vec2f normal_directions[] = {
-        vec2f(0.0f, 1.0f),  // up = 0
+        vec2f(0.0f, 1.0f),  // down = 0
         vec2f(1.0f, 0.0f),  // right = 1
-        vec2f(0.0f, -1.0f), // down = 2
+        vec2f(0.0f, -1.0f), // up = 2
         vec2f(-1.0f, 0.0f)  // left = 3
     };
 
@@ -148,11 +189,11 @@ namespace mg8
     {
       ball->m_velocity.y = ball->m_velocity.y * -1 * border->m_restitution_coeff;
       ball->m_velocity.x = ball->m_velocity.x * border->m_restitution_coeff;
-      if (best_match == 0) // up collision - move ball down
+      if (best_match == 0) // down collision - move ball up
       {
         ball->circle::pos.y -= border_penetration;
       }
-      else // down collision - move ball up
+      else // up collision - move ball down
       {
         ball->circle::pos.y += border_penetration;
       }
@@ -216,13 +257,15 @@ namespace mg8
                        vec2f velocity,
                        float width,
                        float height,
+                       float rotation,
+                       MG8_ROTATION_ANCHOR rotation_anchor,
                        vec2f acceleration,
                        float mass,
                        float restitution_coeff,
                        ALLEGRO_COLOR color,
                        uint32_t collision,
                        MG8_OBJECT_TYPES obj_type) : GameObject(obj_type, collision, velocity),
-                                                    rect(position, width, height),
+                                                    rect(position, width, height, rotation, rotation_anchor),
                                                     m_color(color), m_acceleration(acceleration), m_mass(mass), m_restitution_coeff(restitution_coeff), m_rigid_body_type(rigid_body_type), m_gameobject_type(gameobject_type)
   {
   }
