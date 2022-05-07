@@ -30,6 +30,12 @@ namespace mg8
       return {(T)((double)x * (double)scale), (T)((double)y * (double)scale)};
     }
 
+    template <typename T2>
+    vec2 operator/(T2 divisor)
+    {
+      return {(T)((double)x / (double)divisor), (T)((double)y / (double)divisor)};
+    }
+
     vec2 operator+(vec2 other)
     {
       return {x + other.x, y + other.y};
@@ -63,6 +69,8 @@ namespace mg8
   using vec2f = vec2<float>;
   using vec2i = vec2<int>;
 
+  vec2f rotatePoint(const vec2f, const vec2f, const float);
+
   typedef struct circle
   {
   public:
@@ -88,6 +96,10 @@ namespace mg8
     float height;
     float rotation;
     MG8_ROTATION_ANCHOR anchor;
+    vec2f left_upper;
+    vec2f left_lower;
+    vec2f right_upper;
+    vec2f right_lower;
 
     rect()
     {
@@ -95,6 +107,37 @@ namespace mg8
 
     rect(vec2f pos, float width, float height, float rotation, MG8_ROTATION_ANCHOR anchor) : pos(pos), width(width), height(height), rotation(rotation), anchor(anchor)
     {
+      float anchor_x = 0;
+      float anchor_y = 0;
+      switch (anchor)
+      {
+      case LEFT_UPPER_CORNER:
+        anchor_x = pos.x;
+        anchor_y = pos.y;
+        break;
+      case LEFT_LOWER_CORNER:
+        anchor_x = pos.x;
+        anchor_y = pos.y + height;
+        break;
+      case RIGHT_UPPER_CORNER:
+        anchor_x = pos.x + width;
+        anchor_y = pos.y;
+        break;
+      case RIGHT_LOWER_CORNER:
+        anchor_x = pos.x + width;
+        anchor_y = pos.y + height;
+        break;
+      default: // center
+        anchor_x = pos.x + width / 2;
+        anchor_y = pos.y + height / 2;
+        break;
+      }
+      vec2f rotation_anchor = vec2f(anchor_x, anchor_y);
+
+      left_upper = rotatePoint(pos, rotation_anchor, rotation);
+      left_lower = rotatePoint(vec2f(pos.x, pos.y + height), rotation_anchor, rotation);
+      right_upper = rotatePoint(vec2f(pos.x + width, pos.y), rotation_anchor, rotation);
+      right_lower = rotatePoint(vec2f(pos.x + width, pos.y + height), rotation_anchor, rotation);
     }
 
     bool point_inside(vec2f point) const;

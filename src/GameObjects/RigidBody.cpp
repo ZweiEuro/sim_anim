@@ -64,6 +64,17 @@ namespace mg8
         al_use_transform(&t);
         al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, m_color);
         al_use_transform(&original);
+        // al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::right_lower.x, rect::right_lower.y, m_color);
+        /*if (rect::rotation == 135.0f)
+        {
+          ALLEGRO_FONT *font = al_create_builtin_font();
+          std::string s = "left upper x: ";
+          std::string d = ", y: ";
+          std::string s2 = ", right upper x: ";
+          std::string d2 = ", y: ";
+          std::string msg = s + std::to_string(rect::left_upper.x) + d + std::to_string(rect::left_upper.y) + s2 + std::to_string(rect::right_upper.x) + d2 + std::to_string(rect::right_upper.y);
+          al_draw_text(font, al_map_rgb(0, 0, 0), rect::left_upper.x - 250, rect::left_upper.y - 40, 0, msg.c_str());
+        }*/
       }
       else
       {
@@ -110,6 +121,68 @@ namespace mg8
 
   void RigidBody::handle_ball_ball_collision(RigidBody *otherBall)
   {
+    /*vec2f tangent_vec = vec2f((otherBall->circle::pos.y - this->circle::pos.y), -(otherBall->circle::pos.x - this->circle::pos.x));
+    vec2f tangent_normal = tangent_vec.dir();
+    vec2f relative_velocity = vec2f(otherBall->m_velocity.x - this->m_velocity.x, otherBall->m_velocity.y - this->m_velocity.y);
+
+    float len = relative_velocity.dot(tangent_normal);
+    vec2f velocity_component_on_tangent = tangent_normal * len;
+    vec2f velocity_component_perpendicular_to_tangent = relative_velocity - velocity_component_on_tangent;
+
+    this->m_velocity = this->m_velocity - velocity_component_perpendicular_to_tangent;
+    otherBall->m_velocity = otherBall->m_velocity + velocity_component_perpendicular_to_tangent;*/
+
+    /*vec2f normal = this->circle::pos - otherBall->circle::pos;
+    normal = normal.dir();
+
+    this->m_velocity = this->m_velocity - normal * (((1 + this->m_restitution_coeff) * otherBall->m_mass) / (this->m_mass + otherBall->m_mass) * (this->m_velocity - otherBall->m_velocity).dot(normal));
+    otherBall->m_velocity = otherBall->m_velocity + normal * (((1 + otherBall->m_restitution_coeff) * this->m_mass) / (this->m_mass + otherBall->m_mass) * (this->m_velocity - otherBall->m_velocity).dot(normal));
+*/
+    /*vec2f normal = vec2f(otherBall->circle::pos.x - this->circle::pos.x, otherBall->circle::pos.y - this->circle::pos.y);
+    vec2f unit_normal = normal.dir();
+    vec2f unit_tangent = vec2f(-unit_normal.y, unit_normal.x);
+
+    float normal_velocity_this = unit_normal.dot(this->m_velocity);
+    float normal_velocity_other = unit_normal.dot(otherBall->m_velocity);
+
+    float tangent_velocity_this = unit_tangent.dot(this->m_velocity);
+    float tangent_velocity_other = unit_tangent.dot(otherBall->m_velocity);
+
+    float normal_velocity_this_after_col = (normal_velocity_this * (this->m_mass - otherBall->m_mass) + normal_velocity_other * 2 * otherBall->m_mass) / (this->m_mass + otherBall->m_mass);
+    float normal_velocity_other_after_col = (normal_velocity_other * (otherBall->m_mass - this->m_mass) + normal_velocity_this * 2 * this->m_mass) / (this->m_mass + otherBall->m_mass);
+
+    vec2f new_normal_velocity_this = unit_normal * normal_velocity_this_after_col;
+    vec2f new_normal_velocity_other = unit_normal * normal_velocity_other_after_col;
+
+    vec2f new_tangent_velocity_this = unit_tangent * tangent_velocity_this;
+    vec2f new_tangent_velocity_other = unit_tangent * tangent_velocity_other;
+
+    this->m_velocity = new_normal_velocity_this + new_tangent_velocity_this;
+    otherBall->m_velocity = new_normal_velocity_other + new_tangent_velocity_other;
+*/
+
+    /*vec2f col = this->circle::pos - otherBall->circle::pos;
+    float dist = col.mag();
+
+    if (dist == 0.0f)
+    {
+      col = vec2f(1.0f, 0.0f); // to avoid div by zero
+      dist = 1.0f;
+    }
+    if (dist > 1.0f)
+    {
+      return;
+    }
+    col = col / dist;
+    float aci = this->m_velocity.dot(col);
+    float bci = otherBall->m_velocity.dot(col);
+
+    float acf = bci;
+    float bcf = aci;
+
+    this->m_velocity = this->m_velocity + col * (acf - aci);
+    otherBall->m_velocity = otherBall->m_velocity + col * (bcf - bci);*/
+
     vec2f pos_delta = this->circle::pos - otherBall->circle::pos;
     float r = this->rad + otherBall->rad;
 
@@ -145,6 +218,8 @@ namespace mg8
 
   void RigidBody::handle_ball_rectangle_collision(RigidBody *ball, RigidBody *border)
   {
+
+    // fix collision -> work with 4 corners of rectangle, which should be rotated correctly
 
     vec2f normal_directions[] = {
         vec2f(0.0f, 1.0f),  // down = 0

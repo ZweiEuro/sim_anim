@@ -91,4 +91,12 @@ namespace mg8
            A->point_inside(c) ||
            A->point_inside(d);
   }
+
+  vec2f rotatePoint(const vec2f point, const vec2f anchor_point, const float angle)
+  {
+    float rotation_angle = angle * M_PI / 180.0f;
+    float rotated_point_x = cosf(rotation_angle) * (point.x - anchor_point.x) - sinf(rotation_angle) * (point.y - anchor_point.y) + anchor_point.x;
+    float rotated_point_y = sinf(rotation_angle) * (point.x - anchor_point.x) + cosf(rotation_angle) * (point.y - anchor_point.y) + anchor_point.y;
+    return vec2f(rotated_point_x, rotated_point_y);
+  }
 }
