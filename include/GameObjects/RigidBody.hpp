@@ -4,6 +4,7 @@
 #include "GameObjects/GameObject.hpp"
 #include <atomic>
 #include <allegro5/color.h>
+#include <vector>
 
 namespace mg8
 {
@@ -33,6 +34,9 @@ namespace mg8
 
     class RigidBody : public virtual GameObject, public circle, public rect
     {
+    private:
+        std::vector<vec2f> collision_points;
+
     public:
         ALLEGRO_COLOR m_color = {0, 0, 0, 255};
 
@@ -71,7 +75,7 @@ namespace mg8
                   vec2f acceleration = {0, 0},
                   float mass = 1.0f,
                   float restitution_coeff = 0.6,
-                  ALLEGRO_COLOR color = {0, 0, 0, 255},
+                  ALLEGRO_COLOR color = {102, 51, 0, 255},
                   uint32_t collision = 0,
                   MG8_OBJECT_TYPES obj_type = TYPE_RIGID_BODY);
 

@@ -20,9 +20,9 @@ namespace mg8
 
   // Table Dimensions:
   const float hole_radius = 10.0;
-  const float table_border_width = 20;
+  const float table_border_width = 40;
 
-  const float outer_border_x_offset = 20;
+  const float outer_border_x_offset = 60;
   const float inner_border_x_offset = outer_border_x_offset + table_border_width;
 
   const float pool_table_width = (float)config_start_resolution_w - 2 * outer_border_x_offset;

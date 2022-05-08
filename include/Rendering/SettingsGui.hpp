@@ -27,6 +27,8 @@
 #include <iostream>
 #include <thread>
 #include <spdlog/spdlog.h>
+
+#include "GameCore/GameManager.hpp"
 namespace mg8
 {
 
@@ -63,6 +65,7 @@ namespace mg8
 
     std::atomic<float> m_slider_value = 1;
     agui::Label m_slider_value_display;
+    agui::CheckBox m_debug_enabled;
   };
 
   class SimpleActionListener : public agui::ActionListener
@@ -83,6 +86,12 @@ namespace mg8
                      std::to_string(val.load()));
 
         return;
+      }
+      agui::CheckBox *checkbox = dynamic_cast<agui::CheckBox *>(evt.getSource());
+      if (checkbox)
+      {
+        bool is_checked = checkbox->checked();
+        GameManager::instance()->debug_enabled = is_checked;
       }
 
       spdlog::info("button pushed");

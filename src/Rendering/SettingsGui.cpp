@@ -26,7 +26,7 @@ namespace mg8
     // main frame dimensions
     add(&m_main_frame);
     m_main_frame.setSize(220, 120);
-    m_main_frame.setLocation(60, 60);
+    m_main_frame.setLocation(config_start_resolution_w / 10, 10);
     m_main_frame.setText("Settings frame");
 
     // Time delta slider
@@ -60,6 +60,13 @@ namespace mg8
     complete_width += slider_value_dims.getWidth();
 
     m_main_frame.setSize(complete_width + 50, 120);
+
+    m_main_frame.add(&m_debug_enabled);
+    m_debug_enabled.setLocation(10, 50);
+    m_debug_enabled.setAutosizing(true);
+    m_debug_enabled.setText("Enable Debug View");
+    m_debug_enabled.setCheckBoxAlignment(agui::ALIGN_MIDDLE_LEFT);
+    m_debug_enabled.addActionListener(m_action_listeneer);
 
     /*std::stringstream ss;
     for (int i = 0; i < 3; ++i)

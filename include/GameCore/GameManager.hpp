@@ -11,6 +11,8 @@
 #include <vector>
 #include <memory>
 
+#include "math/PathInterpol.hpp"
+
 namespace mg8
 {
 
@@ -41,6 +43,10 @@ namespace mg8
 
   public:
     bool objects_moving = false;
+
+    bool debug_enabled = false;
+
+    splineCurve *curve = nullptr;
 
     static bool initializeAllegro();
     static GameManager *instance();

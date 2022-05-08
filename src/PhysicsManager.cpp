@@ -4,7 +4,7 @@
 #include "GameObjects/Ball.hpp"
 #include "GameObjects/RigidBody.hpp"
 #include "GameObjects/Hole.hpp"
-#include "../src/GameObjects/Hole.cpp"
+
 #include "Rendering/SettingsGui.hpp"
 
 #include <spdlog/spdlog.h>

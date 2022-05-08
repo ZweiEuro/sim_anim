@@ -158,4 +158,5 @@ namespace mg8
   bool circleCircleCollision(const circle *A, const circle *B);
   bool circleRectCollision(const circle *A, const rect *B);
   bool rectRectCollision(const rect *A, const rect *B);
+  bool circleLineCollision(const circle *A, vec2f P, vec2f Q);
 }

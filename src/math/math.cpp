@@ -27,17 +27,99 @@ namespace mg8
     return d2 < r2;
   }
 
+  float getTriangleArea(vec2f A, vec2f B, vec2f C)
+  {
+    vec2f AB = B - A;
+    vec2f AC = C - A;
+    float cross = AB.x * AC.y - AB.y * AC.x;
+    return fabsf(cross) / 2.0f;
+  }
+
+  bool circleLineCollision(const circle *A, vec2f P, vec2f Q) // intersection of circle with line from P to Q
+  {
+    float triangleArea = getTriangleArea(A->rad, P, Q);
+    float distance_PQ = sqrtf(powf(Q.x - P.x, 2) + powf(Q.y - P.y, 2));
+    float triangleHeight = (2 * triangleArea) / distance_PQ;
+
+    if (triangleHeight <= A->rad)
+    {
+      return true;
+    }
+    return false;
+  }
+
   bool circleRectCollision(const circle *A, const rect *B)
   {
+    // check collision upper border of rect
+    /*if (circleLineCollision(A, B->left_upper, B->right_upper))
+    {
+      return true;
+    }
+    else if (circleLineCollision(A, B->right_upper, B->right_lower))
+    {
+      return true;
+    }
+    else if (circleLineCollision(A, B->right_lower, B->left_lower))
+    {
+      return true;
+    }
+    else if (circleLineCollision(A, B->left_lower, B->left_upper))
+    {
+      return true;
+    }
+    return false;*/
 
-    float x_near = std::clamp(A->pos.x, B->pos.x, B->pos.x + B->width);
+    float circle_rotation_angle = -B->rotation;
+
+    float anchor_x = 0;
+    float anchor_y = 0;
+    switch (B->anchor)
+    {
+    case LEFT_UPPER_CORNER:
+      anchor_x = B->pos.x;
+      anchor_y = B->pos.y;
+      break;
+    case LEFT_LOWER_CORNER:
+      anchor_x = B->pos.x;
+      anchor_y = B->pos.y + B->height;
+      break;
+    case RIGHT_UPPER_CORNER:
+      anchor_x = B->pos.x + B->width;
+      anchor_y = B->pos.y;
+      break;
+    case RIGHT_LOWER_CORNER:
+      anchor_x = B->pos.x + B->width;
+      anchor_y = B->pos.y + B->height;
+      break;
+    default: // center
+      anchor_x = B->pos.x + B->width / 2;
+      anchor_y = B->pos.y + B->height / 2;
+      break;
+    }
+    vec2f rotation_anchor = vec2f(anchor_x, anchor_y);
+
+    vec2f unrotatedCircle = rotatePoint(A->pos, rotation_anchor, circle_rotation_angle);
+
+    // assume unrotated circle and rectangle and calculate collision on unrotated rectangle and circle
+    // i.e. if rectangle rotated by 45 deg -> rotate circle by -45 deg and calculate collision between rotated circle and unrotated rectangle
+
+    float x_near = std::clamp(unrotatedCircle.x, B->pos.x, B->pos.x + B->width);
+    float y_near = std::clamp(unrotatedCircle.y, B->pos.y, B->pos.y + B->height);
+
+    vec2f circle_rect_dist = vec2f(unrotatedCircle.x - x_near, unrotatedCircle.y - y_near);
+
+    // If dist < circle radius -> intersection = true
+    float dist_squared = (circle_rect_dist.x * circle_rect_dist.x) + (circle_rect_dist.y * circle_rect_dist.y);
+    return dist_squared < (A->rad * A->rad);
+
+    /*float x_near = std::clamp(A->pos.x, B->pos.x, B->pos.x + B->width);
     float y_near = std::clamp(A->pos.y, B->pos.y, B->pos.y + B->height);
 
     vec2f circle_rect_dist = vec2f(A->pos.x - x_near, A->pos.y - y_near);
 
     // If dist < circle radius -> intersection = true
     float dist_squared = (circle_rect_dist.x * circle_rect_dist.x) + (circle_rect_dist.y * circle_rect_dist.y);
-    return dist_squared < (A->rad * A->rad);
+    return dist_squared < (A->rad * A->rad);*/
 
     /*float dist_x = fabsf(A->pos.x - (B->pos.x - B->width / 2));
     float dist_y = fabsf(A->pos.y - (B->pos.y - B->height / 2));

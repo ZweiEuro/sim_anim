@@ -18,6 +18,13 @@ namespace mg8
       al_draw_filled_circle(circle::pos.x, circle::pos.y, rad, al_map_rgba(m_color.r, m_color.g, m_color.b, m_color.a));
       if (this->m_gameobject_type == TYPE_WHITE_BALL)
       {
+        if (!GameManager::instance()->objects_moving) // draw direction line for white ball when white ball can be played i.e. when no objects are moving
+        {
+          ALLEGRO_MOUSE_STATE state;
+          al_get_mouse_state(&state);
+          al_draw_line(circle::pos.x, circle::pos.y, state.x, state.y, al_map_rgb(255, 0, 0), 2);
+        }
+
         ALLEGRO_FONT *font = al_create_builtin_font();
         std::string s = "x: ";
         std::string d = ", y: ";
@@ -63,6 +70,10 @@ namespace mg8
         al_translate_transform(&t, anchor_x, anchor_y);
         al_use_transform(&t);
         al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, m_color);
+        if (GameManager::instance()->debug_enabled && this->m_gameobject_type == TYPE_TABLE_BORDER)
+        {
+          al_draw_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, al_map_rgba(255, 255, 255, 127), 1);
+        }
         al_use_transform(&original);
         // al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::right_lower.x, rect::right_lower.y, m_color);
         /*if (rect::rotation == 135.0f)
@@ -79,6 +90,18 @@ namespace mg8
       else
       {
         al_draw_filled_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, m_color);
+        if (GameManager::instance()->debug_enabled && this->m_gameobject_type == TYPE_TABLE_BORDER)
+        {
+          al_draw_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, al_map_rgba(255, 255, 255, 127), 1);
+        }
+      }
+    }
+    // should only be displayed when DEBUG is on
+    if (GameManager::instance()->debug_enabled)
+    {
+      for (size_t i = 0; i < collision_points.size(); i++)
+      {
+        al_draw_filled_circle(collision_points[i].x, collision_points[i].y, 2, al_map_rgba(255, 0, 0, 255));
       }
     }
   }
@@ -218,8 +241,42 @@ namespace mg8
 
   void RigidBody::handle_ball_rectangle_collision(RigidBody *ball, RigidBody *border)
   {
+    // rotate circle back -> to calculate collision between circle and axis aligned rectangle
+    // rotate circle velocity vector back
+    // calculate & resolve collision on axis aligned rectangle
+    // rotate circle velocity vector back to its original direction
 
-    // fix collision -> work with 4 corners of rectangle, which should be rotated correctly
+    float anchor_x = 0;
+    float anchor_y = 0;
+    switch (border->rect::anchor)
+    {
+    case LEFT_UPPER_CORNER:
+      anchor_x = border->rect::pos.x;
+      anchor_y = border->rect::pos.y;
+      break;
+    case LEFT_LOWER_CORNER:
+      anchor_x = border->rect::pos.x;
+      anchor_y = border->rect::pos.y + border->rect::height;
+      break;
+    case RIGHT_UPPER_CORNER:
+      anchor_x = border->rect::pos.x + border->rect::width;
+      anchor_y = border->rect::pos.y;
+      break;
+    case RIGHT_LOWER_CORNER:
+      anchor_x = border->rect::pos.x + border->rect::width;
+      anchor_y = border->rect::pos.y + border->rect::height;
+      break;
+    default: // center
+      anchor_x = border->rect::pos.x + border->rect::width / 2;
+      anchor_y = border->rect::pos.y + border->rect::height / 2;
+      break;
+    }
+    vec2f rotation_anchor = vec2f(anchor_x, anchor_y);
+
+    float circle_rotation_angle = -border->rect::rotation;
+
+    vec2f unrotatedCircle = rotatePoint(ball->circle::pos, rotation_anchor, circle_rotation_angle);
+    vec2f unrotatedVelocityVec = rotatePoint(ball->m_velocity, rotation_anchor, circle_rotation_angle);
 
     vec2f normal_directions[] = {
         vec2f(0.0f, 1.0f),  // down = 0
@@ -228,10 +285,13 @@ namespace mg8
         vec2f(-1.0f, 0.0f)  // left = 3
     };
 
-    float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
-    float y_near = std::clamp(ball->circle::pos.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
+    float x_near = std::clamp(unrotatedCircle.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
+    float y_near = std::clamp(unrotatedCircle.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
 
-    vec2f v = vec2f(x_near - ball->circle::pos.x, y_near - ball->circle::pos.y);
+    // add collision point -> for visualization purposes
+    collision_points.push_back(rotatePoint(vec2f(x_near, y_near), rotation_anchor, -circle_rotation_angle));
+
+    vec2f v = vec2f(x_near - unrotatedCircle.x, y_near - unrotatedCircle.y);
     float border_penetration = ball->circle::rad - v.mag();
     vec2f r = v.dir() * border_penetration;
 
@@ -249,8 +309,8 @@ namespace mg8
 
     if (best_match == 1 || best_match == 3) // horizontal collision
     {
-      ball->m_velocity.x = ball->m_velocity.x * -1 * border->m_restitution_coeff;
-      ball->m_velocity.y = ball->m_velocity.y * border->m_restitution_coeff;
+      unrotatedVelocityVec.x = unrotatedVelocityVec.x * -1 * border->m_restitution_coeff;
+      unrotatedVelocityVec.y = unrotatedVelocityVec.y * border->m_restitution_coeff;
       if (best_match == 1) // right collision - move ball left
       {
         ball->circle::pos.x -= border_penetration;
@@ -262,8 +322,8 @@ namespace mg8
     }
     else // vertical collision
     {
-      ball->m_velocity.y = ball->m_velocity.y * -1 * border->m_restitution_coeff;
-      ball->m_velocity.x = ball->m_velocity.x * border->m_restitution_coeff;
+      unrotatedVelocityVec.y = unrotatedVelocityVec.y * -1 * border->m_restitution_coeff;
+      unrotatedVelocityVec.x = unrotatedVelocityVec.x * border->m_restitution_coeff;
       if (best_match == 0) // down collision - move ball up
       {
         ball->circle::pos.y -= border_penetration;
@@ -274,24 +334,28 @@ namespace mg8
       }
     }
 
+    // DONT KNOW IF THIS IS APPLICABLE
+    vec2f realVelocityVec = rotatePoint(unrotatedVelocityVec, rotation_anchor, -circle_rotation_angle);
+    ball->m_velocity = realVelocityVec;
+
     /*
-    float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
-    float y_near = std::clamp(ball->circle::pos.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
+float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
+float y_near = std::clamp(ball->circle::pos.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
 
-    vec2f ball_border_dist = vec2f(ball->circle::pos.x - x_near, ball->circle::pos.y - y_near);
-    vec2f ball_border_dist_normalized = ball_border_dist.dir();
-    vec2f ball_border_dist_perpendicular = vec2f(-ball_border_dist_normalized.y, ball_border_dist_normalized.x);
+vec2f ball_border_dist = vec2f(ball->circle::pos.x - x_near, ball->circle::pos.y - y_near);
+vec2f ball_border_dist_normalized = ball_border_dist.dir();
+vec2f ball_border_dist_perpendicular = vec2f(-ball_border_dist_normalized.y, ball_border_dist_normalized.x);
 
-    if (ball->m_velocity.dot(ball_border_dist) < 0)
-    {
-      vec2f normal_vec_len = ball_border_dist_normalized.dot(ball->m_velocity);
-      vec2f tangental_vec_len = ball_border_dist_perpendicular.dot(ball->m_velocity);
+if (ball->m_velocity.dot(ball_border_dist) < 0)
+{
+  vec2f normal_vec_len = ball_border_dist_normalized.dot(ball->m_velocity);
+  vec2f tangental_vec_len = ball_border_dist_perpendicular.dot(ball->m_velocity);
 
-      vec2f part1 = (tangental_vec_len * border->m_restitution_coeff).dot(ball_border_dist_perpendicular);
-      vec2f part2 = ((ball_border_dist_normalized * -1.0f) * ball->m_restitution_coeff).dot(normal_vec_len);
+  vec2f part1 = (tangental_vec_len * border->m_restitution_coeff).dot(ball_border_dist_perpendicular);
+  vec2f part2 = ((ball_border_dist_normalized * -1.0f) * ball->m_restitution_coeff).dot(normal_vec_len);
 
-      ball->m_velocity = part1 + part2;
-    }*/
+  ball->m_velocity = part1 + part2;
+}*/
 
     /*float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
     float y_near = std::clamp(ball->circle::pos.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);

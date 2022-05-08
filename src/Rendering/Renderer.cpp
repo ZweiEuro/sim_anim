@@ -264,7 +264,12 @@ namespace mg8
 
         al_clear_to_color(al_map_rgb(100, 100, 100));
         // al_clear_to_color(al_map_rgb(240, 240, 240));
+        al_draw_filled_rounded_rectangle(outer_border_x_offset - table_border_width / 2, outer_border_y_offset - table_border_width / 2, (float)config_start_resolution_w - outer_border_x_offset + table_border_width / 2,
+                                         (float)config_start_resolution_h - outer_border_y_offset + table_border_width / 2, hole_radius, hole_radius, al_map_rgb(102, 51, 0));
 
+        // inner green field of the table
+        al_draw_filled_rectangle(inner_border_x_offset - 2 * hole_radius, inner_border_y_offset - 2 * hole_radius, (float)config_start_resolution_w - inner_border_x_offset + 2 * hole_radius,
+                                 (float)config_start_resolution_h - inner_border_y_offset + 2 * hole_radius, al_map_rgb(0, 102, 0));
         //  draw_table();
         //  al_draw_filled_circle(_TestBall.x, _TestBall.y, _TestBall.radius, al_map_rgb(0, 0, 255));
         auto &objects = GameManager::instance()->getGameObjects();
@@ -275,6 +280,10 @@ namespace mg8
           obj->draw();
         }
         GameManager::instance()->releaseGameObjects();
+        if (GameManager::instance()->debug_enabled)
+        {
+          GameManager::instance()->curve->drawCurve();
+        }
 
         renderGUI();
         al_flip_display();

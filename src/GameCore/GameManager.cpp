@@ -19,6 +19,8 @@
 #include "GameObjects/RigidBody.hpp"
 #include "GameObjects/Hole.hpp"
 
+#include "math/PathInterpol.hpp"
+
 namespace mg8
 {
 
@@ -251,13 +253,17 @@ namespace mg8
                         //auto &objects = getGameObjects(true);
                         if (m_white_ball)
                         {
+                          //ALLEGRO_MOUSE_STATE state;
+
+                          //al_get_mouse_state(&state);
                           auto white_ball = dynamic_cast<RigidBody *>(m_white_ball);
+                          //al_draw_line(white_ball->circle::pos.x, white_ball->circle::pos.y, state.x, state.y, al_map_rgb(255,0,0),2);
                           auto ok = InputManager::instance()->wait_for_mouse_button(1, dir);
                           if(!ok){
                             //releaseGameObjects(true);
                             return;
                           }
-                          white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * 1000;
+                          white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * (dir - white_ball->circle::pos).mag();
                           objects_moving = true;
                         }
                         //releaseGameObjects(true);
@@ -268,60 +274,74 @@ namespace mg8
 
     auto &objects = getGameObjects(true);
     // left border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {0, inner_border_y_offset + hole_radius * 2}, {0, 0}, inner_border_x_offset, (float)config_start_resolution_h - (inner_border_y_offset + hole_radius * 2) * 2, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {outer_border_x_offset, inner_border_y_offset + hole_radius * 2}, {0, 0}, table_border_width, (float)config_start_resolution_h - (inner_border_y_offset + hole_radius * 2) * 2, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // upper border 1
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2, 0}, {0, 0}, ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 - 3 * hole_radius, inner_border_y_offset, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2, outer_border_y_offset}, {0, 0}, ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 - 3 * hole_radius, table_border_width, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // upper border 2
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2 + ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius, 0}, {0, 0}, ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 - 3 * hole_radius, inner_border_y_offset, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2 + ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius, outer_border_y_offset}, {0, 0}, ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 - 3 * hole_radius, table_border_width, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // right border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset, inner_border_y_offset + hole_radius * 2}, {0, 0}, inner_border_x_offset, (float)config_start_resolution_h - (inner_border_y_offset + hole_radius * 2) * 2, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset, inner_border_y_offset + hole_radius * 2}, {0, 0}, table_border_width, (float)config_start_resolution_h - (inner_border_y_offset + hole_radius * 2) * 2, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // lower border 1
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 - 3 * hole_radius, inner_border_y_offset, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 - 3 * hole_radius, table_border_width, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // lower border 2
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2 + ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 - 3 * hole_radius, inner_border_y_offset, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2 + ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, ((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 - 3 * hole_radius, table_border_width, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
 
     // left upper hole - upper border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2 - hole_radius * 4, inner_border_y_offset - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, RIGHT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2 - hole_radius * 4, inner_border_y_offset - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, RIGHT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // left upper hole - lower border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset - hole_radius * 4, inner_border_y_offset + hole_radius * 2}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, RIGHT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset - hole_radius * 4, inner_border_y_offset + hole_radius * 2}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, RIGHT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
 
     // right upper hole - upper border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset - hole_radius * 2, inner_border_y_offset - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset - hole_radius * 2, inner_border_y_offset - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // right upper hole - lower border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset, inner_border_y_offset + hole_radius * 2}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, LEFT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset, inner_border_y_offset + hole_radius * 2}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, LEFT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
 
     // right lower hole - upper border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset, (float)config_start_resolution_h - inner_border_y_offset - hole_radius * 2 - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset, (float)config_start_resolution_h - inner_border_y_offset - hole_radius * 2 - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // right lower hole - lower border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset - hole_radius * 2, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, LEFT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w - inner_border_x_offset - hole_radius * 2, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, LEFT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
 
     // left lower hole - upper border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset - hole_radius * 4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius * 2 - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, RIGHT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset - hole_radius * 4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius * 2 - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, RIGHT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // left lower hole - lower border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2 - hole_radius * 4, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, RIGHT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {inner_border_x_offset + hole_radius * 2 - hole_radius * 4, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, RIGHT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
 
     // middle upper hole - left border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius, inner_border_y_offset - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w / 2.0f - 3 * hole_radius, inner_border_y_offset - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, -45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // middle upper hole - right border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius + 6 * hole_radius, inner_border_y_offset}, {0, 0}, hole_radius * 4, table_border_width, -135.0f, LEFT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w / 2.0f + 3 * hole_radius, inner_border_y_offset}, {0, 0}, hole_radius * 4, table_border_width, -135.0f, LEFT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
 
     // middle lower hole - left border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, LEFT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w / 2.0f - 3 * hole_radius, (float)config_start_resolution_h - inner_border_y_offset}, {0, 0}, hole_radius * 4, table_border_width, 45.0f, LEFT_UPPER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // middle lower hole - right border
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius + 6 * hole_radius, (float)config_start_resolution_h - inner_border_y_offset - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, 135.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {(float)config_start_resolution_w / 2.0f + 3 * hole_radius, (float)config_start_resolution_h - inner_border_y_offset - table_border_width}, {0, 0}, hole_radius * 4, table_border_width, 135.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
 
     // left upper hole
-    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {inner_border_x_offset - hole_radius, inner_border_y_offset - hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2) - 0.001)));
+    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {inner_border_x_offset - hole_radius, inner_border_y_offset - hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2)) - 0.2));
     // middle upper hole
-    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 6 * hole_radius, inner_border_y_offset - hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2) - 0.001)));
+    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {(float)config_start_resolution_w / 2.0f, inner_border_y_offset - hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2)) - 0.2));
     // right upper hole
-    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {(float)config_start_resolution_w - inner_border_x_offset + hole_radius, inner_border_y_offset - hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2) - 0.001)));
+    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {(float)config_start_resolution_w - inner_border_x_offset + hole_radius, inner_border_y_offset - hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2)) - 0.2));
     // left lower hole
-    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {inner_border_x_offset - hole_radius, (float)config_start_resolution_h - inner_border_y_offset + hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2) - 0.001)));
+    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {inner_border_x_offset - hole_radius, (float)config_start_resolution_h - inner_border_y_offset + hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2)) - 0.2));
     // middle lower hole
-    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 6 * hole_radius, (float)config_start_resolution_h - inner_border_y_offset + hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2) - 0.001)));
+    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {(float)config_start_resolution_w / 2.0f, (float)config_start_resolution_h - inner_border_y_offset + hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2)) - 0.2));
     // right lower hole
-    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {(float)config_start_resolution_w - inner_border_x_offset + hole_radius, (float)config_start_resolution_h - inner_border_y_offset + hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2) - 0.001)));
+    objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {(float)config_start_resolution_w - inner_border_x_offset + hole_radius, (float)config_start_resolution_h - inner_border_y_offset + hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2)) - 0.2));
+
+    // Rotated test rectangle
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_OBSTACLE_RECTANGE, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius + 6 * hole_radius, (float)config_start_resolution_h / 2}, {0, 0}, hole_radius * 4, table_border_width, 135.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+
+    float center_offset_x = 50;
+    float center_offset_y = 50;
+    float center_x = (float)config_start_resolution_w / 2;
+    float center_y = (float)config_start_resolution_h / 2;
+    curve = new splineCurve();
+    curve->addControlPoint(vec2f(center_x - center_offset_x, center_y - center_offset_y));
+    curve->addControlPoint(vec2f(center_x + center_offset_x, center_y - center_offset_y));
+    curve->addControlPoint(vec2f(center_x + center_offset_x, center_y + center_offset_y));
+    curve->addControlPoint(vec2f(center_x - center_offset_x, center_y + center_offset_y));
+    // curve->addControlPoint(vec2f(center_x - center_offset_x / 2, center_y + center_offset_y / 2));
 
     // ball moving right
     // not moving
@@ -329,9 +349,9 @@ namespace mg8
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_WHITE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 255, 255, 255}));
     m_white_ball = objects.back(); // set white ball
 
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 0.75f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 50, 255, 255}));
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 0.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 50, 255, 255}));
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 0.25f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 50, 255, 255}));
+    // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 0.75f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 50, 255, 255}));
+    // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 0.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 50, 255, 255}));
+    // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 0.25f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 50, 255, 255}));
     releaseGameObjects(true);
     player_one_active = true;
   }
