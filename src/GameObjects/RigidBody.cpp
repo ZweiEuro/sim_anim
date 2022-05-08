@@ -313,11 +313,11 @@ namespace mg8
       unrotatedVelocityVec.y = unrotatedVelocityVec.y * border->m_restitution_coeff;
       if (best_match == 1) // right collision - move ball left
       {
-        ball->circle::pos.x -= border_penetration;
+        unrotatedCircle.x -= border_penetration;
       }
       else // left collision - move ball right
       {
-        ball->circle::pos.x += border_penetration;
+        unrotatedCircle.x += border_penetration;
       }
     }
     else // vertical collision
@@ -326,15 +326,15 @@ namespace mg8
       unrotatedVelocityVec.x = unrotatedVelocityVec.x * border->m_restitution_coeff;
       if (best_match == 0) // down collision - move ball up
       {
-        ball->circle::pos.y -= border_penetration;
+        unrotatedCircle.y -= border_penetration;
       }
       else // up collision - move ball down
       {
-        ball->circle::pos.y += border_penetration;
+        unrotatedCircle.y += border_penetration;
       }
     }
 
-    // DONT KNOW IF THIS IS APPLICABLE
+    ball->circle::pos = rotatePoint(unrotatedCircle, rotation_anchor, -circle_rotation_angle);
     vec2f realVelocityVec = rotatePoint(unrotatedVelocityVec, rotation_anchor, -circle_rotation_angle);
     ball->m_velocity = realVelocityVec;
 
