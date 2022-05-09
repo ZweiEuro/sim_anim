@@ -51,17 +51,17 @@ namespace mg8
       return vec2<T2>((T2)x, (T2)y);
     }
 
-    float mag()
+    float mag() const
     {
       return std::sqrt(x * x + y * y);
     }
 
-    float dot(vec2 other)
+    float dot(vec2 other) const
     {
       return x * other.x + y * other.y;
     }
 
-    vec2<float> dir() // i.e. normalize
+    vec2<float> dir() const // i.e. normalize
     {
       return {((float)x) / mag(), ((float)y) / mag()};
     }

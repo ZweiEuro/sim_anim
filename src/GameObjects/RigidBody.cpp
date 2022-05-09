@@ -109,7 +109,7 @@ namespace mg8
   {
     if (this->m_rigid_body_type == TYPE_BALL)
     {
-      if (this->m_velocity.x < MOVEMENT_EPSILON && this->m_velocity.y < MOVEMENT_EPSILON)
+      if (abs(this->m_velocity.mag()) < MOVEMENT_EPSILON)
       {
         this->m_velocity = {0.0f, 0.0f};
       }

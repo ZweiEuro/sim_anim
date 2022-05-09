@@ -23,7 +23,7 @@ namespace mg8
 
   bool GameObject::is_moving() const
   {
-    if (m_velocity.x > MOVEMENT_EPSILON || m_velocity.y > MOVEMENT_EPSILON)
+    if (abs(m_velocity.mag()) > MOVEMENT_EPSILON)
     {
       return true;
     }
