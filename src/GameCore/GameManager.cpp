@@ -272,7 +272,52 @@ namespace mg8
                   } })
         .detach();
 
+    std::thread([=]() -> void
+                {
+                    while(true) {
+
+                      if(!InputManager::instance()->wait_for_key(ALLEGRO_KEY_R)){
+                        return;
+                      }
+                      spawnGame();
+                  } })
+        .detach();
+    spawnGame();
+    float center_offset_x = 50;
+    float center_offset_y = 50;
+    float center_x = (float)config_start_resolution_w / 2;
+    float center_y = (float)config_start_resolution_h / 2;
+    curve = new splineCurve();
+    curve->addControlPoint(vec2f(center_x - center_offset_x, center_y - center_offset_y));
+    curve->addControlPoint(vec2f(center_x + center_offset_x, center_y - center_offset_y));
+    curve->addControlPoint(vec2f(center_x + center_offset_x, center_y + center_offset_y));
+    curve->addControlPoint(vec2f(center_x - center_offset_x, center_y + center_offset_y));
+    // curve->addControlPoint(vec2f(center_x - center_offset_x / 2, center_y + center_offset_y / 2));
+
+    player_one_active = true;
+  }
+
+  bool GameManager::initializeAllegro()
+  {
+    // Initialize Allegro
+    assert(al_init() && "al_init failed");
+    assert(al_init_image_addon() && "al_init_image_addon failed");
+    assert(al_init_font_addon() && "al_init_image_addon failed");
+    assert(al_init_ttf_addon() && "al_init_ttf_addon failed");
+    assert(al_init_primitives_addon() && "al_init_primitives_addon failed");
+    assert(al_install_mouse() && "al_install_mouse failed");
+    assert(al_install_keyboard() && "al_install_keyboard failed");
+    assert(al_init_native_dialog_addon() && "al_init_native_dialog_addon failed");
+
+    return true;
+  }
+
+  void GameManager::spawnGame()
+  {
+
     auto &objects = getGameObjects(true);
+    objects.clear();
+
     // left border
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_TABLE_BORDER, {outer_border_x_offset, inner_border_y_offset + hole_radius * 2}, {0, 0}, table_border_width, (float)config_start_resolution_h - (inner_border_y_offset + hole_radius * 2) * 2, 0.0f, CENTER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(102, 51, 0)));
     // upper border 1
@@ -332,43 +377,12 @@ namespace mg8
     // Rotated test rectangle
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_OBSTACLE_RECTANGE, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius + 6 * hole_radius, (float)config_start_resolution_h / 2}, {0, 0}, hole_radius * 4, table_border_width, 135.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
 
-    float center_offset_x = 50;
-    float center_offset_y = 50;
-    float center_x = (float)config_start_resolution_w / 2;
-    float center_y = (float)config_start_resolution_h / 2;
-    curve = new splineCurve();
-    curve->addControlPoint(vec2f(center_x - center_offset_x, center_y - center_offset_y));
-    curve->addControlPoint(vec2f(center_x + center_offset_x, center_y - center_offset_y));
-    curve->addControlPoint(vec2f(center_x + center_offset_x, center_y + center_offset_y));
-    curve->addControlPoint(vec2f(center_x - center_offset_x, center_y + center_offset_y));
-    // curve->addControlPoint(vec2f(center_x - center_offset_x / 2, center_y + center_offset_y / 2));
-
     // ball moving right
     // not moving
     // objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_WHITE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 255, 255, 255}));
     m_white_ball = objects.back(); // set white ball
-
-    // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 0.75f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 50, 255, 255}));
-    // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 0.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 50, 255, 255}));
-    // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 0.25f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 50, 255, 255}));
     releaseGameObjects(true);
-    player_one_active = true;
-  }
-
-  bool GameManager::initializeAllegro()
-  {
-    // Initialize Allegro
-    assert(al_init() && "al_init failed");
-    assert(al_init_image_addon() && "al_init_image_addon failed");
-    assert(al_init_font_addon() && "al_init_image_addon failed");
-    assert(al_init_ttf_addon() && "al_init_ttf_addon failed");
-    assert(al_init_primitives_addon() && "al_init_primitives_addon failed");
-    assert(al_install_mouse() && "al_install_mouse failed");
-    assert(al_install_keyboard() && "al_install_keyboard failed");
-    assert(al_init_native_dialog_addon() && "al_init_native_dialog_addon failed");
-
-    return true;
   }
 
 }

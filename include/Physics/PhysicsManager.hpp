@@ -4,6 +4,7 @@
 
 namespace mg8
 {
+  class GameObject;
   class PhysicsManager
   {
   private:
@@ -15,6 +16,7 @@ namespace mg8
 
     void physics_loop();
     PhysicsManager();
+    bool collide(GameObject *&A, GameObject *&B);
 
   public:
     static PhysicsManager *instance();

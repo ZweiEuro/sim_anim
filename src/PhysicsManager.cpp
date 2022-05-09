@@ -114,27 +114,9 @@ namespace mg8
             {
               continue;
             }
-            if (A->collides_with(B))
+
+            if (collide(A, B))
             {
-              spdlog::info("collision");
-              if (A->m_type == TYPE_RIGID_BODY && B->m_type == TYPE_RIGID_BODY)
-              {
-                auto obj1 = dynamic_cast<RigidBody *>(A);
-                auto obj2 = dynamic_cast<RigidBody *>(B);
-                obj1->handle_collision(obj2);
-              }
-              else if (A->m_type == TYPE_TABLE_HOLE && B->m_type == TYPE_RIGID_BODY)
-              {
-                auto obj1 = dynamic_cast<Hole *>(A);
-                auto obj2 = dynamic_cast<RigidBody *>(B);
-                obj1->handle_collision(obj2);
-              }
-              else if (B->m_type == TYPE_TABLE_HOLE && A->m_type == TYPE_RIGID_BODY)
-              {
-                auto obj1 = dynamic_cast<Hole *>(B);
-                auto obj2 = dynamic_cast<RigidBody *>(A);
-                obj1->handle_collision(obj2);
-              }
             }
           }
 
@@ -146,4 +128,24 @@ namespace mg8
     spdlog::info("[Physics] exitted");
     return;
   }
+
+  bool PhysicsManager::collide(GameObject *&A, GameObject *&B)
+  {
+
+    {
+      auto p = dynamic_cast<RigidBody *>(B);
+      if (p)
+      {
+        if (A->collides_with(p))
+        {
+          auto p_A = dynamic_cast<RigidBody *>(A);
+          p_A->handle_collision(p);
+          spdlog::info("collision");
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 }

@@ -41,6 +41,8 @@ namespace mg8
 
     GameManager();
 
+    void spawnGame();
+
   public:
     bool objects_moving = false;
 

@@ -5,6 +5,8 @@
 
 namespace mg8
 {
+  class RigidBody;
+  class Hole;
 
   enum MG8_OBJECT_TYPES : uint32_t
   {
@@ -31,7 +33,9 @@ namespace mg8
     virtual void draw() const = 0;
     virtual void move(vec2f delta_position) = 0;
 
-    bool collides_with(const GameObject *comp) const;
+    bool collides_with(const RigidBody *comp) const;
+    bool collides_with(const Hole *comp) const;
+
     bool is_moving() const;
     // virtual void handle_collision(GameObject *collision_with) = 0;
 
