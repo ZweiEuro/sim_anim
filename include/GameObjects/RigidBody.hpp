@@ -36,6 +36,7 @@ namespace mg8
     {
     private:
         std::vector<vec2f> collision_points;
+        bool colliding = false;
 
     public:
         ALLEGRO_COLOR m_color = {0, 0, 0, 255};

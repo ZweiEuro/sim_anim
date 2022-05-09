@@ -124,6 +124,7 @@ namespace mg8
 
   void RigidBody::handle_collision(RigidBody *collisioner)
   {
+
     if (this->m_rigid_body_type == TYPE_BALL && collisioner->m_rigid_body_type == TYPE_BALL)
     {
       handle_ball_ball_collision(collisioner);
@@ -239,12 +240,22 @@ namespace mg8
     otherBall->m_velocity = otherBall->m_velocity - impulse * inverseMass_other;
   }
 
+  bool is_val_within_bound(float x, float lower_bound, float upper_bound)
+  {
+    return (x >= lower_bound && x <= upper_bound);
+  }
+  /*bool is_x_within_z_y(float x, float z, float y)
+  {
+    return x <=
+  }*/
+
   void RigidBody::handle_ball_rectangle_collision(RigidBody *ball, RigidBody *border)
   {
     // rotate circle back -> to calculate collision between circle and axis aligned rectangle
     // rotate circle velocity vector back
     // calculate & resolve collision on axis aligned rectangle
     // rotate circle velocity vector back to its original direction
+    vec2f collision_plane_normal = vec2f(0, 0);
 
     float anchor_x = 0;
     float anchor_y = 0;
@@ -291,7 +302,65 @@ namespace mg8
     // add collision point -> for visualization purposes
     collision_points.push_back(rotatePoint(vec2f(x_near, y_near), rotation_anchor, -circle_rotation_angle));
 
-    vec2f v = vec2f(x_near - unrotatedCircle.x, y_near - unrotatedCircle.y);
+    float x_col = std::clamp(ball->circle::pos.x, border->rect::left_upper.x, border->rect::right_upper.x);
+    float y_col = std::clamp(ball->circle::pos.y, border->rect::left_upper.y, border->rect::left_lower.y);
+
+    vec2f col_point = rotatePoint(vec2f(x_near, y_near), rotation_anchor, -circle_rotation_angle);
+
+    vec2f BallCenterToColPoint = col_point - ball->circle::pos;
+    // add 0.1 to the radius to avoid numerical error where the ball is stuck in the wall
+    vec2f BallCenterToBallBorder = BallCenterToColPoint * ((ball->circle::rad + 0.1) / BallCenterToColPoint.mag());
+    // spdlog::info("ball center length {}, ball border length {}", BallCenterToColPoint.mag(), BallCenterToBallBorder.mag());
+    vec2f BorderPenetration = BallCenterToBallBorder - BallCenterToColPoint;
+    ball->circle::pos = ball->circle::pos - (BorderPenetration);
+    spdlog::info("ball pos x: {}, y: {}", ball->circle::pos.x, ball->circle::pos.y);
+
+    if ((col_point.x == left_upper.x || is_val_within_bound(col_point.x, left_lower.x, left_upper.x) || is_val_within_bound(col_point.x, left_upper.x, left_lower.x)) && (is_val_within_bound(col_point.y, left_upper.y, left_lower.y) || is_val_within_bound(col_point.y, left_lower.y, left_upper.y)))
+    {
+      // left edge
+      spdlog::info("left edge collision" /*, al_keycode_to_name(keycode)*/);
+      float dx = border->rect::left_upper.x - border->rect::left_lower.x;
+      float dy = border->rect::left_upper.y - border->rect::left_lower.y;
+      collision_plane_normal = vec2f(dy * -1, dx);
+      spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; left lower x: {}, y: {}", col_point.x, col_point.y, left_upper.x, left_upper.y, left_lower.x, left_lower.y);
+    }
+    else if ((col_point.x == right_upper.x || is_val_within_bound(col_point.x, right_lower.x, right_upper.x) || is_val_within_bound(col_point.x, right_upper.x, right_lower.x)) && (is_val_within_bound(col_point.y, right_upper.y, right_lower.y) || is_val_within_bound(col_point.y, right_lower.y, right_upper.y)))
+    {
+      // right edge
+      spdlog::info("right edge collision" /*, al_keycode_to_name(keycode)*/);
+      float dx = border->rect::right_upper.x - border->rect::right_lower.x;
+      float dy = border->rect::right_upper.y - border->rect::right_lower.y;
+      collision_plane_normal = vec2f(dy * -1, dx);
+      spdlog::info("col point x: {}, y: {}; right upper x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, right_upper.x, right_upper.y, right_lower.x, right_lower.y);
+    }
+    else if ((col_point.y == left_upper.y || is_val_within_bound(col_point.y, right_upper.y, left_upper.y) || is_val_within_bound(col_point.y, left_upper.y, right_upper.y)) && (is_val_within_bound(col_point.x, right_upper.x, left_upper.x) || is_val_within_bound(col_point.x, left_upper.x, right_upper.x)))
+    {
+      // upper edge
+      spdlog::info("upper edge collision" /*, al_keycode_to_name(keycode)*/);
+      float dx = border->rect::left_upper.x - border->rect::right_upper.x;
+      float dy = border->rect::left_upper.y - border->rect::right_upper.y;
+      collision_plane_normal = vec2f(dy * -1, dx);
+      spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; right upper x: {}, y: {}", col_point.x, col_point.y, left_upper.x, left_upper.y, right_upper.x, right_upper.y);
+    }
+    else if ((col_point.y == left_lower.y || is_val_within_bound(col_point.y, right_lower.y, left_lower.y) || is_val_within_bound(col_point.y, left_lower.y, right_lower.y)) && (is_val_within_bound(col_point.x, right_lower.x, left_lower.x) || is_val_within_bound(col_point.x, left_lower.x, right_lower.x)))
+    {
+      // lower edge
+      spdlog::info("lower edge collision" /*, al_keycode_to_name(keycode)*/);
+      float dx = border->rect::left_lower.x - border->rect::right_lower.x;
+      float dy = border->rect::left_lower.y - border->rect::right_lower.y;
+      collision_plane_normal = vec2f(dy * -1, dx);
+      spdlog::info("col point x: {}, y: {}; left lower x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, left_lower.x, left_lower.y, right_lower.x, right_lower.y);
+    }
+
+    if (collision_plane_normal.x == 0 && collision_plane_normal.y == 0)
+    {
+      assert(false && "normal is zero");
+    }
+    collision_plane_normal = collision_plane_normal.dir();
+    vec2f velocity_ = ball->m_velocity - collision_plane_normal * (ball->m_velocity.dot(collision_plane_normal)) * 2;
+    ball->m_velocity = velocity_;
+
+    /*vec2f v = vec2f(x_near - unrotatedCircle.x, y_near - unrotatedCircle.y);
     float border_penetration = ball->circle::rad - v.mag();
     vec2f r = v.dir() * border_penetration;
 
@@ -309,21 +378,21 @@ namespace mg8
 
     if (best_match == 1 || best_match == 3) // horizontal collision
     {
-      unrotatedVelocityVec.x = unrotatedVelocityVec.x * -1 * border->m_restitution_coeff;
-      unrotatedVelocityVec.y = unrotatedVelocityVec.y * border->m_restitution_coeff;
+      // unrotatedVelocityVec.x = unrotatedVelocityVec.x * -1 * border->m_restitution_coeff;
+      // unrotatedVelocityVec.y = unrotatedVelocityVec.y * border->m_restitution_coeff;
       if (best_match == 1) // right collision - move ball left
       {
         unrotatedCircle.x -= border_penetration;
       }
       else // left collision - move ball right
       {
-        unrotatedCircle.x += border_penetration;
+        // unrotatedCircle.x += border_penetration;
       }
     }
     else // vertical collision
     {
-      unrotatedVelocityVec.y = unrotatedVelocityVec.y * -1 * border->m_restitution_coeff;
-      unrotatedVelocityVec.x = unrotatedVelocityVec.x * border->m_restitution_coeff;
+      // unrotatedVelocityVec.y = unrotatedVelocityVec.y * -1 * border->m_restitution_coeff;
+      // unrotatedVelocityVec.x = unrotatedVelocityVec.x * border->m_restitution_coeff;
       if (best_match == 0) // down collision - move ball up
       {
         unrotatedCircle.y -= border_penetration;
@@ -334,9 +403,11 @@ namespace mg8
       }
     }
 
-    ball->circle::pos = rotatePoint(unrotatedCircle, rotation_anchor, -circle_rotation_angle);
-    vec2f realVelocityVec = rotatePoint(unrotatedVelocityVec, rotation_anchor, -circle_rotation_angle);
-    ball->m_velocity = realVelocityVec;
+     ball->circle::pos = rotatePoint(unrotatedCircle, rotation_anchor, -circle_rotation_angle);
+
+    */
+    //  vec2f realVelocityVec = rotatePoint(unrotatedVelocityVec, vec2f(x_near, y_near), -circle_rotation_angle);
+    //  ball->m_velocity = realVelocityVec;
 
     /*
 float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
