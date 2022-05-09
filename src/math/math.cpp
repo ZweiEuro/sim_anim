@@ -14,7 +14,8 @@ namespace mg8
     a.y -= b.y;
     return a;
   }
-  // float dot(vec2f a, vec2f b) { return a.x * b.x + a.y * b.y; }
+
+    // float dot(vec2f a, vec2f b) { return a.x * b.x + a.y * b.y; }
 
   bool circleCircleCollision(const circle *A, const circle *B)
   {

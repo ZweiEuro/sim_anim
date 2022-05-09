@@ -143,6 +143,11 @@ namespace mg8
     }
   }
 
+  float eucledianDistance(vec2f p, vec2f q)
+  {
+    return sqrt(pow(q.x - p.x, 2) - pow(q.y - p.y, 2));
+  }
+
   void RigidBody::handle_ball_ball_collision(RigidBody *otherBall)
   {
     /*vec2f tangent_vec = vec2f((otherBall->circle::pos.y - this->circle::pos.y), -(otherBall->circle::pos.x - this->circle::pos.x));
@@ -238,6 +243,12 @@ namespace mg8
 
     this->m_velocity = this->m_velocity + impulse * inverseMass_self;
     otherBall->m_velocity = otherBall->m_velocity - impulse * inverseMass_other;
+    /*
+        vec2f vel1 = (this->circle::pos - otherBall->circle::pos) * (2 * otherBall->m_mass) / (this->m_mass + otherBall->m_mass) * (this->m_velocity - otherBall->m_velocity).dot(this->circle::pos - otherBall->circle::pos) / pow(eucledianDistance(this->circle::pos, otherBall->circle::pos), 2);
+        vec2f vel2 = (otherBall->circle::pos - this->circle::pos) * (2 * this->m_mass) / (this->m_mass + otherBall->m_mass) * (otherBall->m_velocity - this->m_velocity).dot(otherBall->circle::pos - this->circle::pos) / pow(eucledianDistance(otherBall->circle::pos, this->circle::pos), 2);
+
+        this->m_velocity = this->m_velocity - vel1;
+        otherBall->m_velocity = otherBall->m_velocity - vel2;*/
   }
 
   bool is_val_within_bound(float x, float lower_bound, float upper_bound)
@@ -357,7 +368,7 @@ namespace mg8
       assert(false && "normal is zero");
     }
     collision_plane_normal = collision_plane_normal.dir();
-    vec2f velocity_ = ball->m_velocity - collision_plane_normal * (ball->m_velocity.dot(collision_plane_normal)) * 2;
+    vec2f velocity_ = ball->m_velocity - collision_plane_normal * (ball->m_velocity.dot(collision_plane_normal)) * 2 * border->m_restitution_coeff;
     ball->m_velocity = velocity_;
 
     /*vec2f v = vec2f(x_near - unrotatedCircle.x, y_near - unrotatedCircle.y);

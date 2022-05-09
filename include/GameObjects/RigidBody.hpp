@@ -75,7 +75,7 @@ namespace mg8
                   MG8_ROTATION_ANCHOR rotation_anchor = CENTER,
                   vec2f acceleration = {0, 0},
                   float mass = 1.0f,
-                  float restitution_coeff = 0.6,
+                  float restitution_coeff = 0.8,
                   ALLEGRO_COLOR color = {102, 51, 0, 255},
                   uint32_t collision = 0,
                   MG8_OBJECT_TYPES obj_type = TYPE_RIGID_BODY);
