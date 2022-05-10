@@ -212,7 +212,7 @@ namespace mg8
     this->m_velocity = this->m_velocity + col * (acf - aci);
     otherBall->m_velocity = otherBall->m_velocity + col * (bcf - bci);*/
 
-    vec2f pos_delta = this->circle::pos - otherBall->circle::pos;
+    /*vec2f pos_delta = this->circle::pos - otherBall->circle::pos;
     float r = this->rad + otherBall->rad;
 
     float d = pos_delta.mag();
@@ -243,22 +243,36 @@ namespace mg8
 
     this->m_velocity = this->m_velocity + impulse * inverseMass_self;
     otherBall->m_velocity = otherBall->m_velocity - impulse * inverseMass_other;
-    /*
-        vec2f vel1 = (this->circle::pos - otherBall->circle::pos) * (2 * otherBall->m_mass) / (this->m_mass + otherBall->m_mass) * (this->m_velocity - otherBall->m_velocity).dot(this->circle::pos - otherBall->circle::pos) / pow(eucledianDistance(this->circle::pos, otherBall->circle::pos), 2);
-        vec2f vel2 = (otherBall->circle::pos - this->circle::pos) * (2 * this->m_mass) / (this->m_mass + otherBall->m_mass) * (otherBall->m_velocity - this->m_velocity).dot(otherBall->circle::pos - this->circle::pos) / pow(eucledianDistance(otherBall->circle::pos, this->circle::pos), 2);
+    */
+    //⟨v1−v2,x1−x2⟩ = (v1.x - v2.x) * (x1.x - x2.x) + (v1.y - v2.y) * (x1.y - x2.y)
+    //⟨v2−v1,x2−x1⟩ = (v2.x - v1.x) * (x2.x - x1.x) + (v2.y - v1.y) * (x2.y - x1.y)
 
-        this->m_velocity = this->m_velocity - vel1;
-        otherBall->m_velocity = otherBall->m_velocity - vel2;*/
+    //||x1 - x2||² = ⟨x1 - x2,x1 - x2⟩ = (x1.x - x2.x) * (x1.x - x2.x) + (x1.y - x2.y) * (x1.y - x2.y)
+
+    //||x2 - x1||² = ⟨x2−x1,x2−x1⟩ = (x2.x - x1.x) * (x2.x - x1.x) + (x2.y - x1.y) * (x2.y - x1.y)
+
+    // vec2f vel1 = (this->circle::pos - otherBall->circle::pos) * (2 * otherBall->m_mass) / (this->m_mass + otherBall->m_mass) * ((this->m_velocity.x - otherBall->m_velocity.x) * (this->circle::pos.x - otherBall->circle::pos.x) + (this->m_velocity.y - otherBall->m_velocity.y) * (this->circle::pos.y - otherBall->circle::pos.y)) / ((this->circle::pos.x - otherBall->circle::pos.x) * (this->circle::pos.x - otherBall->circle::pos.x) + (this->circle::pos.y - otherBall->circle::pos.y) * (this->circle::pos.y - otherBall->circle::pos.y));
+    // vec2f vel2 = (otherBall->circle::pos - this->circle::pos) * (2 * this->m_mass) / (this->m_mass + otherBall->m_mass) * ((otherBall->m_velocity.x - this->m_velocity.x) * (otherBall->circle::pos.x - this->circle::pos.x) + (otherBall->m_velocity.y - this->m_velocity.y) * (otherBall->circle::pos.y - this->circle::pos.y)) / ((otherBall->circle::pos.x - this->circle::pos.x) * (otherBall->circle::pos.x - this->circle::pos.x) + (otherBall->circle::pos.y - this->circle::pos.y) * (otherBall->circle::pos.y - this->circle::pos.y));
+    vec2f vel1 = (this->circle::pos - otherBall->circle::pos) * (2 * otherBall->m_mass) / (this->m_mass + otherBall->m_mass) * ((this->m_velocity - otherBall->m_velocity).dot(this->circle::pos - otherBall->circle::pos)) / ((this->circle::pos - otherBall->circle::pos).dot(this->circle::pos - otherBall->circle::pos));
+    vec2f vel2 = (otherBall->circle::pos - this->circle::pos) * (2 * this->m_mass) / (this->m_mass + otherBall->m_mass) * ((otherBall->m_velocity - this->m_velocity).dot(otherBall->circle::pos - this->circle::pos)) / ((otherBall->circle::pos - this->circle::pos).dot(otherBall->circle::pos - this->circle::pos));
+    // spdlog::info("prior: velocity-this x: {}, y: {}, velocity-other x: {}, y: {}, vel1 x: {}, y: {}, vel2 x: {}, y: {}", this->m_velocity.x, this->m_velocity.y, otherBall->m_velocity.x, otherBall->m_velocity.y, vel1.x, vel1.y, vel2.x, vel2.y);
+
+    vec2f OtherCenterToThisCenter = this->circle::pos - otherBall->circle::pos;
+    // fix the penetration of the one ball into the other -> leads to constant collision
+    // fix penetration by increasing the ball center - ball center distance to 2 * ball radius
+    vec2f OtherCenterToThisCenterFixedOverlap = OtherCenterToThisCenter * ((this->circle::rad * 2.0f) / OtherCenterToThisCenter.mag());
+
+    this->circle::pos = otherBall->circle::pos + OtherCenterToThisCenterFixedOverlap;
+
+    this->m_velocity = this->m_velocity - vel1 * otherBall->m_restitution_coeff;
+    otherBall->m_velocity = otherBall->m_velocity - vel2 * this->m_restitution_coeff;
+    // spdlog::info("after: velocity-this x: {}, y: {}, velocity-other x: {}, y: {}", this->m_velocity.x, this->m_velocity.y, otherBall->m_velocity.x, otherBall->m_velocity.y);
   }
 
   bool is_val_within_bound(float x, float lower_bound, float upper_bound)
   {
     return (x >= lower_bound && x <= upper_bound);
   }
-  /*bool is_x_within_z_y(float x, float z, float y)
-  {
-    return x <=
-  }*/
 
   void RigidBody::handle_ball_rectangle_collision(RigidBody *ball, RigidBody *border)
   {
