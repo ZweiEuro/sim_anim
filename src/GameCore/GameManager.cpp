@@ -293,6 +293,7 @@ namespace mg8
     curve->addControlPoint(vec2f(center_x + center_offset_x, center_y + center_offset_y));
     curve->addControlPoint(vec2f(center_x - center_offset_x, center_y + center_offset_y));
     // curve->addControlPoint(vec2f(center_x - center_offset_x / 2, center_y + center_offset_y / 2));
+    curve->calcCurve();
 
     player_one_active = true;
   }

@@ -282,6 +282,7 @@ namespace mg8
         GameManager::instance()->releaseGameObjects();
         if (GameManager::instance()->debug_enabled)
         {
+
           GameManager::instance()->curve->drawCurve();
         }
 

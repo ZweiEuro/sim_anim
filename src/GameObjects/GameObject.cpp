@@ -3,6 +3,7 @@
 #include "math/math.hpp"
 #include "configuration.hpp"
 #include "GameObjects/RigidBody.hpp"
+#include "GameObjects/Hole.hpp"
 
 #include <spdlog/spdlog.h>
 namespace mg8
@@ -58,5 +59,30 @@ namespace mg8
         assert(false && "Object in collision has no base type");
       }
     }
+    return false;
+  }
+
+  bool GameObject::collides_with(const Hole *comp) const
+  {
+
+    auto me_rigid = dynamic_cast<const RigidBody *>(this);
+
+    if (me_rigid)
+    {
+      if (me_rigid->m_rigid_body_type == TYPE_BALL)
+      {
+        return circleHoleCollision(me_rigid, comp);
+      }
+      else if (me_rigid->m_rigid_body_type == TYPE_RECTANGLE)
+      {
+        // no rectangle - hole collision
+        return false;
+      }
+      else
+      {
+        assert(false && "Object in collision has no base type");
+      }
+    }
+    return false;
   }
 }

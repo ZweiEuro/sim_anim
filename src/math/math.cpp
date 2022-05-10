@@ -15,7 +15,13 @@ namespace mg8
     return a;
   }
 
-    // float dot(vec2f a, vec2f b) { return a.x * b.x + a.y * b.y; }
+  // float dot(vec2f a, vec2f b) { return a.x * b.x + a.y * b.y; }
+
+  bool circleHoleCollision(const circle *C, const circle *H)
+  {
+    assert(C && H && "Circle circle collision with nullptr");
+    return powf(C->circle::pos.x - H->circle::pos.x, 2) + powf(C->circle::pos.y - H->circle::pos.y, 2) < powf(H->circle::rad, 2);
+  }
 
   bool circleCircleCollision(const circle *A, const circle *B)
   {
