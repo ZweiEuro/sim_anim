@@ -208,12 +208,15 @@ namespace mg8
 
   void GameManager::setup_game()
   {
+
+    // escape exit
     std::thread([=]() -> void
                 {
                   InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
                   send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); })
         .detach();
 
+    // Toggle GUI
     std::thread([=]() -> void
                 {
                   while (true)
@@ -225,6 +228,34 @@ namespace mg8
                   } })
         .detach();
 
+    // reset game
+    std::thread([=]() -> void
+                {
+                    while(true) {
+
+                      if(!InputManager::instance()->wait_for_key(ALLEGRO_KEY_R)){
+                        return;
+                      }
+                      spawnGame();
+                  } })
+        .detach();
+
+    // Pause physics
+    std::thread([=]() -> void
+                {
+                  while (true)
+                  {
+                    auto ok = InputManager::instance()->wait_for_key(ALLEGRO_KEY_P);
+                    if(!ok)
+                    return;
+
+                    
+                    PhysicsManager::instance()->toggle();
+
+                  } })
+        .detach();
+
+    // control white ball
     std::thread([=]() -> void
                 {
                     while(true) {
@@ -272,16 +303,6 @@ namespace mg8
                   } })
         .detach();
 
-    std::thread([=]() -> void
-                {
-                    while(true) {
-
-                      if(!InputManager::instance()->wait_for_key(ALLEGRO_KEY_R)){
-                        return;
-                      }
-                      spawnGame();
-                  } })
-        .detach();
     spawnGame();
     float center_offset_x = 50;
     float center_offset_y = 50;
@@ -382,6 +403,9 @@ namespace mg8
     // objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_WHITE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 255, 255, 255}));
     m_white_ball = objects.back(); // set white ball
+
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_BLACK_BALL, {(float)config_start_resolution_w / 2.0f * 1.0f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {0, 0, 0, 255}));
+
     releaseGameObjects(true);
   }
 

@@ -40,6 +40,7 @@ namespace mg8
     al_register_event_source(m_PhysicsManager_event_queue, al_get_timer_event_source(m_physics_refresh_timer));
 
     al_start_timer(m_physics_refresh_timer);
+    running = true;
 
     m_collision_check_thread = std::thread([=]() -> void
                                            { this->physics_loop(); });
@@ -58,11 +59,11 @@ namespace mg8
       static double delta_ms = 0;
 
       {
-        auto start = std::chrono::high_resolution_clock::now();
+        delta_time_start_point = std::chrono::high_resolution_clock::now();
         al_wait_for_event(m_PhysicsManager_event_queue, &event);
         auto end = std::chrono::high_resolution_clock::now();
 
-        delta_ms = std::chrono::duration<double, std::milli>(end - start).count() / 1000; // why is chrono like this -.-
+        delta_ms = std::chrono::duration<double, std::milli>(end - delta_time_start_point).count() / 1000; // why is chrono like this -.-
         delta_ms *= SettingsGUI::instance()->m_slider_value.load();
       }
 
@@ -148,4 +149,36 @@ namespace mg8
     return false;
   }
 
+  void PhysicsManager::pause()
+  {
+    assert(m_physics_refresh_timer && "No timer to pause for physics");
+    if (running.exchange(false))
+    {
+      spdlog::info("[Physics] paused");
+      al_stop_timer(m_physics_refresh_timer);
+    }
+  }
+  void PhysicsManager::resume()
+  {
+    assert(m_physics_refresh_timer && "No timer to resume for physics");
+    if (!running.exchange(true))
+    {
+      spdlog::info("[Physics] resumed");
+      delta_time_start_point = std::chrono::high_resolution_clock::now();
+      al_start_timer(m_physics_refresh_timer);
+    }
+  }
+
+  void PhysicsManager::toggle()
+  {
+
+    if (running.load())
+    {
+      pause();
+    }
+    else
+    {
+      resume();
+    }
+  }
 }
