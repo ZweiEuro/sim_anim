@@ -1,7 +1,7 @@
 #include "GameCore/GameManager.hpp"
 #include "Rendering/Renderer.hpp"
 #include "Input/InputManager.hpp"
-#include "Physics/PhysicsManager.hpp"
+#include "GameCore/PhysicsManager.hpp"
 
 #include "enums.hpp"
 

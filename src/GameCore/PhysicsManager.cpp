@@ -1,4 +1,4 @@
-#include "Physics/PhysicsManager.hpp"
+#include "GameCore/PhysicsManager.hpp"
 #include "GameCore/GameManager.hpp"
 #include "Rendering/Renderer.hpp"
 #include "GameObjects/Ball.hpp"
