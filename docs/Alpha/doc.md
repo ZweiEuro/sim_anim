@@ -30,3 +30,6 @@ Path interpolation:
 WIP arc length parametrization not done yet.
 math/PathInterpol.cpp
 
+## Note
+If you want to compile this yourself you will need 
+allegro5 and spdlog as libraries in your system.
