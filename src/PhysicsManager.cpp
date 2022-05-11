@@ -72,7 +72,6 @@ namespace mg8
       switch (event.type)
       {
       case ALLEGRO_EVENT_TIMER:
-        Renderer::instance()->logicGUI();
         recalculate = true;
         break;
       case USER_BASE_EVENT:

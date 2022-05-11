@@ -16,7 +16,7 @@ namespace mg8
   // Physics:
   const float config_physics_updates_per_second = 80;
   const float MOVEMENT_EPSILON = 1;
-  const float table_friction = 0.01;
+  const float table_friction = 0.75;
 
   // Table Dimensions:
   const float hole_radius = 10.0;

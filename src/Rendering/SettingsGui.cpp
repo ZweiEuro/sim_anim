@@ -66,6 +66,7 @@ namespace mg8
     m_debug_enabled.setAutosizing(true);
     m_debug_enabled.setText("Enable Debug View");
     m_debug_enabled.setCheckBoxAlignment(agui::ALIGN_MIDDLE_LEFT);
+    m_debug_enabled.setChecked(GameManager::instance()->debug_enabled);
     m_debug_enabled.addActionListener(m_action_listeneer);
 
     /*std::stringstream ss;

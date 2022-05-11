@@ -36,13 +36,23 @@ namespace mg8
       return {(T)((double)x / (double)divisor), (T)((double)y / (double)divisor)};
     }
 
-    vec2 operator+(vec2 other)
+    vec2 operator+(const vec2 other) const
     {
       return {x + other.x, y + other.y};
     }
-    vec2 operator-(vec2 other)
+    vec2 operator-(const vec2 other) const
     {
       return {x - other.x, y - other.y};
+    }
+
+    bool operator==(const vec2 other) const
+    {
+      return x == other.x && y == other.y;
+    }
+
+    bool operator!=(const vec2 other) const
+    {
+      return !(this->operator==(other));
     }
 
     template <typename T2>
@@ -86,6 +96,15 @@ namespace mg8
     {
       pos = new_position;
     }
+
+    bool point_inside(vec2f point) const
+    {
+
+      auto mag = (pos - point).mag();
+
+      return mag <= (rad + 0.1f);
+    }
+
   } circle;
 
   typedef struct rect
@@ -96,16 +115,8 @@ namespace mg8
     float height;
     float rotation;
     MG8_ROTATION_ANCHOR anchor;
-    vec2f left_upper;
-    vec2f left_lower;
-    vec2f right_upper;
-    vec2f right_lower;
 
-    rect()
-    {
-    }
-
-    rect(vec2f pos, float width, float height, float rotation, MG8_ROTATION_ANCHOR anchor) : pos(pos), width(width), height(height), rotation(rotation), anchor(anchor)
+    vec2f get_anchor()
     {
       float anchor_x = 0;
       float anchor_y = 0;
@@ -132,12 +143,32 @@ namespace mg8
         anchor_y = pos.y + height / 2;
         break;
       }
-      vec2f rotation_anchor = vec2f(anchor_x, anchor_y);
+      return vec2f(anchor_x, anchor_y);
+    }
 
-      left_upper = rotatePoint(pos, rotation_anchor, rotation);
-      left_lower = rotatePoint(vec2f(pos.x, pos.y + height), rotation_anchor, rotation);
-      right_upper = rotatePoint(vec2f(pos.x + width, pos.y), rotation_anchor, rotation);
-      right_lower = rotatePoint(vec2f(pos.x + width, pos.y + height), rotation_anchor, rotation);
+    vec2f left_upper()
+    {
+      return rotatePoint(pos, get_anchor(), rotation);
+    }
+    vec2f left_lower()
+    {
+      return rotatePoint(vec2f(pos.x, pos.y + height), get_anchor(), rotation);
+    }
+    vec2f right_upper()
+    {
+      return rotatePoint(vec2f(pos.x + width, pos.y), get_anchor(), rotation);
+    }
+    vec2f right_lower()
+    {
+      return rotatePoint(vec2f(pos.x + width, pos.y + height), get_anchor(), rotation);
+    }
+
+    rect()
+    {
+    }
+
+    rect(vec2f pos, float width, float height, float rotation, MG8_ROTATION_ANCHOR anchor) : pos(pos), width(width), height(height), rotation(rotation), anchor(anchor)
+    {
     }
 
     bool point_inside(vec2f point) const;

@@ -37,7 +37,7 @@ namespace mg8
                 }
                 else if (obj->m_gameobject_type == TYPE_PLAYER1_BALL || obj->m_gameobject_type == TYPE_PLAYER2_BALL)
                 {
-                    auto objects = GameManager::instance()->getGameObjects();
+                    auto &objects = GameManager::instance()->getGameObjects();
                     spdlog::info("erasing object.");
                     objects.erase(std::remove(objects.begin(), objects.end(), collider), objects.end());
                     GameManager::instance()->releaseGameObjects(true);

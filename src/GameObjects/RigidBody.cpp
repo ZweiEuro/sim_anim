@@ -103,6 +103,10 @@ namespace mg8
       {
         al_draw_filled_circle(collision_points[i].x, collision_points[i].y, 2, al_map_rgba(255, 0, 0, 255));
       }
+
+      auto dest = circle::pos + m_velocity;
+
+      al_draw_line(circle::pos.x, circle::pos.y, dest.x, dest.y, al_map_rgba(0, 0, 0, 255), 1);
     }
   }
   void RigidBody::move(vec2f delta_move)
@@ -114,7 +118,7 @@ namespace mg8
         this->m_velocity = {0.0f, 0.0f};
       }
       circle::setPosition(circle::pos + delta_move);
-      this->m_velocity = this->m_velocity - (this->m_velocity * table_friction);
+      this->m_velocity = this->m_velocity - (delta_move * table_friction);
     }
     if (this->m_rigid_body_type == TYPE_RECTANGLE)
     {
@@ -333,8 +337,8 @@ namespace mg8
     // add collision point -> for visualization purposes
     collision_points.push_back(rotatePoint(vec2f(x_near, y_near), rotation_anchor, -circle_rotation_angle));
 
-    float x_col = std::clamp(ball->circle::pos.x, border->rect::left_upper.x, border->rect::right_upper.x);
-    float y_col = std::clamp(ball->circle::pos.y, border->rect::left_upper.y, border->rect::left_lower.y);
+    float x_col = std::clamp(ball->circle::pos.x, border->rect::left_upper().x, border->rect::right_upper().x);
+    float y_col = std::clamp(ball->circle::pos.y, border->rect::left_upper().y, border->rect::left_lower().y);
 
     vec2f col_point = rotatePoint(vec2f(x_near, y_near), rotation_anchor, -circle_rotation_angle);
 
@@ -346,41 +350,87 @@ namespace mg8
     ball->circle::pos = ball->circle::pos - (BorderPenetration);
     spdlog::info("ball pos x: {}, y: {}", ball->circle::pos.x, ball->circle::pos.y);
 
-    if ((col_point.x == left_upper.x || is_val_within_bound(col_point.x, left_lower.x, left_upper.x) || is_val_within_bound(col_point.x, left_upper.x, left_lower.x)) && (is_val_within_bound(col_point.y, left_upper.y, left_lower.y) || is_val_within_bound(col_point.y, left_lower.y, left_upper.y)))
+    vec2f collided_corner(-1, -1); // none
+
+    if ((col_point.x == left_upper().x || is_val_within_bound(col_point.x, left_lower().x, left_upper().x) || is_val_within_bound(col_point.x, left_upper().x, left_lower().x)) && (is_val_within_bound(col_point.y, left_upper().y, left_lower().y) || is_val_within_bound(col_point.y, left_lower().y, left_upper().y)))
     {
       // left edge
       spdlog::info("left edge collision" /*, al_keycode_to_name(keycode)*/);
-      float dx = border->rect::left_upper.x - border->rect::left_lower.x;
-      float dy = border->rect::left_upper.y - border->rect::left_lower.y;
+      float dx = border->rect::left_upper().x - border->rect::left_lower().x;
+      float dy = border->rect::left_upper().y - border->rect::left_lower().y;
       collision_plane_normal = vec2f(dy * -1, dx);
-      spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; left lower x: {}, y: {}", col_point.x, col_point.y, left_upper.x, left_upper.y, left_lower.x, left_lower.y);
+      spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; left lower x: {}, y: {}", col_point.x, col_point.y, left_upper().x, left_upper().y, left_lower().x, left_lower().y);
+
+      if (ball->circle::point_inside(border->rect::left_upper()))
+      {
+        collided_corner = border->rect::left_upper();
+      }
+      else if (ball->circle::point_inside(border->rect::left_lower()))
+      {
+        collided_corner = border->rect::left_lower();
+      }
     }
-    else if ((col_point.x == right_upper.x || is_val_within_bound(col_point.x, right_lower.x, right_upper.x) || is_val_within_bound(col_point.x, right_upper.x, right_lower.x)) && (is_val_within_bound(col_point.y, right_upper.y, right_lower.y) || is_val_within_bound(col_point.y, right_lower.y, right_upper.y)))
+    else if ((col_point.x == right_upper().x || is_val_within_bound(col_point.x, right_lower().x, right_upper().x) || is_val_within_bound(col_point.x, right_upper().x, right_lower().x)) && (is_val_within_bound(col_point.y, right_upper().y, right_lower().y) || is_val_within_bound(col_point.y, right_lower().y, right_upper().y)))
     {
       // right edge
       spdlog::info("right edge collision" /*, al_keycode_to_name(keycode)*/);
-      float dx = border->rect::right_upper.x - border->rect::right_lower.x;
-      float dy = border->rect::right_upper.y - border->rect::right_lower.y;
+      float dx = border->rect::right_upper().x - border->rect::right_lower().x;
+      float dy = border->rect::right_upper().y - border->rect::right_lower().y;
       collision_plane_normal = vec2f(dy * -1, dx);
-      spdlog::info("col point x: {}, y: {}; right upper x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, right_upper.x, right_upper.y, right_lower.x, right_lower.y);
+      spdlog::info("col point x: {}, y: {}; right upper x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, right_upper().x, right_upper().y, right_lower().x, right_lower().y);
+
+      if (ball->circle::point_inside(border->rect::right_upper()))
+      {
+        collided_corner = border->rect::right_upper();
+      }
+      else if (ball->circle::point_inside(border->rect::right_lower()))
+      {
+        collided_corner = border->rect::right_lower();
+      }
     }
-    else if ((col_point.y == left_upper.y || is_val_within_bound(col_point.y, right_upper.y, left_upper.y) || is_val_within_bound(col_point.y, left_upper.y, right_upper.y)) && (is_val_within_bound(col_point.x, right_upper.x, left_upper.x) || is_val_within_bound(col_point.x, left_upper.x, right_upper.x)))
+    else if ((col_point.y == left_upper().y || is_val_within_bound(col_point.y, right_upper().y, left_upper().y) || is_val_within_bound(col_point.y, left_upper().y, right_upper().y)) && (is_val_within_bound(col_point.x, right_upper().x, left_upper().x) || is_val_within_bound(col_point.x, left_upper().x, right_upper().x)))
     {
       // upper edge
       spdlog::info("upper edge collision" /*, al_keycode_to_name(keycode)*/);
-      float dx = border->rect::left_upper.x - border->rect::right_upper.x;
-      float dy = border->rect::left_upper.y - border->rect::right_upper.y;
+      float dx = border->rect::left_upper().x - border->rect::right_upper().x;
+      float dy = border->rect::left_upper().y - border->rect::right_upper().y;
       collision_plane_normal = vec2f(dy * -1, dx);
-      spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; right upper x: {}, y: {}", col_point.x, col_point.y, left_upper.x, left_upper.y, right_upper.x, right_upper.y);
+      spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; right upper x: {}, y: {}", col_point.x, col_point.y, left_upper().x, left_upper().y, right_upper().x, right_upper().y);
+
+      if (ball->circle::point_inside(border->rect::left_upper()))
+      {
+        collided_corner = border->rect::left_upper();
+      }
+      else if (ball->circle::point_inside(border->rect::right_upper()))
+      {
+        collided_corner = border->rect::right_upper();
+      }
     }
-    else if ((col_point.y == left_lower.y || is_val_within_bound(col_point.y, right_lower.y, left_lower.y) || is_val_within_bound(col_point.y, left_lower.y, right_lower.y)) && (is_val_within_bound(col_point.x, right_lower.x, left_lower.x) || is_val_within_bound(col_point.x, left_lower.x, right_lower.x)))
+    else if ((col_point.y == left_lower().y || is_val_within_bound(col_point.y, right_lower().y, left_lower().y) || is_val_within_bound(col_point.y, left_lower().y, right_lower().y)) && (is_val_within_bound(col_point.x, right_lower().x, left_lower().x) || is_val_within_bound(col_point.x, left_lower().x, right_lower().x)))
     {
       // lower edge
       spdlog::info("lower edge collision" /*, al_keycode_to_name(keycode)*/);
-      float dx = border->rect::left_lower.x - border->rect::right_lower.x;
-      float dy = border->rect::left_lower.y - border->rect::right_lower.y;
+      float dx = border->rect::left_lower().x - border->rect::right_lower().x;
+      float dy = border->rect::left_lower().y - border->rect::right_lower().y;
       collision_plane_normal = vec2f(dy * -1, dx);
-      spdlog::info("col point x: {}, y: {}; left lower x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, left_lower.x, left_lower.y, right_lower.x, right_lower.y);
+      spdlog::info("col point x: {}, y: {}; left lower x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, left_lower().x, left_lower().y, right_lower().x, right_lower().y);
+
+      if (ball->circle::point_inside(border->rect::left_lower()))
+      {
+        collided_corner = border->rect::left_lower();
+      }
+      else if (ball->circle::point_inside(border->rect::right_lower()))
+      {
+        collided_corner = border->rect::right_lower();
+      }
+    }
+
+    if (collided_corner != vec2f(-1, -1))
+    {
+      spdlog::info("direct corner collision");
+
+      ball->m_velocity = ball->m_velocity * -1 * border->m_restitution_coeff;
+      return;
     }
 
     if (collision_plane_normal.x == 0 && collision_plane_normal.y == 0)

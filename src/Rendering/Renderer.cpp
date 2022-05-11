@@ -285,7 +285,7 @@ namespace mg8
 
           GameManager::instance()->curve->drawCurve();
         }
-
+        Renderer::instance()->logicGUI();
         renderGUI();
         al_flip_display();
       }

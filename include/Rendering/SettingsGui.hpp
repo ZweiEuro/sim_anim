@@ -81,9 +81,9 @@ namespace mg8
         SettingsGUI::instance()->m_slider_value_display.setText(std::to_string(val.load()).c_str());
         // SettingsGUI::instance()->m_slider_value_display.setText("0.05");
 
-        spdlog::info("set to {} from {}",
+        /*spdlog::info("set to {} from {}",
                      SettingsGUI::instance()->m_slider_value_display.getText(),
-                     std::to_string(val.load()));
+                     std::to_string(val.load()));*/
 
         return;
       }
