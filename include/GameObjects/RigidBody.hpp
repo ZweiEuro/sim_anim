@@ -29,7 +29,7 @@ namespace mg8
         TYPE_BLACK_BALL = 1 << 3,
         TYPE_TABLE_BORDER = 1 << 4,
         TYPE_POWERUP_RECTANGLE = 1 << 5,
-        TYPE_OBSTACLE_RECTANGE = 1 << 6,
+        TYPE_OBSTACLE_RECTANGLE = 1 << 6,
     };
 
     class RigidBody : public virtual GameObject, public circle, public rect

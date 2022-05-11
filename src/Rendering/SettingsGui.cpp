@@ -32,7 +32,7 @@ namespace mg8
     // Time delta slider
 
     m_main_frame.add(&m_slider_title);
-    m_slider_title.setText("Time delta multiplier:");
+    m_slider_title.setText("Time delta multiplier (Update Rate):");
     m_slider_title.resizeToContents();
     auto slider_title_dims = m_slider_title.getSize();
     m_slider_title.setLocation(0, 10);

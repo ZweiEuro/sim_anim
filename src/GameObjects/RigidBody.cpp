@@ -118,7 +118,13 @@ namespace mg8
     }
     if (this->m_rigid_body_type == TYPE_RECTANGLE)
     {
-      return;
+      if (this->m_gameobject_type == TYPE_OBSTACLE_RECTANGLE)
+      {
+        /*if (this->movementCurve)
+        {
+          return;
+        }*/
+      }
     }
   }
 

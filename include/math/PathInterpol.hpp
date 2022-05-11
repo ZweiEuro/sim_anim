@@ -36,6 +36,10 @@ namespace mg8
         std::vector<segment> segments;
         std::vector<arcLen> arcLenTable;
         bool loop = true;
+        int current_segment = 0;
+        float current_arc_pos = 0.0f;
+        long last_update_time = 0;
+        float s_per_timeunit = 1;
 
         void addControlPoint(vec2f point)
         {
@@ -72,7 +76,7 @@ namespace mg8
             for (size_t i = 0; i < controlPoints.size(); i++)
             {
                 drawSegments(i);
-                drawArcPoints(i);
+                // drawArcPoints(i);
                 al_draw_filled_circle(controlPoints[i].x, controlPoints[i].y, 2, al_map_rgba(255, 0, 0, 255));
             }
         }
@@ -102,6 +106,19 @@ namespace mg8
                 }
             }
         }
+        /*vec2f getPosition(vec2f current_pos, float t, int p1_index)
+        {
+            vec2f p0 = controlPoints[getVecIndex(p1_index - 1)];
+            vec2f p1 = controlPoints[p1_index];
+            vec2f p2 = controlPoints[getVecIndex(p1_index + 1)];
+            vec2f p3 = controlPoints[getVecIndex(p1_index + 2)];
+
+            vec2f newPos = calcCatmullRom(t, p0, p1, p2, p3);
+
+            float chord_length = (newPos - current_pos).mag();
+
+            return;
+        }*/
 
         void drawSegments(int p1_index) // draw segments between point p1 and p2 -> points given as index to controlPoints vector
         {
