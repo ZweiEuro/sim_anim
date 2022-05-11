@@ -1,11 +1,6 @@
 ## 1. Excecution
-Cd a terminal to /bin.
-execute via command:,
 
-```bash
-ln -fs ../res ./res #link the resource folder
-./magic_eight
-```
+In this folder is a shell script "start.sh" that links ./res for the game and starts it.
 
 ## 2. Manual
 Clicking with the mouse onto the table will fire the white ball to the mouse with increasing speed the further the click is away from the white ball.
