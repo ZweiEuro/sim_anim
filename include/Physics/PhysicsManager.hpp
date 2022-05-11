@@ -1,6 +1,7 @@
 #pragma once
 #include <thread>
 #include <allegro5/allegro.h>
+#include <atomic>
 
 namespace mg8
 {
@@ -13,17 +14,26 @@ namespace mg8
     ALLEGRO_TIMER *m_physics_refresh_timer = nullptr;
 
     std::thread m_collision_check_thread;
+    std::atomic<bool> running = false;
 
     void physics_loop();
     PhysicsManager();
     bool collide(GameObject *&A, GameObject *&B);
 
+  protected:
+    std::chrono::_V2::system_clock::time_point delta_time_start_point;
+
   public:
-    static PhysicsManager *instance();
+    static PhysicsManager *
+    instance();
 
     std::thread *get_thread()
     {
       return &m_collision_check_thread;
     }
+
+    void pause();
+    void resume();
+    void toggle();
   };
 }
