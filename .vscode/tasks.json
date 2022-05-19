@@ -6,7 +6,7 @@
         {
             "label": "setup build",
             "type": "shell",
-            "command": "mkdir -p '${workspaceFolder}/build' && cd '${workspaceFolder}/build' && git submodule init && git submodule update && ln -fs ../res ./res && cmake .. && make . -j8",
+            "command": "cd ${workspaceFolder} && mkdir -p '${workspaceFolder}/build' && if [[ ! -e '${workspaceFolder}/build/res' ]]; then ln -ns '${workspaceFolder}/res' '${workspaceFolder}/build/res'; fi && cd '${workspaceFolder}/build' && git submodule init && git submodule update && cmake .. && make . -j8",
             "problemMatcher": []
         },
         {
