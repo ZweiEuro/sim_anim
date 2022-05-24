@@ -1,6 +1,41 @@
+
+# Magic Eight
+
+
+Dominik Völkel    11811035  d.voelkel@student.tugraz.at
+
+Phillip Stranger  11807773  phillip.stranger@student.tugraz.at
+
+
+## 0. Needed libraries:
+Firstly on ubuntu community repository (universe) need to be enabled. (Tutorial: https://www.linuxshelltips.com/enable-universe-repository-ubuntu/)
+
+Allegro needs to be installed:
+https://github.com/liballeg/allegro_wiki/wiki/Quickstart
+
+under Linux -> Ubuntu
+
+```
+sudo apt update
+
+sudo add-apt-repository ppa:allegro/5.2
+sudo apt-get install liballegro*5.2 liballegro*5-dev
+
+#and then we install spdlog
+sudo apt install libspdlog-dev
+
+```
+
+
+
+
 ## 1. Excecution
 
-In this folder is a shell script "start.sh" that links ./res for the game and starts it.
+Next to this file in this filder is a shell script "start.sh" that links ./res for the game and starts it.
+With a terminal inside the extracted folder you can execute the game with:
+```
+./start.sh
+```
 
 ## 2. Manual
 Clicking with the mouse onto the table will fire the white ball to the mouse with increasing speed the further the click is away from the white ball.
