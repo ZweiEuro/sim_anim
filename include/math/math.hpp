@@ -2,6 +2,7 @@
 #include "configuration.hpp"
 #include "assert.h"
 #include <cmath>
+#include <random>
 namespace mg8
 {
   enum MG8_ROTATION_ANCHOR
@@ -79,7 +80,9 @@ namespace mg8
   using vec2f = vec2<float>;
   using vec2i = vec2<int>;
 
-  vec2f rotatePoint(const vec2f, const vec2f, const float);
+  float eucledianDistance(const vec2f a, const vec2f b);
+
+  vec2f rotatePoint(const vec2f point, const vec2f anchor_point, const float angle);
 
   typedef struct circle
   {
@@ -169,6 +172,28 @@ namespace mg8
 
     rect(vec2f pos, float width, float height, float rotation, MG8_ROTATION_ANCHOR anchor) : pos(pos), width(width), height(height), rotation(rotation), anchor(anchor)
     {
+    }
+
+    vec2f get_random_point_in_rect()
+    {
+      std::random_device r;
+      std::mt19937 gen(r());
+      std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+      float x = pos.x + ((pos.x + width) - pos.x) * dis(gen);
+      float y = pos.y + ((pos.y + height) - pos.y) * dis(gen);
+
+      vec2f rotatedPoint = rotatePoint(vec2f(x, y), get_anchor(), rotation);
+      return vec2f(rotatedPoint.x, rotatedPoint.y);
+    }
+
+    vec2f get_random_point_in_unrotated_rect()
+    {
+      std::random_device r;
+      std::mt19937 gen(r());
+      std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+      float x = pos.x + ((pos.x + width) - pos.x) * dis(gen);
+      float y = pos.y + ((pos.y + height) - pos.y) * dis(gen);
+      return vec2f(x, y);
     }
 
     bool point_inside(vec2f point) const;

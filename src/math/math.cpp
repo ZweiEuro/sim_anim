@@ -15,6 +15,11 @@ namespace mg8
     return a;
   }
 
+  float eucledianDistance(const vec2f a, const vec2f b)
+  {
+    return std::sqrt(std::pow(b.x - a.x, 2.f) + std::pow(b.y - a.y, 2.f));
+  }
+
   // float dot(vec2f a, vec2f b) { return a.x * b.x + a.y * b.y; }
 
   bool circleHoleCollision(const circle *C, const circle *H)

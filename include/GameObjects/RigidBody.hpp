@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/math.hpp"
+#include "math/VoronoiFracture.hpp"
 #include "GameObjects/GameObject.hpp"
 #include <atomic>
 #include <allegro5/color.h>
@@ -44,6 +45,8 @@ namespace mg8
         vec2f m_acceleration = {0, 0};
         float m_mass = 1.0f;
         float m_restitution_coeff = 0;
+
+        VoronoiFracture *v = nullptr;
 
         MG8_RIGID_BODY_OBJECT_TYPES m_rigid_body_type = TYPE_UNDEFINED_BODY;
         MG8_GAMEOBJECT_TYPES m_gameobject_type = TYPE_UNDEFINED_GAMEOBJECT;

@@ -19,7 +19,7 @@
 #include "GameObjects/RigidBody.hpp"
 #include "GameObjects/Hole.hpp"
 
-#include "math/PathInterpol.hpp"
+#include "math/VoronoiFracture.hpp"
 
 namespace mg8
 {
@@ -389,6 +389,13 @@ namespace mg8
 
     // Rotated test rectangle
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_OBSTACLE_RECTANGLE, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius + 6 * hole_radius, (float)config_start_resolution_h / 2}, {0, 0}, hole_radius * 4, table_border_width / 2, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_OBSTACLE_RECTANGLE, {(float)inner_border_x_offset * 2, (float)config_start_resolution_h / 2}, {0, 0}, 200, table_border_width * 3, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    rect r = rect({(float)inner_border_x_offset * 2, (float)config_start_resolution_h / 2}, 200, table_border_width * 3, 45.0f, LEFT_LOWER_CORNER);
+    VoronoiFracture *v = new VoronoiFracture(&r);
+
+    auto p = dynamic_cast<RigidBody *>(objects.back());
+    p->v = v;
 
     float center_offset_x = 50;
     float center_offset_y = 50;

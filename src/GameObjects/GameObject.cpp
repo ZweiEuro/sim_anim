@@ -1,6 +1,5 @@
 
 #include "GameObjects/GameObject.hpp"
-#include "math/math.hpp"
 #include "configuration.hpp"
 #include "GameObjects/RigidBody.hpp"
 #include "GameObjects/Hole.hpp"

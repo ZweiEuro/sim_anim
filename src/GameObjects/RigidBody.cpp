@@ -95,6 +95,11 @@ namespace mg8
           al_draw_rectangle(rect::pos.x, rect::pos.y, rect::pos.x + rect::width, rect::pos.y + rect::height, al_map_rgba(255, 255, 255, 127), 1);
         }
       }
+
+      if (v)
+      {
+        v->draw();
+      }
     }
     // should only be displayed when DEBUG is on
     if (GameManager::instance()->debug_enabled)
@@ -151,11 +156,6 @@ namespace mg8
     {
       // assert(false && "Border - border collision should not happen.");
     }
-  }
-
-  float eucledianDistance(vec2f p, vec2f q)
-  {
-    return sqrt(pow(q.x - p.x, 2) - pow(q.y - p.y, 2));
   }
 
   void RigidBody::handle_ball_ball_collision(RigidBody *otherBall)
