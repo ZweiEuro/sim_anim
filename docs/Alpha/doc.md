@@ -7,6 +7,26 @@ Dominik Völkel    11811035  d.voelkel@student.tugraz.at
 Phillip Stranger  11807773  phillip.stranger@student.tugraz.at
 
 
+Notes from ass2:
+
+Angular momentum visualization: we have no angular momentum.
+
+Seperated Update rate and time delta multiplier.
+
+Implemented FPS updater (do not switch this around to much the internal timer might not like it).
+
+Notes for final release:
+
+Force Field checkbox added.
+
+Object path is shown in debug mode.
+
+Toggle box for euler / RK4
+
+Step size h slider for euler/RK4
+
+
+
 ## 0. Needed libraries:
 Firstly on ubuntu community repository (universe) need to be enabled. (Tutorial: https://www.linuxshelltips.com/enable-universe-repository-ubuntu/)
 
