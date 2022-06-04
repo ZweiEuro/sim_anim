@@ -22,6 +22,7 @@ namespace mg8
         vec2f center;
         float min_distance;
         float max_distance;
+        std::vector<vec2f> hull;
         std::vector<DistanceFieldPoint *> distanceField;
 
         VoronoiCell(vec2f center, float min_distance = MAXFLOAT, float max_distance = -1.0f) : center(center), min_distance(min_distance), max_distance(max_distance) {}
@@ -34,8 +35,13 @@ namespace mg8
         std::vector<VoronoiCell *> cells;
         rect *fractureBody;
 
+        bool fractured = false;
+
+        void calcConvexHull(int cell_index);
+
     public:
         VoronoiFracture(rect *fractureBody);
         void draw();
+        void fracture();
     };
 }

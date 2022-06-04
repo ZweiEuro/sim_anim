@@ -31,4 +31,7 @@ namespace mg8
   const float outer_border_y_offset = ((float)config_start_resolution_h - pool_table_height) / 2.0;
   const float inner_border_y_offset = outer_border_y_offset + table_border_width;
 
+  // Visual:
+  const int config_voronoi_cells = 25;
+
 }

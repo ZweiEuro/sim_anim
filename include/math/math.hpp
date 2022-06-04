@@ -81,6 +81,7 @@ namespace mg8
   using vec2i = vec2<int>;
 
   float eucledianDistance(const vec2f a, const vec2f b);
+  float squaredDistance(const vec2f a, const vec2f b);
 
   vec2f rotatePoint(const vec2f point, const vec2f anchor_point, const float angle);
 

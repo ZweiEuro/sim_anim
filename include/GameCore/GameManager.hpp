@@ -21,6 +21,8 @@ namespace mg8
   private:
     static GameManager *m_instance;
 
+    static bool instanced;
+
     std::shared_timed_mutex l_game_objects;
     std::vector<GameObject *> m_game_objects = {};
     GameObject *m_white_ball = nullptr;

@@ -96,7 +96,7 @@ namespace mg8
         }
       }
 
-      if (v)
+      if (this->m_gameobject_type == TYPE_ICE_RECTANGLE && v)
       {
         v->draw();
       }
@@ -290,6 +290,12 @@ namespace mg8
     // rotate circle velocity vector back
     // calculate & resolve collision on axis aligned rectangle
     // rotate circle velocity vector back to its original direction
+
+    if (this->m_gameobject_type == TYPE_ICE_RECTANGLE && v)
+    {
+      v->fracture();
+    }
+
     vec2f collision_plane_normal = vec2f(0, 0);
 
     float anchor_x = 0;
