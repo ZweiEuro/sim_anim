@@ -18,6 +18,7 @@
 #include "GameObjects/Ball.hpp"
 #include "GameObjects/RigidBody.hpp"
 #include "GameObjects/Hole.hpp"
+#include "GameObjects/ParticleDynamics.hpp"
 
 #include "math/PathInterpol.hpp"
 
