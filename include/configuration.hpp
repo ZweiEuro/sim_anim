@@ -1,6 +1,5 @@
 #pragma once
 #include <stddef.h>
-
 // static configuration for some settings that are set by compile time
 
 namespace mg8
@@ -17,6 +16,12 @@ namespace mg8
   const float config_physics_updates_per_second = 80;
   const float MOVEMENT_EPSILON = 1;
   const float table_friction = 0.75;
+  const float config_min_distance_grav_well = 0.01f;
+
+#define MAX_VEL (vec2f{200, 200})
+
+  const float config_max_velocity_x = 200;
+  const float config_max_velocity_y = 200;
 
   // Table Dimensions:
   const float hole_radius = 10.0;
@@ -30,5 +35,4 @@ namespace mg8
 
   const float outer_border_y_offset = ((float)config_start_resolution_h - pool_table_height) / 2.0;
   const float inner_border_y_offset = outer_border_y_offset + table_border_width;
-
 }

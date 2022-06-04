@@ -10,8 +10,8 @@ namespace mg8
   {
 
   private:
-    vec2f velocity_to_well(const GameObject &body, float dt);
-    vec2f euler(const GameObject &obj, float dt);
+    vec2f velocity_to_well(const GameObject &body, float dt) const;
+    vec2f euler(const GameObject &obj, float dt) const;
 
   public:
     ALLEGRO_COLOR m_color = {0, 0, 0, 255};
@@ -26,11 +26,11 @@ namespace mg8
 
     ~GravityWell();
 
-    float m_mass = 1.0f;
+    float m_mass = 6.0e+18;
 
     virtual void draw() const;
     virtual void move(vec2f delta_move);
 
-    void apply(const std::vector<GameObject> &objs, float dt);
+    void apply(std::vector<GameObject *> &objs, float dt) const;
   };
 }

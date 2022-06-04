@@ -4,11 +4,13 @@
 #include "GameObjects/Ball.hpp"
 #include "GameObjects/RigidBody.hpp"
 #include "GameObjects/Hole.hpp"
+#include "GameObjects/ParticleDynamics.hpp"
 
 #include "Rendering/SettingsGui.hpp"
 
 #include <spdlog/spdlog.h>
 #include <chrono>
+
 namespace mg8
 {
 
@@ -94,8 +96,21 @@ namespace mg8
       if (recalculate)
       {
         recalculate = false;
-        auto objects = GameManager::instance()->getGameObjects();
+        auto &objects = GameManager::instance()->getGameObjects();
         bool are_objects_moving = false;
+
+        // first all the gravity
+        for (auto &A : objects)
+        {
+          if (A->m_type == TYPE_GRAVITY_WELL)
+          {
+            const auto *grav = dynamic_cast<const GravityWell *>(A);
+            assert(grav && "Grav well cast failed");
+
+            grav->apply(objects, delta_ms);
+          }
+        }
+
         // movement resolve
         for (auto &A : objects)
         {

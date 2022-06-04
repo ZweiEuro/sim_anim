@@ -256,6 +256,22 @@ namespace mg8
                   } })
         .detach();
 
+    // gravity well spawner
+    std::thread([=]() -> void
+                {
+                  while (true)
+                  {
+                    mg8::vec2i pos;
+                    auto ok = InputManager::instance()->wait_for_mouse_button(2, pos);
+                    if (!ok)
+                      return;
+                    auto &objects = getGameObjects(true);
+                    objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,pos,{0, 0}, 10));
+
+                    releaseGameObjects(true);
+                  } })
+        .detach();
+
     // control white ball
     std::thread([=]() -> void
                 {
