@@ -151,7 +151,7 @@ namespace mg8
         {
           auto p_A = dynamic_cast<RigidBody *>(A);
           p_A->handle_collision(p);
-          spdlog::info("collision");
+          // spdlog::info("collision");
           return true;
         }
       }

@@ -27,7 +27,7 @@ namespace mg8
     template <typename T2>
     vec2 operator*(T2 scale)
     {
-      return {(T)((double)x * (double)scale), (T)((double)y * (double)scale)};
+      return {(T)(x * scale), (T)(y * scale)};
     }
 
     template <typename T2>

@@ -10,7 +10,7 @@ namespace mg8
   {
 
   private:
-    vec2f velocity_to_well(const GameObject &body, float dt) const;
+    vec2f velocity_to_well(const float mass_body, const vec2f &object_position, float dt) const;
     vec2f euler(const GameObject &obj, float dt) const;
     vec2f kutta(const GameObject &obj, float dt) const;
 

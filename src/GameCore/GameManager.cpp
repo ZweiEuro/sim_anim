@@ -185,14 +185,19 @@ namespace mg8
 
     // shutdown renderer
     send_user_event(MG8_SUBSYSTEMS::RENDERER, CONTROL_SHUTDOWN);
+    spdlog::warn("Waiting for rendering");
     // Renderer::instance()->get_thread()->join();
 
     // shutdown physics
     send_user_event(MG8_SUBSYSTEMS::PHYSICS_MANAGER, CONTROL_SHUTDOWN);
+    spdlog::warn("Waiting for physics");
+
     PhysicsManager::instance()->get_thread()->join();
 
     // shutdown input
     send_user_event(MG8_SUBSYSTEMS::INPUT_MANAGER, CONTROL_SHUTDOWN);
+    spdlog::warn("Waiting for control");
+
     InputManager::instance()->get_thread()->join();
   }
   void GameManager::send_user_event(MG8_SUBSYSTEMS target_system, MG8_EVENTS event)

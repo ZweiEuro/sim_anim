@@ -7,25 +7,22 @@ namespace mg8
 
   // acceleration according to euler
 
-  vec2f GravityWell::velocity_to_well(const GameObject &body, float dt) const
+  vec2f GravityWell::velocity_to_well(const float mass_body, const vec2f &object_position, float dt) const
   {
 
     // F = G * m_1 * m_2 / r^2
     // F =  m*a   -> a = F/m  -> m/s = N / kg
 
-    auto body_circ = dynamic_cast<const circle *>(&body);
-    assert(body_circ && "Dynamic cast null for gravity calc");
+    auto r = (object_position - pos).mag();
 
-    auto r = (body_circ->pos - pos).mag();
-
-    auto F = (G * m_mass * body.m_mass) /
+    auto F = (G * m_mass * mass_body) /
              (r * r);
 
-    auto a = ((pos - body_circ->pos).dir()) * F / body.m_mass;
+    auto a = ((pos - object_position).dir()) * F / mass_body;
 
     if (r < rad) // catch ridiculous velocity values
     {
-      return ((pos - body_circ->pos).dir()) * r;
+      return ((pos - object_position).dir()) * r;
     }
 
     return a * dt;
@@ -35,13 +32,16 @@ namespace mg8
   vec2f GravityWell::euler(const GameObject &obj, float t1) const
   {
 
+    auto body_circ = dynamic_cast<const circle *>(&obj);
+    assert(body_circ && "Dynamic cast null for gravity calc");
+
     vec2f vel1 = obj.m_velocity; // what we want to calculate
     float t = h;
     // Iterating till the point at which we
     // need approximation
     while (t < t1)
     {
-      vel1 += velocity_to_well(obj, t) * h;
+      vel1 += velocity_to_well(obj.m_mass, body_circ->pos, t) * h;
       t += h;
     }
 
@@ -50,7 +50,36 @@ namespace mg8
 
   vec2f GravityWell::kutta(const GameObject &obj, float t1) const
   {
-    return {0, 0};
+
+    auto body_circ = dynamic_cast<const circle *>(&obj);
+    assert(body_circ && "Dynamic cast null for gravity calc");
+
+    // Count number of iterations using step size or
+    // step height h
+    int n = (int)(t1 / h);
+
+    vec2f k1, k2, k3, k4, k5;
+
+    // Iterate for number of iterations
+    vec2f vel1 = obj.m_velocity;
+    float t = 0;
+    for (int i = 1; i <= n; i++)
+    {
+      // Apply Runge Kutta Formulas to find
+      // next value of y
+      k1 = velocity_to_well(obj.m_mass, body_circ->pos, t) * h;
+      k2 = velocity_to_well(obj.m_mass, body_circ->pos + k1 * 0.5f, t + 0.5 * h) * h;
+      k3 = velocity_to_well(obj.m_mass, body_circ->pos + k2 * 0.5f, t + 0.5 * h) * h;
+      k4 = velocity_to_well(obj.m_mass, body_circ->pos + k3, t + h) * h;
+
+      // Update next value of y
+      vel1 = vel1 + (k1 + k2 * 2 + k3 * 3 + k4) * (1.0 / 6.0);
+
+      // Update next value of x
+      t += h;
+    }
+
+    return vel1;
   }
 
   void GravityWell::apply(std::vector<GameObject *> &objs, float dt) const
@@ -62,14 +91,16 @@ namespace mg8
       if (obj == this)
         continue;
 
-      if (true)
+      if (false)
       {
         new_vel = euler(*obj, dt);
       }
       else
       {
-        abort();
+        new_vel = kutta(*obj, dt);
       }
+
+      assert(!std::isnan(new_vel.x) && !std::isnan(new_vel.y) && "One or more velocities acquired nan");
 
       obj->m_velocity = new_vel;
     }
