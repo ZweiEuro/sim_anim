@@ -55,52 +55,98 @@ namespace mg8
 
     agui::Frame m_main_frame;
 
-    agui::Label m_slider_title;
-    agui::Slider m_slider_time_multiplier;
-
     SettingsGUI();
 
   public:
     static SettingsGUI *instance();
 
+    // general
+    agui::CheckBox m_checkbox_debug_enabled;
+
+    // update rates
     std::atomic<float> m_slider_value = 1;
-    agui::Label m_slider_value_display;
-    agui::CheckBox m_debug_enabled;
+    agui::Label m_title_time_delta_slider;
+    agui::Slider m_slider_time_multiplier;
+    agui::Label m_label_time_multiplier;
+
+    std::atomic<float> m_fps_value = 60;
+    agui::Label m_title_fps_slider;
+    agui::Slider m_slider_FPS;
+    agui::Label m_label_FPS;
+
+    std::atomic<float> m_pps_value = 60; // physics per second
+    agui::Label m_title_pps_slider;
+    agui::Slider m_slider_PPS;
+    agui::Label m_label_PPS;
+
+    agui::CheckBox m_checkbox_table_friction;
+
+    // gravity shit
+    agui::CheckBox m_checkbox_forcefield;
+    agui::CheckBox m_checkbox_object_path;
+
+    agui::RadioButton m_radio_kutta_euler[2];
+    agui::RadioButtonGroup m_group_radio_kutta_euler;
   };
 
   class SimpleActionListener : public agui::ActionListener
   {
   public:
+    void handleSlider(agui::Slider *slider)
+    {
+      if (slider == &SettingsGUI::instance()->m_slider_time_multiplier)
+      {
+        auto &val = SettingsGUI::instance()->m_slider_value;
+        val = ((float)slider->getValue()) / 100;
+        SettingsGUI::instance()->m_label_time_multiplier.setText(std::to_string(val.load()).c_str());
+      }
+      else if (slider == &SettingsGUI::instance()->m_slider_FPS)
+      {
+        printf("Set FPS: %d\n", slider->getValue());
+        SettingsGUI::instance()->m_label_FPS.setText(std::to_string(slider->getValue()).c_str());
+      }
+      else if (slider == &SettingsGUI::instance()->m_slider_PPS)
+      {
+        printf("Set PPS: %d\n", slider->getValue());
+        SettingsGUI::instance()->m_label_PPS.setText(std::to_string(slider->getValue()).c_str());
+      }
+    }
+
+    void handleCheckbox(agui::CheckBox *checkbox)
+    {
+      if (checkbox == &SettingsGUI::instance()->m_checkbox_debug_enabled)
+      {
+        printf("Set debug to %s\n", checkbox->checked() ? "True" : "False");
+        GameManager::instance()->debug_enabled = checkbox->checked();
+      }
+      else if (checkbox == &SettingsGUI::instance()->m_checkbox_forcefield)
+      {
+        printf("Set forcefield to %s\n", checkbox->checked() ? "True" : "False");
+
+        GameManager::instance()->forcefield_enabled = checkbox->checked();
+      }
+      else if (checkbox == &SettingsGUI::instance()->m_checkbox_object_path)
+      {
+        printf("Set obj path to %s\n", checkbox->checked() ? "True" : "False");
+
+        GameManager::instance()->object_path_enabled = checkbox->checked();
+      }
+    }
+
     virtual void actionPerformed(const agui::ActionEvent &evt)
     {
       agui::Slider *slider = dynamic_cast<agui::Slider *>(evt.getSource());
       if (slider)
       {
-        auto &val = SettingsGUI::instance()->m_slider_value;
-        val = ((float)slider->getValue()) / 100;
-        SettingsGUI::instance()->m_slider_value_display.setText(std::to_string(val.load()).c_str());
-        // SettingsGUI::instance()->m_slider_value_display.setText("0.05");
-
-        /*spdlog::info("set to {} from {}",
-                     SettingsGUI::instance()->m_slider_value_display.getText(),
-                     std::to_string(val.load()));*/
-
+        handleSlider(slider);
         return;
       }
       agui::CheckBox *checkbox = dynamic_cast<agui::CheckBox *>(evt.getSource());
       if (checkbox)
       {
-        bool is_checked = checkbox->checked();
-        GameManager::instance()->debug_enabled = is_checked;
+        handleCheckbox(checkbox);
+        return;
       }
-
-      spdlog::info("button pushed");
-
-      /*   al_show_native_message_box(al_get_current_display(),
-                                    "Agui Action Listener",
-                                    "",
-                                    "An Action Event has occured!",
-                                    NULL, 0);*/
     }
   };
 

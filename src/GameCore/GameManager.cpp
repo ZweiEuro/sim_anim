@@ -219,7 +219,10 @@ namespace mg8
     std::thread([=]() -> void
                 {
                   InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
-                  send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); })
+                  send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN);
+
+                  exit(0);
+                })
         .detach();
 
     // Toggle GUI
