@@ -35,5 +35,12 @@ namespace mg8
     void pause();
     void resume();
     void toggle();
+
+    void setPPS(float PPS)
+    {
+
+      al_set_timer_speed(m_physics_refresh_timer, 1.0 / PPS);
+    }
   };
+
 }

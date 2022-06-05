@@ -29,6 +29,9 @@
 #include <spdlog/spdlog.h>
 
 #include "GameCore/GameManager.hpp"
+#include "GameCore/PhysicsManager.hpp"
+#include "Rendering/Renderer.hpp"
+
 namespace mg8
 {
 
@@ -69,17 +72,17 @@ namespace mg8
     agui::Slider m_slider_time_multiplier;
     agui::Label m_label_time_multiplier;
 
-    std::atomic<float> m_fps_value = 60;
+    std::atomic<float> m_fps_value = config_default_fps;
     agui::Label m_title_fps_slider;
     agui::Slider m_slider_FPS;
     agui::Label m_label_FPS;
 
-    std::atomic<float> m_pps_value = 60; // physics per second
+    std::atomic<float> m_pps_value = config_default_pps; // physics per second
     agui::Label m_title_pps_slider;
     agui::Slider m_slider_PPS;
     agui::Label m_label_PPS;
 
-    std::atomic<float> m_h_value = 0.0025; // physics per second
+    std::atomic<float> m_h_value = config_default_h; // physics per second
     agui::Label m_title_h_slider;
     agui::Slider m_slider_h;
     agui::Label m_label_h;
@@ -109,11 +112,15 @@ namespace mg8
       {
         printf("Set FPS: %d\n", slider->getValue());
         SettingsGUI::instance()->m_label_FPS.setText(std::to_string(slider->getValue()).c_str());
+
+        Renderer::instance()->setFPS(slider->getValue());
       }
       else if (slider == &SettingsGUI::instance()->m_slider_PPS)
       {
         printf("Set PPS: %d\n", slider->getValue());
         SettingsGUI::instance()->m_label_PPS.setText(std::to_string(slider->getValue()).c_str());
+
+        PhysicsManager::instance()->setPPS(slider->getValue());
       }
       else if (slider == &SettingsGUI::instance()->m_slider_h)
       {

@@ -5,7 +5,7 @@
 namespace mg8
 {
   // display
-  const float config_fps = 60;
+  const float config_default_fps = 60;
   const int config_start_resolution_w = 1080;
   const int config_start_resolution_h = 720;
   const bool config_allow_resize = false;
@@ -13,12 +13,12 @@ namespace mg8
   const float config_mouse_position_refresh_per_second = 5;
 
   // Physics:
-  const float config_physics_updates_per_second = 80;
+  const float config_default_pps = 80;
   const float MOVEMENT_EPSILON = 1;
   const float table_friction = 0.75;
   const float config_min_distance_grav_well = 0.01f;
 
-#define MAX_VEL (vec2f{200, 200})
+  const float config_default_h = 0.0025;
 
   const float config_max_velocity_x = 200;
   const float config_max_velocity_y = 200;

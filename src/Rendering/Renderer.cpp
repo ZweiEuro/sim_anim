@@ -131,7 +131,7 @@ namespace mg8
 
     spdlog::info("Renderer setupped");
 
-    m_display_refresh_timer = al_create_timer(1.0 / config_fps);
+    m_display_refresh_timer = al_create_timer(1.0 / config_default_fps);
     if (!m_display_refresh_timer)
     {
       spdlog::error("Could not create display refresh timer.");

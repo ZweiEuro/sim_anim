@@ -100,6 +100,11 @@ namespace mg8
       return false;
     }
 
+    void setFPS(float FPS)
+    {
+      al_set_timer_speed(m_display_refresh_timer, 1.0 / FPS);
+    }
+
     void logicGUI();
     void resizeGUI();
 

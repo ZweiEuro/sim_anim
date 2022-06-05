@@ -31,7 +31,7 @@ namespace mg8
 
     m_PhysicsManager_event_queue = al_create_event_queue();
 
-    m_physics_refresh_timer = al_create_timer(1.0 / config_physics_updates_per_second);
+    m_physics_refresh_timer = al_create_timer(1.0 / config_default_pps);
     if (!m_physics_refresh_timer)
     {
       spdlog::error("Could not create physics refresh timer.");

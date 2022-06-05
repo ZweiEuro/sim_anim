@@ -120,7 +120,7 @@ namespace mg8
 
       m_main_frame.add(&m_slider_FPS);
       m_slider_FPS.setSize(100, 40);
-      m_slider_FPS.setMinValue(0);
+      m_slider_FPS.setMinValue(1);
       m_slider_FPS.setMaxValue(100);
       m_slider_FPS.setValue(m_fps_value.load());
       m_slider_FPS.setMarkerSize(agui::Dimension(10, 30));
@@ -145,7 +145,7 @@ namespace mg8
 
       m_main_frame.add(&m_slider_PPS);
       m_slider_PPS.setSize(100, 40);
-      m_slider_PPS.setMinValue(0);
+      m_slider_PPS.setMinValue(20);
       m_slider_PPS.setMaxValue(100);
       m_slider_PPS.setValue(m_pps_value.load());
       m_slider_PPS.setMarkerSize(agui::Dimension(10, 30));
