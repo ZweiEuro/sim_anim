@@ -66,7 +66,7 @@ namespace mg8
         auto end = std::chrono::high_resolution_clock::now();
 
         delta_ms = std::chrono::duration<double, std::milli>(end - delta_time_start_point).count() / 1000; // why is chrono like this -.-
-        delta_ms *= SettingsGUI::instance()->m_slider_value.load();
+        delta_ms *= SettingsGUI::instance()->m_time_delta_permultiplier_value.load();
       }
 
       // Handle the event

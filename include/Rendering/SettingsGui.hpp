@@ -64,7 +64,7 @@ namespace mg8
     agui::CheckBox m_checkbox_debug_enabled;
 
     // update rates
-    std::atomic<float> m_slider_value = 1;
+    std::atomic<float> m_time_delta_permultiplier_value = 1;
     agui::Label m_title_time_delta_slider;
     agui::Slider m_slider_time_multiplier;
     agui::Label m_label_time_multiplier;
@@ -78,6 +78,11 @@ namespace mg8
     agui::Label m_title_pps_slider;
     agui::Slider m_slider_PPS;
     agui::Label m_label_PPS;
+
+    std::atomic<float> m_h_value = 0.0025; // physics per second
+    agui::Label m_title_h_slider;
+    agui::Slider m_slider_h;
+    agui::Label m_label_h;
 
     agui::CheckBox m_checkbox_table_friction;
 
@@ -96,7 +101,7 @@ namespace mg8
     {
       if (slider == &SettingsGUI::instance()->m_slider_time_multiplier)
       {
-        auto &val = SettingsGUI::instance()->m_slider_value;
+        auto &val = SettingsGUI::instance()->m_time_delta_permultiplier_value;
         val = ((float)slider->getValue()) / 100;
         SettingsGUI::instance()->m_label_time_multiplier.setText(std::to_string(val.load()).c_str());
       }
@@ -109,6 +114,14 @@ namespace mg8
       {
         printf("Set PPS: %d\n", slider->getValue());
         SettingsGUI::instance()->m_label_PPS.setText(std::to_string(slider->getValue()).c_str());
+      }
+      else if (slider == &SettingsGUI::instance()->m_slider_h)
+      {
+        printf("Set h: %d\n", slider->getValue());
+        auto &val = SettingsGUI::instance()->m_h_value;
+        val = ((float)slider->getValue()) / 1000;
+
+        SettingsGUI::instance()->m_label_h.setText(std::to_string(val.load()).c_str());
       }
     }
 

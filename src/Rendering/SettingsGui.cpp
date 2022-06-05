@@ -42,7 +42,7 @@ namespace mg8
 
       m_main_frame.add(&m_label_time_multiplier);
       m_label_time_multiplier.setText("0.123456789");
-      m_label_time_multiplier.setText(std::to_string(m_slider_value.load()).c_str());
+      m_label_time_multiplier.setText(std::to_string(m_time_delta_permultiplier_value.load()).c_str());
       m_label_time_multiplier.resizeToContents();
       m_label_time_multiplier.setLocation(width[1] + 10, height + 15);
 
@@ -139,7 +139,7 @@ namespace mg8
 
       m_main_frame.add(&m_label_PPS);
       m_label_PPS.setText("0.123456789");
-      m_label_PPS.setText(std::to_string(m_fps_value.load()).c_str());
+      m_label_PPS.setText(std::to_string(m_pps_value.load()).c_str());
       m_label_PPS.resizeToContents();
       m_label_PPS.setLocation(width[1] + 10, height + 10);
 
@@ -147,12 +147,38 @@ namespace mg8
       m_slider_PPS.setSize(100, 40);
       m_slider_PPS.setMinValue(0);
       m_slider_PPS.setMaxValue(100);
-      m_slider_PPS.setValue(m_fps_value.load());
+      m_slider_PPS.setValue(m_pps_value.load());
       m_slider_PPS.setMarkerSize(agui::Dimension(10, 30));
       m_slider_PPS.addActionListener(m_action_listeneer);
       m_slider_PPS.setLocation(width[1], height);
       m_slider_PPS.resizeToContents();
       m_slider_PPS.setBackColor(agui::Color(0, 0, 0, 0));
+
+      height += 25;
+    }
+
+    { // h
+      m_main_frame.add(&m_title_h_slider);
+      m_title_h_slider.setText("h: ");
+      m_title_h_slider.resizeToContents();
+      m_title_h_slider.setLocation(width[0], height);
+
+      m_main_frame.add(&m_label_h);
+      m_label_h.setText("0.123456789");
+      m_label_h.setText(std::to_string(m_h_value.load()).c_str());
+      m_label_h.resizeToContents();
+      m_label_h.setLocation(width[1] + 10, height + 10);
+
+      m_main_frame.add(&m_slider_h);
+      m_slider_h.setSize(100, 40);
+      m_slider_h.setMinValue(0);
+      m_slider_h.setMaxValue(100);
+      m_slider_h.setValue(m_h_value.load());
+      m_slider_h.setMarkerSize(agui::Dimension(10, 30));
+      m_slider_h.addActionListener(m_action_listeneer);
+      m_slider_h.setLocation(width[1], height);
+      m_slider_h.resizeToContents();
+      m_slider_h.setBackColor(agui::Color(0, 0, 0, 0));
 
       height += 25;
     }
