@@ -12,6 +12,7 @@ namespace mg8
   private:
     vec2f velocity_to_well(const GameObject &body, float dt) const;
     vec2f euler(const GameObject &obj, float dt) const;
+    vec2f kutta(const GameObject &obj, float dt) const;
 
   public:
     ALLEGRO_COLOR m_color = {0, 0, 0, 255};

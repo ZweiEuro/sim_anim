@@ -18,12 +18,10 @@ namespace mg8
       al_draw_filled_circle(circle::pos.x, circle::pos.y, rad, al_map_rgba(m_color.r, m_color.g, m_color.b, m_color.a));
       if (this->m_gameobject_type == TYPE_WHITE_BALL)
       {
-        if (!GameManager::instance()->objects_moving) // draw direction line for white ball when white ball can be played i.e. when no objects are moving
-        {
-          ALLEGRO_MOUSE_STATE state;
-          al_get_mouse_state(&state);
-          al_draw_line(circle::pos.x, circle::pos.y, state.x, state.y, al_map_rgb(255, 0, 0), 2);
-        }
+
+        ALLEGRO_MOUSE_STATE state;
+        al_get_mouse_state(&state);
+        al_draw_line(circle::pos.x, circle::pos.y, state.x, state.y, al_map_rgb(255, 0, 0), 2);
 
         ALLEGRO_FONT *font = al_create_builtin_font();
         std::string s = "x: ";

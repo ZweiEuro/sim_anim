@@ -295,8 +295,7 @@ namespace mg8
                       releaseGameObjects(true);*/
 
                       // if objects are not moving one player can play the white ball
-                      if (!objects_moving && (player_one_active || player_two_active))
-                      {
+              
                         vec2i dir;
                         //auto &objects = getGameObjects(true);
                         if (m_white_ball)
@@ -312,17 +311,14 @@ namespace mg8
                             return;
                           }
                           white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * (dir - white_ball->circle::pos).mag();
-                          objects_moving = true;
                         }
                         //releaseGameObjects(true);
-                      }
+                      
                       
                   } })
         .detach();
 
     spawnGame();
-
-    player_one_active = true;
   }
 
   bool GameManager::initializeAllegro()

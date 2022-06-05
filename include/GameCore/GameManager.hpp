@@ -25,9 +25,6 @@ namespace mg8
     std::vector<GameObject *> m_game_objects = {};
     GameObject *m_white_ball = nullptr;
 
-    bool player_one_active = false;
-    bool player_two_active = false;
-
     // Events need to be fired to each system from a new source so they don't starve each other
     static ALLEGRO_EVENT_SOURCE m_GameManager_event_source_to_InputManager; // the queue the input thread listens to
     static ALLEGRO_EVENT_SOURCE m_GameManager_event_source_to_Renderer;     // The renderer queue also gets forwarded most display events for processing, but stuff like "exit button pressed" will need to be managed by the GameManager first for controlled shutdown
@@ -44,8 +41,6 @@ namespace mg8
     void spawnGame();
 
   public:
-    bool objects_moving = false;
-
     bool debug_enabled = false;
 
     splineCurve *curve = nullptr;

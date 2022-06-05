@@ -28,7 +28,7 @@ namespace mg8
   {
   public:
     vec2f m_velocity = {0, 0}; // Object direction of movement in 2D space
-    float m_mass = 1.0f;
+    float m_mass = 1.0;
 
     MG8_OBJECT_TYPES m_type = TYPE_UNDEFINED;
     uint32_t m_collision_mask = TYPE_UNDEFINED; // & of object types

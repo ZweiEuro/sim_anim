@@ -18,14 +18,15 @@ namespace mg8
 
     auto r = (body_circ->pos - pos).mag();
 
-    if (r < config_min_distance_grav_well)
-    {
-      return 0.0f;
-    }
     auto F = (G * m_mass * body.m_mass) /
              (r * r);
 
-    auto a = ((pos - body_circ->pos).dir()) * F * body.m_mass;
+    auto a = ((pos - body_circ->pos).dir()) * F / body.m_mass;
+
+    if (r < rad) // catch ridiculous velocity values
+    {
+      return ((pos - body_circ->pos).dir()) * r;
+    }
 
     return a * dt;
   }
@@ -47,11 +48,20 @@ namespace mg8
     return vel1;
   }
 
+  vec2f GravityWell::kutta(const GameObject &obj, float t1) const
+  {
+    return {0, 0};
+  }
+
   void GravityWell::apply(std::vector<GameObject *> &objs, float dt) const
   {
     vec2f new_vel;
+
     for (const auto &obj : objs)
     {
+      if (obj == this)
+        continue;
+
       if (true)
       {
         new_vel = euler(*obj, dt);
@@ -59,12 +69,6 @@ namespace mg8
       else
       {
         abort();
-      }
-
-      if (new_vel.mag() > MAX_VEL.mag())
-      {
-        new_vel = {0,
-                   0};
       }
 
       obj->m_velocity = new_vel;

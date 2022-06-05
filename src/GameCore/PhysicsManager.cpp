@@ -115,12 +115,7 @@ namespace mg8
         for (auto &A : objects)
         {
           A->move(A->m_velocity * delta_ms);
-          if (!are_objects_moving) // if one object is moving this is true;
-          {
-            are_objects_moving = A->is_moving();
-          }
         }
-        GameManager::instance()->objects_moving = are_objects_moving;
         // Collision resolve
         for (auto &A : objects)
           for (auto &B : objects)
