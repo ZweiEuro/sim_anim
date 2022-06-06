@@ -302,6 +302,38 @@ namespace mg8
           PhysicsManager::instance()->l_forcefield.unlock();
         }
 
+        if (SettingsGUI::instance()->m_checkbox_object_path.checked())
+        {
+          for (const auto &obj : objects)
+          {
+            auto p = dynamic_cast<RigidBody *>(obj);
+            auto &body = *p;
+
+            if (p && body.m_past_positions.size() > 0)
+            {
+
+              auto source = body.m_past_positions.back();
+              int count = 0;
+
+              for (auto i = body.m_past_positions.rbegin();
+                   i != body.m_past_positions.rend(); ++i)
+              {
+                auto dest = *i;
+
+                al_draw_line(source.x, source.y, dest.x, dest.y, body.m_color, 2);
+                source = *i;
+
+                if (count > config_show_last_X_positions)
+                {
+                  break;
+                }
+
+                count++;
+              }
+            }
+          }
+        }
+
         GameManager::instance()->releaseGameObjects();
         if (GameManager::instance()->debug_enabled)
         {

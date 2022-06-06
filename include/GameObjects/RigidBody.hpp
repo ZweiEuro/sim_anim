@@ -87,6 +87,19 @@ namespace mg8
         void handle_collision(RigidBody *collider);
         void handle_ball_ball_collision(RigidBody *collider);
         void handle_ball_rectangle_collision(RigidBody *ball, RigidBody *border);
+
+        vec2f getPos()
+        {
+            if (this->m_rigid_body_type == TYPE_BALL)
+            {
+                return circle::pos;
+            }
+            else if (this->m_rigid_body_type == TYPE_RECTANGLE)
+            {
+                return rect::pos;
+            }
+            return vec2f{0, 0};
+        }
     };
 
 }
