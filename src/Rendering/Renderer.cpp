@@ -283,7 +283,7 @@ namespace mg8
         if (SettingsGUI::instance()->m_checkbox_forcefield.checked())
         {
           // draw the forcefield
-
+          PhysicsManager::instance()->l_forcefield.lock();
           for (auto &row : PhysicsManager::instance()->m_forcefield)
           {
             for (auto &point : row)
@@ -294,11 +294,12 @@ namespace mg8
 
               auto &circ = *dynamic_cast<circle *>(point);
 
-              auto destination = circ.pos + body.m_velocity.dir() * 30;
+              auto destination = circ.pos + (body.m_velocity.dir() * 5) * std::min(10.0f, body.m_velocity.mag());
 
               al_draw_line(circ.pos.x, circ.pos.y, destination.x, destination.y, body.m_color, 2);
             }
           }
+          PhysicsManager::instance()->l_forcefield.unlock();
         }
 
         GameManager::instance()->releaseGameObjects();

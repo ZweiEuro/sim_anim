@@ -103,7 +103,8 @@ namespace mg8
         new_vel = kutta(*obj, dt);
       }
 
-      assert(!(std::isnan(new_vel.x) || std::isnan(new_vel.y)) && "One or more velocities acquired nan");
+      // assert(!std::isnan(new_vel.x));
+      // assert(!std::isnan(new_vel.y));
 
       obj->m_velocity = new_vel;
     }

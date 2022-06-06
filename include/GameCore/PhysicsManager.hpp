@@ -44,6 +44,8 @@ namespace mg8
       al_set_timer_speed(m_physics_refresh_timer, 1.0 / PPS);
     }
 
+    std::mutex l_forcefield;
+
     std::vector<std::vector<GameObject *>> m_forcefield;
   };
 

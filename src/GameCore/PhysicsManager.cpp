@@ -126,6 +126,7 @@ namespace mg8
         }
 
         // first all the gravity
+        l_forcefield.lock();
         for (auto &A : objects)
         {
           if (A->m_type == TYPE_GRAVITY_WELL)
@@ -142,6 +143,7 @@ namespace mg8
             }
           }
         }
+        l_forcefield.unlock();
 
         // movement resolve
         for (auto &A : objects)
