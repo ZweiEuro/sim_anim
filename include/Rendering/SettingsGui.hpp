@@ -66,6 +66,11 @@ namespace mg8
     // general
     agui::CheckBox m_checkbox_debug_enabled;
 
+    std::atomic<float> m_white_ball_power_value = config_default_white_ball_power;
+    agui::Label m_title_white_ball_powerslider;
+    agui::Slider m_slider_white_ball_power;
+    agui::Label m_label_white_ball_power;
+
     // update rates
     std::atomic<float> m_time_delta_permultiplier_value = 1;
     agui::Label m_title_time_delta_slider;
@@ -93,6 +98,7 @@ namespace mg8
     agui::CheckBox m_checkbox_forcefield;
     agui::CheckBox m_checkbox_object_path;
 
+    std::atomic<bool> m_choice_euler = config_default_gravity;
     agui::RadioButton m_radio_kutta_euler[2];
     agui::RadioButtonGroup m_group_radio_kutta_euler;
   };
@@ -130,6 +136,11 @@ namespace mg8
 
         SettingsGUI::instance()->m_label_h.setText(std::to_string(val.load()).c_str());
       }
+      else if (slider == &SettingsGUI::instance()->m_slider_white_ball_power)
+      {
+        SettingsGUI::instance()->m_white_ball_power_value = slider->getValue();
+        SettingsGUI::instance()->m_label_white_ball_power.setText(std::to_string(slider->getValue()).c_str());
+      }
     }
 
     void handleCheckbox(agui::CheckBox *checkbox)
@@ -143,13 +154,13 @@ namespace mg8
       {
         printf("Set forcefield to %s\n", checkbox->checked() ? "True" : "False");
 
-        GameManager::instance()->forcefield_enabled = checkbox->checked();
+        // GameManager::instance()->forcefield_enabled = checkbox->checked();
       }
       else if (checkbox == &SettingsGUI::instance()->m_checkbox_object_path)
       {
         printf("Set obj path to %s\n", checkbox->checked() ? "True" : "False");
 
-        GameManager::instance()->object_path_enabled = checkbox->checked();
+        //  GameManager::instance()->object_path_enabled = checkbox->checked();
       }
     }
 
@@ -166,6 +177,19 @@ namespace mg8
       {
         handleCheckbox(checkbox);
         return;
+      }
+
+      agui::RadioButton *button = dynamic_cast<agui::RadioButton *>(evt.getSource());
+      if (button)
+      {
+        if (button == &SettingsGUI::instance()->m_radio_kutta_euler[0])
+        {
+          SettingsGUI::instance()->m_choice_euler = true;
+        }
+        else if (button == &SettingsGUI::instance()->m_radio_kutta_euler[1])
+        {
+          SettingsGUI::instance()->m_choice_euler = false;
+        }
       }
     }
   };

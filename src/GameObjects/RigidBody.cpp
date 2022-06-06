@@ -1,5 +1,7 @@
 #include "GameObjects/RigidBody.hpp"
 #include "GameCore/GameManager.hpp"
+#include "Rendering/SettingsGui.hpp"
+
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 
@@ -116,7 +118,7 @@ namespace mg8
         this->m_velocity = {0.0f, 0.0f};
       }
       circle::setPosition(circle::pos + delta_move);
-      this->m_velocity = this->m_velocity - (delta_move * table_friction);
+      this->m_velocity = this->m_velocity - (delta_move * (SettingsGUI::instance()->m_checkbox_table_friction.checked() ? table_friction : 0));
     }
     if (this->m_rigid_body_type == TYPE_RECTANGLE)
     {

@@ -2,6 +2,7 @@
 #include "Rendering/Renderer.hpp"
 #include "Input/InputManager.hpp"
 #include "GameCore/PhysicsManager.hpp"
+#include "Rendering/SettingsGui.hpp"
 
 #include "enums.hpp"
 
@@ -221,8 +222,7 @@ namespace mg8
                   InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
                   send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN);
 
-                  exit(0);
-                })
+                  exit(0); })
         .detach();
 
     // Toggle GUI
@@ -318,7 +318,7 @@ namespace mg8
                             //releaseGameObjects(true);
                             return;
                           }
-                          white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * (dir - white_ball->circle::pos).mag();
+                          white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * SettingsGUI::instance()->m_white_ball_power_value.load();
                         }
                         //releaseGameObjects(true);
                       

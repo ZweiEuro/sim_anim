@@ -43,9 +43,6 @@ namespace mg8
   public:
     // Settings stuff
     bool debug_enabled = false;
-    bool forcefield_enabled = false;
-    bool object_path_enabled = false;
-    bool table_friction = false;
 
     splineCurve *curve = nullptr;
 

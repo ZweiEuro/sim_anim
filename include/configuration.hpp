@@ -16,9 +16,11 @@ namespace mg8
   const float config_default_pps = 80;
   const float MOVEMENT_EPSILON = 1;
   const float table_friction = 0.75;
-  const float config_min_distance_grav_well = 0.01f;
+
+  const float config_default_white_ball_power = 500;
 
   const float config_default_h = 0.0025;
+  const bool config_default_gravity = true; // True = Euler, false = kutta
 
   const float config_max_velocity_x = 200;
   const float config_max_velocity_y = 200;

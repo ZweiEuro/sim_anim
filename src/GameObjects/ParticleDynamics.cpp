@@ -1,8 +1,8 @@
 #include "GameObjects/ParticleDynamics.hpp"
+#include "Rendering/SettingsGui.hpp"
 #include "configuration.hpp"
 namespace mg8
 {
-  const float h = 0.0025;
   const float G = 6.674e-11;
 
   // acceleration according to euler
@@ -36,6 +36,7 @@ namespace mg8
     assert(body_circ && "Dynamic cast null for gravity calc");
 
     vec2f vel1 = obj.m_velocity; // what we want to calculate
+    float h = SettingsGUI::instance()->m_h_value.load();
     float t = h;
     // Iterating till the point at which we
     // need approximation
@@ -56,6 +57,8 @@ namespace mg8
 
     // Count number of iterations using step size or
     // step height h
+    float h = SettingsGUI::instance()->m_h_value.load();
+
     int n = (int)(t1 / h);
 
     vec2f k1, k2, k3, k4, k5;
@@ -91,7 +94,7 @@ namespace mg8
       if (obj == this)
         continue;
 
-      if (false)
+      if (SettingsGUI::instance()->m_choice_euler.load())
       {
         new_vel = euler(*obj, dt);
       }

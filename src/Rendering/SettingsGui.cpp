@@ -62,28 +62,28 @@ namespace mg8
 
     m_main_frame.add(&m_checkbox_debug_enabled);
     m_checkbox_debug_enabled.setText("Enable Debug View");
-    m_checkbox_debug_enabled.setChecked(GameManager::instance()->debug_enabled);
+    m_checkbox_debug_enabled.setChecked(false);
     m_checkbox_debug_enabled.addActionListener(m_action_listeneer);
     m_checkbox_debug_enabled.setLocation(width[0], height += 20);
 
     m_main_frame.add(&m_checkbox_forcefield);
     m_checkbox_forcefield.setAutosizing(true);
     m_checkbox_forcefield.setText("Enable Forcefield");
-    m_checkbox_forcefield.setChecked(GameManager::instance()->forcefield_enabled);
+    m_checkbox_forcefield.setChecked(false);
     m_checkbox_forcefield.addActionListener(m_action_listeneer);
     m_checkbox_forcefield.setLocation(width[0], height += 20);
 
     m_main_frame.add(&m_checkbox_object_path);
     m_checkbox_object_path.setAutosizing(true);
     m_checkbox_object_path.setText("Enable Object path");
-    m_checkbox_object_path.setChecked(GameManager::instance()->object_path_enabled);
+    m_checkbox_object_path.setChecked(false);
     m_checkbox_object_path.addActionListener(m_action_listeneer);
     m_checkbox_object_path.setLocation(width[0], height += 20);
 
     m_main_frame.add(&m_checkbox_table_friction);
     m_checkbox_table_friction.setAutosizing(true);
     m_checkbox_table_friction.setText("Table Friction");
-    m_checkbox_table_friction.setChecked(GameManager::instance()->table_friction);
+    m_checkbox_table_friction.setChecked(true);
     m_checkbox_table_friction.addActionListener(m_action_listeneer);
     m_checkbox_table_friction.setLocation(width[0], height += 20);
 
@@ -96,7 +96,7 @@ namespace mg8
     m_main_frame.add(&m_radio_kutta_euler[0]);
 
     m_main_frame.add(&m_radio_kutta_euler[1]);
-    m_radio_kutta_euler[1].setText("kutta");
+    m_radio_kutta_euler[1].setText("Kutta");
     m_radio_kutta_euler[1].setLocation(width[0], height += 20);
     m_radio_kutta_euler[1].setChecked(true);
     m_radio_kutta_euler[1].addActionListener(m_action_listeneer);
@@ -179,6 +179,32 @@ namespace mg8
       m_slider_h.setLocation(width[1], height);
       m_slider_h.resizeToContents();
       m_slider_h.setBackColor(agui::Color(0, 0, 0, 0));
+
+      height += 25;
+    }
+
+    { // ball power
+      m_main_frame.add(&m_title_white_ball_powerslider);
+      m_title_white_ball_powerslider.setText("BP: ");
+      m_title_white_ball_powerslider.resizeToContents();
+      m_title_white_ball_powerslider.setLocation(width[0], height);
+
+      m_main_frame.add(&m_label_white_ball_power);
+      m_label_white_ball_power.setText("0.123456789");
+      m_label_white_ball_power.setText(std::to_string(m_white_ball_power_value.load()).c_str());
+      m_label_white_ball_power.resizeToContents();
+      m_label_white_ball_power.setLocation(width[1] + 10, height + 10);
+
+      m_main_frame.add(&m_slider_white_ball_power);
+      m_slider_white_ball_power.setSize(100, 40);
+      m_slider_white_ball_power.setMinValue(0);
+      m_slider_white_ball_power.setMaxValue(800);
+      m_slider_white_ball_power.setValue(m_white_ball_power_value.load());
+      m_slider_white_ball_power.setMarkerSize(agui::Dimension(10, 30));
+      m_slider_white_ball_power.addActionListener(m_action_listeneer);
+      m_slider_white_ball_power.setLocation(width[1], height);
+      m_slider_white_ball_power.resizeToContents();
+      m_slider_white_ball_power.setBackColor(agui::Color(0, 0, 0, 0));
 
       height += 25;
     }
