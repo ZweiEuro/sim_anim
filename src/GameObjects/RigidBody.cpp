@@ -118,12 +118,19 @@ namespace mg8
   {
     if (this->m_rigid_body_type == TYPE_BALL)
     {
-      if (abs(this->m_velocity.mag()) < MOVEMENT_EPSILON)
+      if (this->m_gameobject_type == TYPE_SATELLITE_BALL)
       {
-        this->m_velocity = {0.0f, 0.0f};
+        // move according to hierarchical transformation
       }
-      circle::setPosition(circle::pos + delta_move);
-      this->m_velocity = this->m_velocity - (delta_move * table_friction);
+      else
+      {
+        if (abs(this->m_velocity.mag()) < MOVEMENT_EPSILON)
+        {
+          this->m_velocity = {0.0f, 0.0f};
+        }
+        circle::setPosition(circle::pos + delta_move);
+        this->m_velocity = this->m_velocity - (delta_move * table_friction);
+      }
     }
     if (this->m_rigid_body_type == TYPE_RECTANGLE)
     {
@@ -133,6 +140,20 @@ namespace mg8
         {
           return;
         }*/
+      }
+      if (this->m_gameobject_type == TYPE_ICE_RECTANGLE && !v)
+      {
+        v = new VoronoiFracture(dynamic_cast<rect *>(this));
+      }
+
+      if (this->m_gameobject_type == TYPE_ICE_RECTANGLE && v)
+      {
+        if (GameManager::instance()->voronoi_recalc)
+        {
+          GameManager::instance()->voronoi_recalc = false;
+          v->toggleNoised();
+          v->recalc();
+        }
       }
     }
   }

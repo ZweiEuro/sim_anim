@@ -37,6 +37,11 @@ namespace mg8
       return {(T)((double)x / (double)divisor), (T)((double)y / (double)divisor)};
     }
 
+    /*vec2 operator*(float scale)
+    {
+      return {x * scale, y * scale};
+    }*/
+
     vec2 operator+(const vec2 other) const
     {
       return {x + other.x, y + other.y};

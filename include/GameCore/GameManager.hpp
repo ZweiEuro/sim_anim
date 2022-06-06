@@ -49,6 +49,7 @@ namespace mg8
     bool objects_moving = false;
 
     bool debug_enabled = false;
+    bool voronoi_recalc = false;
 
     splineCurve *curve = nullptr;
 

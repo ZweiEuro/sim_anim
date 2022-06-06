@@ -57,6 +57,7 @@ namespace mg8
 
     agui::Label m_slider_title;
     agui::Slider m_slider_time_multiplier;
+    agui::Label m_voronoi_title;
 
     SettingsGUI();
 
@@ -66,6 +67,7 @@ namespace mg8
     std::atomic<float> m_slider_value = 1;
     agui::Label m_slider_value_display;
     agui::CheckBox m_debug_enabled;
+    agui::Button m_voronoi_recalc;
   };
 
   class SimpleActionListener : public agui::ActionListener
@@ -92,6 +94,23 @@ namespace mg8
       {
         bool is_checked = checkbox->checked();
         GameManager::instance()->debug_enabled = is_checked;
+      }
+
+      agui::Button *btn = dynamic_cast<agui::Button *>(evt.getSource());
+      if (btn)
+      {
+        if (btn->getText() == "enable")
+        {
+          btn->setText("disable");
+          btn->resizeToContents();
+        }
+        else
+        {
+          btn->setText("enable");
+          btn->resizeToContents();
+        }
+
+        GameManager::instance()->voronoi_recalc = true;
       }
 
       spdlog::info("button pushed");
