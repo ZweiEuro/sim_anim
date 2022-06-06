@@ -25,7 +25,6 @@ namespace mg8
 
     std::shared_timed_mutex l_game_objects;
     std::vector<GameObject *> m_game_objects = {};
-    GameObject *m_white_ball = nullptr;
 
     // Events need to be fired to each system from a new source so they don't starve each other
     static ALLEGRO_EVENT_SOURCE m_GameManager_event_source_to_InputManager; // the queue the input thread listens to
@@ -46,6 +45,8 @@ namespace mg8
     // Settings stuff
     bool debug_enabled = false;
     bool voronoi_recalc = false;
+
+    GameObject *m_white_ball = nullptr;
 
     splineCurve *curve = nullptr;
 

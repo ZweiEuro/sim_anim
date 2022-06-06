@@ -65,7 +65,6 @@ namespace mg8
   public:
     static SettingsGUI *instance();
 
-    agui::Button m_voronoi_recalc;
     // general
     agui::CheckBox m_checkbox_debug_enabled;
 
@@ -104,6 +103,9 @@ namespace mg8
     std::atomic<bool> m_choice_euler = config_default_gravity;
     agui::RadioButton m_radio_kutta_euler[2];
     agui::RadioButtonGroup m_group_radio_kutta_euler;
+
+    // voronoi
+    agui::Button m_button_voronoi_recalc;
   };
 
   class SimpleActionListener : public agui::ActionListener

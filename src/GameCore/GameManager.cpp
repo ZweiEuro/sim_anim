@@ -314,12 +314,10 @@ namespace mg8
                       //objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BALL, pos, (dir - pos).dir() * 100, 10));
                       objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, pos, (dir - pos).dir() * 100, 10));
                       releaseGameObjects(true);*/
-
-                      // if objects are not moving one player can play the white ball
-              
+                      
                         vec2i dir;
                         //auto &objects = getGameObjects(true);
-                        if (m_white_ball)
+                        if (m_white_ball && m_white_ball->m_velocity.mag() == 0)
                         {
                           //ALLEGRO_MOUSE_STATE state;
 

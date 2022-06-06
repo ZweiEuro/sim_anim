@@ -94,6 +94,9 @@ namespace mg8
       if (obj == this)
         continue;
 
+      if (obj == GameManager::instance()->m_white_ball)
+        continue;
+
       if (SettingsGUI::instance()->m_choice_euler.load())
       {
         new_vel = euler(*obj, dt);

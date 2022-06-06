@@ -25,9 +25,9 @@ namespace mg8
 
     // main frame dimensions
     add(&m_main_frame);
-    m_main_frame.setSize(500, 500);
+    m_main_frame.setSize(500, 120);
     m_main_frame.setLocation(config_start_resolution_w / 10, 10);
-    m_main_frame.setText("Settings frame");
+    m_main_frame.setText("Settings frame - Drag lower right corner to resize");
 
     // Time delta slider
 
@@ -209,20 +209,22 @@ namespace mg8
 
       height += 25;
     }
+    {
+      m_main_frame.add(&m_voronoi_title);
+      m_voronoi_title.setText("Voronoi noise");
+      m_voronoi_title.resizeToContents();
+      auto voronoi_title_dims = m_voronoi_title.getSize();
+      m_voronoi_title.setLocation(width[0], height + 10);
 
-    m_main_frame.add(&m_voronoi_title);
-    m_voronoi_title.setText("Voronoi noise");
-    m_voronoi_title.resizeToContents();
-    auto voronoi_title_dims = m_voronoi_title.getSize();
-    m_voronoi_title.setLocation(0, 100);
+      m_main_frame.add(&m_button_voronoi_recalc);
+      m_button_voronoi_recalc.setLocation(width[0] + voronoi_title_dims.getWidth(), height + 10);
 
-    m_main_frame.add(&m_voronoi_recalc);
-    m_voronoi_recalc.setLocation(voronoi_title_dims.getWidth(), 100);
-
-    m_voronoi_recalc.setText("enable");
-    m_voronoi_recalc.resizeToContents();
-    m_voronoi_recalc.setBackColor({0, 255, 255});
-    m_voronoi_recalc.addActionListener(m_action_listeneer);
+      m_button_voronoi_recalc.setText("enable");
+      m_button_voronoi_recalc.resizeToContents();
+      m_button_voronoi_recalc.setBackColor({0, 255, 255});
+      m_button_voronoi_recalc.addActionListener(m_action_listeneer);
+      height += 25;
+    }
 
     /*std::stringstream ss;
     for (int i = 0; i < 3; ++i)
