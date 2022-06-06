@@ -46,6 +46,24 @@ namespace mg8
 
     m_collision_check_thread = std::thread([=]() -> void
                                            { this->physics_loop(); });
+
+    for (int w = 0; w < int(config_start_resolution_w / config_forcefield_grid_dims) + 1; w++)
+    {
+      m_forcefield.push_back({});
+
+      for (int h = 0; h < int(config_start_resolution_h / config_forcefield_grid_dims) + 1; h++)
+      {
+        m_forcefield[w].push_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL,
+                                                MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL,
+                                                {w * config_forcefield_grid_dims, h * config_forcefield_grid_dims},
+                                                {0, 0},
+                                                3,
+                                                {0.0f, 0.0f},
+                                                1,
+                                                0,
+                                                {255, 255, 255, 255}));
+      }
+    }
   }
 
   void PhysicsManager::physics_loop()
@@ -99,6 +117,14 @@ namespace mg8
         auto &objects = GameManager::instance()->getGameObjects();
         bool are_objects_moving = false;
 
+        for (auto &row : m_forcefield)
+        {
+          for (auto &point : row)
+          {
+            point->m_velocity = {0, 0};
+          }
+        }
+
         // first all the gravity
         for (auto &A : objects)
         {
@@ -108,6 +134,12 @@ namespace mg8
             assert(grav && "Grav well cast failed");
 
             grav->apply(objects, delta_ms);
+
+            for (auto &row : m_forcefield)
+            {
+
+              grav->apply(row, delta_ms);
+            }
           }
         }
 

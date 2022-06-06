@@ -25,6 +25,9 @@ namespace mg8
   const float config_max_velocity_x = 200;
   const float config_max_velocity_y = 200;
 
+  const float config_forcefield_grid_dims = 50;
+  const int config_max_number_grav_wells = 4;
+
   // Table Dimensions:
   const float hole_radius = 10.0;
   const float table_border_width = 40;

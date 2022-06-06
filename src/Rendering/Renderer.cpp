@@ -279,6 +279,28 @@ namespace mg8
         {
           obj->draw();
         }
+
+        if (SettingsGUI::instance()->m_checkbox_forcefield.checked())
+        {
+          // draw the forcefield
+
+          for (auto &row : PhysicsManager::instance()->m_forcefield)
+          {
+            for (auto &point : row)
+            {
+              auto &body = *dynamic_cast<RigidBody *>(point);
+
+              body.draw();
+
+              auto &circ = *dynamic_cast<circle *>(point);
+
+              auto destination = circ.pos + body.m_velocity.dir() * 30;
+
+              al_draw_line(circ.pos.x, circ.pos.y, destination.x, destination.y, body.m_color, 2);
+            }
+          }
+        }
+
         GameManager::instance()->releaseGameObjects();
         if (GameManager::instance()->debug_enabled)
         {

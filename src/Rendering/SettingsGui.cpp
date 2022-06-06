@@ -61,6 +61,7 @@ namespace mg8
     }
 
     m_main_frame.add(&m_checkbox_debug_enabled);
+    m_checkbox_debug_enabled.setAutosizing(true);
     m_checkbox_debug_enabled.setText("Enable Debug View");
     m_checkbox_debug_enabled.setChecked(false);
     m_checkbox_debug_enabled.addActionListener(m_action_listeneer);
