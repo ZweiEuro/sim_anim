@@ -13,6 +13,8 @@
 
 #include "math/PathInterpol.hpp"
 
+#include "GameObjects/SceneHierarchy.hpp"
+
 namespace mg8
 {
 
@@ -47,6 +49,8 @@ namespace mg8
     bool voronoi_recalc = false;
 
     GameObject *m_white_ball = nullptr;
+
+    SceneHierarchy *s = nullptr;
 
     splineCurve *curve = nullptr;
 

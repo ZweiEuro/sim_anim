@@ -450,6 +450,21 @@ namespace mg8
     // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 1.2f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {0, 0, 255, 255}));
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_WHITE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 255, 255, 255}));
     m_white_ball = objects.back(); // set white ball
+    s = new SceneHierarchy(m_white_ball);
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_SATELLITE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f - 20, (float)config_start_resolution_h / 2.0f}, {0, 0}, 6, {0.0f, 0.0f}, 0.2f, 0.93, {255, 255, 255, 255}));
+    std::vector<GameObject *> tmp;
+    tmp.push_back(objects.back());
+    s->addSatellites(m_white_ball, tmp); // add L1
+
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_SATELLITE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f - 30, (float)config_start_resolution_h / 2.0f}, {0, 0}, 3, {0.0f, 0.0f}, 0.2f, 0.93, {255, 255, 255, 255}));
+    std::vector<GameObject *> tmp_;
+    tmp_.push_back(objects.back());
+    s->addSatellites(tmp[0], tmp_); // add L2
+
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_SATELLITE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f - 36, (float)config_start_resolution_h / 2.0f}, {0, 0}, 1.5, {0.0f, 0.0f}, 0.2f, 0.93, {255, 255, 255, 255}));
+    std::vector<GameObject *> tmp__;
+    tmp__.push_back(objects.back());
+    s->addSatellites(tmp_[0], tmp__); // add L3
 
     // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_BLACK_BALL, {(float)config_start_resolution_w / 2.0f * 1.0f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {0, 0, 0, 255}));
     for (int i = 0; i < 5; i++)

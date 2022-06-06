@@ -121,6 +121,10 @@ namespace mg8
       if (this->m_gameobject_type == TYPE_SATELLITE_BALL)
       {
         // move according to hierarchical transformation
+
+        circle::setPosition(circle::pos + delta_move);
+        GameManager::instance()->s->updateVelocity(this);
+        // this->m_velocity = this->m_velocity - (delta_move * (SettingsGUI::instance()->m_checkbox_table_friction.checked() ? table_friction : 0));
       }
       else
       {
@@ -181,100 +185,7 @@ namespace mg8
 
   void RigidBody::handle_ball_ball_collision(RigidBody *otherBall)
   {
-    /*vec2f tangent_vec = vec2f((otherBall->circle::pos.y - this->circle::pos.y), -(otherBall->circle::pos.x - this->circle::pos.x));
-    vec2f tangent_normal = tangent_vec.dir();
-    vec2f relative_velocity = vec2f(otherBall->m_velocity.x - this->m_velocity.x, otherBall->m_velocity.y - this->m_velocity.y);
 
-    float len = relative_velocity.dot(tangent_normal);
-    vec2f velocity_component_on_tangent = tangent_normal * len;
-    vec2f velocity_component_perpendicular_to_tangent = relative_velocity - velocity_component_on_tangent;
-
-    this->m_velocity = this->m_velocity - velocity_component_perpendicular_to_tangent;
-    otherBall->m_velocity = otherBall->m_velocity + velocity_component_perpendicular_to_tangent;*/
-
-    /*vec2f normal = this->circle::pos - otherBall->circle::pos;
-    normal = normal.dir();
-
-    this->m_velocity = this->m_velocity - normal * (((1 + this->m_restitution_coeff) * otherBall->m_mass) / (this->m_mass + otherBall->m_mass) * (this->m_velocity - otherBall->m_velocity).dot(normal));
-    otherBall->m_velocity = otherBall->m_velocity + normal * (((1 + otherBall->m_restitution_coeff) * this->m_mass) / (this->m_mass + otherBall->m_mass) * (this->m_velocity - otherBall->m_velocity).dot(normal));
-*/
-    /*vec2f normal = vec2f(otherBall->circle::pos.x - this->circle::pos.x, otherBall->circle::pos.y - this->circle::pos.y);
-    vec2f unit_normal = normal.dir();
-    vec2f unit_tangent = vec2f(-unit_normal.y, unit_normal.x);
-
-    float normal_velocity_this = unit_normal.dot(this->m_velocity);
-    float normal_velocity_other = unit_normal.dot(otherBall->m_velocity);
-
-    float tangent_velocity_this = unit_tangent.dot(this->m_velocity);
-    float tangent_velocity_other = unit_tangent.dot(otherBall->m_velocity);
-
-    float normal_velocity_this_after_col = (normal_velocity_this * (this->m_mass - otherBall->m_mass) + normal_velocity_other * 2 * otherBall->m_mass) / (this->m_mass + otherBall->m_mass);
-    float normal_velocity_other_after_col = (normal_velocity_other * (otherBall->m_mass - this->m_mass) + normal_velocity_this * 2 * this->m_mass) / (this->m_mass + otherBall->m_mass);
-
-    vec2f new_normal_velocity_this = unit_normal * normal_velocity_this_after_col;
-    vec2f new_normal_velocity_other = unit_normal * normal_velocity_other_after_col;
-
-    vec2f new_tangent_velocity_this = unit_tangent * tangent_velocity_this;
-    vec2f new_tangent_velocity_other = unit_tangent * tangent_velocity_other;
-
-    this->m_velocity = new_normal_velocity_this + new_tangent_velocity_this;
-    otherBall->m_velocity = new_normal_velocity_other + new_tangent_velocity_other;
-*/
-
-    /*vec2f col = this->circle::pos - otherBall->circle::pos;
-    float dist = col.mag();
-
-    if (dist == 0.0f)
-    {
-      col = vec2f(1.0f, 0.0f); // to avoid div by zero
-      dist = 1.0f;
-    }
-    if (dist > 1.0f)
-    {
-      return;
-    }
-    col = col / dist;
-    float aci = this->m_velocity.dot(col);
-    float bci = otherBall->m_velocity.dot(col);
-
-    float acf = bci;
-    float bcf = aci;
-
-    this->m_velocity = this->m_velocity + col * (acf - aci);
-    otherBall->m_velocity = otherBall->m_velocity + col * (bcf - bci);*/
-
-    /*vec2f pos_delta = this->circle::pos - otherBall->circle::pos;
-    float r = this->rad + otherBall->rad;
-
-    float d = pos_delta.mag();
-
-    if (d == 0.0f)
-    {
-      // special case - balls are exactly on top of each other
-      d = r - 1.0f;
-      pos_delta = vec2f(r, 0.0f);
-    }
-    vec2f min_translational_dist = pos_delta * ((r - d) / d);
-
-    float inverseMass_self = 1 / this->m_mass;
-    float inverseMass_other = 1 / otherBall->m_mass;
-
-    this->circle::pos = this->circle::pos + min_translational_dist * (inverseMass_self / (inverseMass_self + inverseMass_other));
-    otherBall->circle::pos = otherBall->circle::pos - min_translational_dist * (inverseMass_other / (inverseMass_self + inverseMass_other));
-
-    vec2f velocity = this->m_velocity - otherBall->m_velocity;
-    float vn = velocity.dot(min_translational_dist.dir());
-    if (vn > 0.0f)
-    {
-      // balls are already moving apart
-      return;
-    }
-    float i = (-(1.0f + this->m_restitution_coeff) * vn) / (inverseMass_self + inverseMass_other);
-    vec2f impulse = min_translational_dist * i;
-
-    this->m_velocity = this->m_velocity + impulse * inverseMass_self;
-    otherBall->m_velocity = otherBall->m_velocity - impulse * inverseMass_other;
-    */
     //⟨v1−v2,x1−x2⟩ = (v1.x - v2.x) * (x1.x - x2.x) + (v1.y - v2.y) * (x1.y - x2.y)
     //⟨v2−v1,x2−x1⟩ = (v2.x - v1.x) * (x2.x - x1.x) + (v2.y - v1.y) * (x2.y - x1.y)
 
@@ -312,7 +223,7 @@ namespace mg8
     // calculate & resolve collision on axis aligned rectangle
     // rotate circle velocity vector back to its original direction
 
-    if (this->m_gameobject_type == TYPE_ICE_RECTANGLE && v)
+    if (border->m_gameobject_type == TYPE_ICE_RECTANGLE && v)
     {
       v->fracture();
     }
@@ -464,6 +375,7 @@ namespace mg8
     {
       assert(false && "normal is zero");
     }
+
     collision_plane_normal = collision_plane_normal.dir();
     vec2f velocity_ = ball->m_velocity - collision_plane_normal * (ball->m_velocity.dot(collision_plane_normal)) * 2 * border->m_restitution_coeff;
     ball->m_velocity = velocity_;

@@ -8,18 +8,13 @@
 namespace mg8
 {
 
-    typedef struct Layer
-    {
-        GameObject *parent;
-        std::vector<GameObject *> children;
-    } Layer;
-
     typedef struct SceneGraph
     {
-        GameObject *root;
-        std::vector<Layer *> layer;
+        GameObject *parent;
+        GameObject *obj;
+        std::vector<SceneGraph *> children;
 
-        SceneGraph(GameObject *root) : root(root) {}
+        SceneGraph(GameObject *parent, GameObject *obj) : parent(parent), obj(obj) {}
     } SceneGraph;
 
     class SceneHierarchy : public rect
@@ -31,6 +26,6 @@ namespace mg8
     public:
         SceneHierarchy(GameObject *root);
         void addSatellites(GameObject *parent, std::vector<GameObject *> satellites);
-        void updateVelocities();
+        void updateVelocity(GameObject *obj);
     };
 }
