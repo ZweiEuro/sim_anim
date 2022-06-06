@@ -28,7 +28,7 @@ namespace mg8
     template <typename T2>
     vec2 operator*(T2 scale)
     {
-      return {(T)((double)x * (double)scale), (T)((double)y * (double)scale)};
+      return {(T)(x * scale), (T)(y * scale)};
     }
 
     template <typename T2>
@@ -46,6 +46,16 @@ namespace mg8
     {
       return {x + other.x, y + other.y};
     }
+
+    vec2 operator+=(const vec2 other)
+    {
+
+      x += other.x;
+      y += other.y;
+
+      return {x, y};
+    }
+
     vec2 operator-(const vec2 other) const
     {
       return {x - other.x, y - other.y};

@@ -1,6 +1,61 @@
+
+# Magic Eight
+
+
+Dominik Völkel    11811035  d.voelkel@student.tugraz.at
+
+Phillip Stranger  11807773  phillip.stranger@student.tugraz.at
+
+
+Notes from ass2:
+
+Angular momentum visualization: we have no angular momentum.
+
+Seperated Update rate and time delta multiplier.
+
+Implemented FPS updater (do not switch this around to much the internal timer might not like it).
+
+Notes for final release:
+
+Force Field checkbox added.
+
+Object path is shown in debug mode.
+
+Toggle box for euler / RK4
+
+Step size h slider for euler/RK4
+
+
+
+## 0. Needed libraries:
+Firstly on ubuntu community repository (universe) need to be enabled. (Tutorial: https://www.linuxshelltips.com/enable-universe-repository-ubuntu/)
+
+Allegro needs to be installed:
+https://github.com/liballeg/allegro_wiki/wiki/Quickstart
+
+under Linux -> Ubuntu
+
+```
+sudo apt update
+
+sudo add-apt-repository ppa:allegro/5.2
+sudo apt-get install liballegro*5.2 liballegro*5-dev
+
+#and then we install spdlog
+sudo apt install libspdlog-dev
+
+```
+
+
+
+
 ## 1. Excecution
 
-In this folder is a shell script "start.sh" that links ./res for the game and starts it.
+Next to this file in this filder is a shell script "start.sh" that links ./res for the game and starts it.
+With a terminal inside the extracted folder you can execute the game with:
+```
+./start.sh
+```
 
 ## 2. Manual
 Clicking with the mouse onto the table will fire the white ball to the mouse with increasing speed the further the click is away from the white ball.
@@ -12,6 +67,15 @@ S -> show/hide settings
 The settings can change a time delta premultiplier to slow down the physics simulation.
 A debug view may be enabled to show collision bodies, past collision points and velocity vectors.
 Additionaly the view shows uninteractable Catmull-rom splines. These do not have a function yet.
+
+
+Settings:
+
+The FPS counter also affects the GUI rendering.
+The PPS counter (phyics) also handles the GUI logic. (lowering the PPS too much will make the system very unstable and increase the likelyhood of moving 2 objects into each other (as we calculate with delta time since last phyics update. This means that at sub 30 the system might crash as some objects are flung out of the playspace into nan)).
+
+As our physics manager uses delta time h needs to be very small or else the calculation will have no impact.
+
 
 
 ## 3. Tech

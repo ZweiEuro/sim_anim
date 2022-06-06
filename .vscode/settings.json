@@ -73,7 +73,14 @@
     "typeinfo": "cpp",
     "valarray": "cpp",
     "variant": "cpp",
-    "core": "cpp"
+    "core": "cpp",
+    "csignal": "cpp",
+    "any": "cpp",
+    "hash_map": "cpp",
+    "codecvt": "cpp",
+    "regex": "cpp",
+    "future": "cpp",
+    "ranges": "cpp"
   },
   "prettier.printWidth": 180,
   "editor.formatOnSave": true

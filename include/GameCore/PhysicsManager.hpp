@@ -2,10 +2,12 @@
 #include <thread>
 #include <allegro5/allegro.h>
 #include <atomic>
+#include "GameObjects/RigidBody.hpp"
 
 namespace mg8
 {
   class GameObject;
+
   class PhysicsManager
   {
   private:
@@ -35,5 +37,16 @@ namespace mg8
     void pause();
     void resume();
     void toggle();
+
+    void setPPS(float PPS)
+    {
+
+      al_set_timer_speed(m_physics_refresh_timer, 1.0 / PPS);
+    }
+
+    std::mutex l_forcefield;
+
+    std::vector<std::vector<GameObject *>> m_forcefield;
   };
+
 }

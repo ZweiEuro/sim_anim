@@ -4,11 +4,13 @@
 #include "GameObjects/Ball.hpp"
 #include "GameObjects/RigidBody.hpp"
 #include "GameObjects/Hole.hpp"
+#include "GameObjects/ParticleDynamics.hpp"
 
 #include "Rendering/SettingsGui.hpp"
 
 #include <spdlog/spdlog.h>
 #include <chrono>
+
 namespace mg8
 {
 
@@ -29,7 +31,7 @@ namespace mg8
 
     m_PhysicsManager_event_queue = al_create_event_queue();
 
-    m_physics_refresh_timer = al_create_timer(1.0 / config_physics_updates_per_second);
+    m_physics_refresh_timer = al_create_timer(1.0 / config_default_pps);
     if (!m_physics_refresh_timer)
     {
       spdlog::error("Could not create physics refresh timer.");
@@ -44,6 +46,24 @@ namespace mg8
 
     m_collision_check_thread = std::thread([=]() -> void
                                            { this->physics_loop(); });
+
+    for (int w = 0; w < int(config_start_resolution_w / config_forcefield_grid_dims) + 1; w++)
+    {
+      m_forcefield.push_back({});
+
+      for (int h = 0; h < int(config_start_resolution_h / config_forcefield_grid_dims) + 1; h++)
+      {
+        m_forcefield[w].push_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL,
+                                                MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL,
+                                                {w * config_forcefield_grid_dims, h * config_forcefield_grid_dims},
+                                                {0, 0},
+                                                3,
+                                                {0.0f, 0.0f},
+                                                1,
+                                                0,
+                                                {255, 255, 255, 255}));
+      }
+    }
   }
 
   void PhysicsManager::physics_loop()
@@ -64,7 +84,7 @@ namespace mg8
         auto end = std::chrono::high_resolution_clock::now();
 
         delta_ms = std::chrono::duration<double, std::milli>(end - delta_time_start_point).count() / 1000; // why is chrono like this -.-
-        delta_ms *= SettingsGUI::instance()->m_slider_value.load();
+        delta_ms *= SettingsGUI::instance()->m_time_delta_permultiplier_value.load();
       }
 
       // Handle the event
@@ -94,18 +114,42 @@ namespace mg8
       if (recalculate)
       {
         recalculate = false;
-        auto objects = GameManager::instance()->getGameObjects();
+        auto &objects = GameManager::instance()->getGameObjects();
         bool are_objects_moving = false;
+
+        for (auto &row : m_forcefield)
+        {
+          for (auto &point : row)
+          {
+            point->m_velocity = {0, 0};
+          }
+        }
+
+        // first all the gravity
+        l_forcefield.lock();
+        for (auto &A : objects)
+        {
+          if (A->m_type == TYPE_GRAVITY_WELL)
+          {
+            const auto *grav = dynamic_cast<const GravityWell *>(A);
+            assert(grav && "Grav well cast failed");
+
+            grav->apply(objects, delta_ms);
+
+            for (auto &row : m_forcefield)
+            {
+
+              grav->apply(row, delta_ms);
+            }
+          }
+        }
+        l_forcefield.unlock();
+
         // movement resolve
         for (auto &A : objects)
         {
           A->move(A->m_velocity * delta_ms);
-          if (!are_objects_moving) // if one object is moving this is true;
-          {
-            are_objects_moving = A->is_moving();
-          }
         }
-        GameManager::instance()->objects_moving = are_objects_moving;
         // Collision resolve
         for (auto &A : objects)
           for (auto &B : objects)
@@ -141,7 +185,7 @@ namespace mg8
         {
           auto p_A = dynamic_cast<RigidBody *>(A);
           p_A->handle_collision(p);
-          spdlog::info("collision");
+          // spdlog::info("collision");
           return true;
         }
       }

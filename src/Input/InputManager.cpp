@@ -101,6 +101,7 @@ namespace mg8
       case ALLEGRO_EVENT_MOUSE_WARPED:
         // ignore since they have permission problems on ubuntu/kde
         break;
+
       case ALLEGRO_EVENT_MOUSE_BUTTON_UP:
       case ALLEGRO_EVENT_KEY_CHAR:
       case ALLEGRO_EVENT_KEY_UP:

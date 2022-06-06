@@ -25,49 +25,190 @@ namespace mg8
 
     // main frame dimensions
     add(&m_main_frame);
-    m_main_frame.setSize(220, 120);
+    m_main_frame.setSize(500, 500);
     m_main_frame.setLocation(config_start_resolution_w / 10, 10);
     m_main_frame.setText("Settings frame");
 
     // Time delta slider
 
-    m_main_frame.add(&m_slider_title);
-    m_slider_title.setText("Time delta multiplier (Update Rate):");
-    m_slider_title.resizeToContents();
-    auto slider_title_dims = m_slider_title.getSize();
-    m_slider_title.setLocation(0, 10);
-    auto complete_width = slider_title_dims.getWidth();
+    float height = 0;
+    float width[4] = {0, 50, 200, 250};
 
-    m_main_frame.add(&m_slider_time_multiplier);
-    m_slider_time_multiplier.setSize(100, 50);
-    m_slider_time_multiplier.setLocation(slider_title_dims.getWidth(), 0);
-    m_slider_time_multiplier.setMinValue(0);
-    m_slider_time_multiplier.setMaxValue(100);
-    m_slider_time_multiplier.setValue(100);
-    m_slider_time_multiplier.setMarkerSize(agui::Dimension(10, 30));
-    m_slider_time_multiplier.addActionListener(m_action_listeneer);
-    m_slider_time_multiplier.resizeToContents();
-    auto slider_dims = m_slider_time_multiplier.getSize();
-    complete_width += slider_dims.getWidth();
+    { // time delta multiplier
+      m_main_frame.add(&m_title_time_delta_slider);
+      m_title_time_delta_slider.setText("TDM:");
+      m_title_time_delta_slider.resizeToContents();
+      m_title_time_delta_slider.setLocation(width[0], height);
 
-    m_main_frame.add(&m_slider_value_display);
-    m_slider_value_display.setText("0.123456789");
-    m_slider_value_display.setText(std::to_string(m_slider_value.load()).c_str());
+      m_main_frame.add(&m_label_time_multiplier);
+      m_label_time_multiplier.setText("0.123456789");
+      m_label_time_multiplier.setText(std::to_string(m_time_delta_permultiplier_value.load()).c_str());
+      m_label_time_multiplier.resizeToContents();
+      m_label_time_multiplier.setLocation(width[1] + 10, height + 15);
 
-    m_slider_value_display.resizeToContents();
-    auto slider_value_dims = m_slider_value_display.getSize();
-    m_slider_value_display.setLocation(complete_width + 10, 10);
-    complete_width += slider_value_dims.getWidth();
+      m_main_frame.add(&m_slider_time_multiplier);
+      m_slider_time_multiplier.setSize(100, 50);
+      m_slider_time_multiplier.setLocation(width[1], height);
+      m_slider_time_multiplier.setMinValue(0);
+      m_slider_time_multiplier.setMaxValue(100);
+      m_slider_time_multiplier.setValue(100);
+      m_slider_time_multiplier.setMarkerSize(agui::Dimension(10, 30));
+      m_slider_time_multiplier.addActionListener(m_action_listeneer);
+      m_slider_time_multiplier.resizeToContents();
+      m_slider_time_multiplier.setBackColor(agui::Color(0, 0, 0, 0));
 
-    m_main_frame.setSize(complete_width + 50, 120);
+      height += 20;
+    }
 
-    m_main_frame.add(&m_debug_enabled);
-    m_debug_enabled.setLocation(10, 50);
-    m_debug_enabled.setAutosizing(true);
-    m_debug_enabled.setText("Enable Debug View");
-    m_debug_enabled.setCheckBoxAlignment(agui::ALIGN_MIDDLE_LEFT);
-    // m_debug_enabled.setChecked(GameManager::instance()->debug_enabled);
-    m_debug_enabled.addActionListener(m_action_listeneer);
+    m_main_frame.add(&m_checkbox_debug_enabled);
+    m_checkbox_debug_enabled.setAutosizing(true);
+    m_checkbox_debug_enabled.setText("Enable Debug View");
+    m_checkbox_debug_enabled.setChecked(false);
+    m_checkbox_debug_enabled.addActionListener(m_action_listeneer);
+    m_checkbox_debug_enabled.setLocation(width[0], height += 20);
+
+    m_main_frame.add(&m_checkbox_forcefield);
+    m_checkbox_forcefield.setAutosizing(true);
+    m_checkbox_forcefield.setText("Enable Forcefield");
+    m_checkbox_forcefield.setChecked(false);
+    m_checkbox_forcefield.addActionListener(m_action_listeneer);
+    m_checkbox_forcefield.setLocation(width[0], height += 20);
+
+    m_main_frame.add(&m_checkbox_object_path);
+    m_checkbox_object_path.setAutosizing(true);
+    m_checkbox_object_path.setText("Enable Object path");
+    m_checkbox_object_path.setChecked(false);
+    m_checkbox_object_path.addActionListener(m_action_listeneer);
+    m_checkbox_object_path.setLocation(width[0], height += 20);
+
+    m_main_frame.add(&m_checkbox_table_friction);
+    m_checkbox_table_friction.setAutosizing(true);
+    m_checkbox_table_friction.setText("Table Friction");
+    m_checkbox_table_friction.setChecked(true);
+    m_checkbox_table_friction.addActionListener(m_action_listeneer);
+    m_checkbox_table_friction.setLocation(width[0], height += 20);
+
+    m_group_radio_kutta_euler.add(&m_radio_kutta_euler[0]);
+    m_radio_kutta_euler[0].setText("Euler");
+    m_radio_kutta_euler[0].setLocation(width[0], height += 20);
+    m_radio_kutta_euler[0].setChecked(true);
+    m_radio_kutta_euler[0].addActionListener(m_action_listeneer);
+    m_radio_kutta_euler[0].setAutosizing(true);
+    m_main_frame.add(&m_radio_kutta_euler[0]);
+
+    m_main_frame.add(&m_radio_kutta_euler[1]);
+    m_radio_kutta_euler[1].setText("Kutta");
+    m_radio_kutta_euler[1].setLocation(width[0], height += 20);
+    m_radio_kutta_euler[1].setChecked(true);
+    m_radio_kutta_euler[1].addActionListener(m_action_listeneer);
+    m_radio_kutta_euler[1].setAutosizing(true);
+    m_group_radio_kutta_euler.add(&m_radio_kutta_euler[1]);
+
+    height += 20;
+
+    { // FPS
+
+      m_main_frame.add(&m_title_fps_slider);
+      m_title_fps_slider.setText("FPS: ");
+      m_title_fps_slider.resizeToContents();
+      m_title_fps_slider.setLocation(width[0], height);
+
+      m_main_frame.add(&m_label_FPS);
+      m_label_FPS.setText("0.123456789");
+      m_label_FPS.setText(std::to_string(m_fps_value.load()).c_str());
+      m_label_FPS.resizeToContents();
+      m_label_FPS.setLocation(width[1] + 10, height + 10);
+
+      m_main_frame.add(&m_slider_FPS);
+      m_slider_FPS.setSize(100, 40);
+      m_slider_FPS.setMinValue(1);
+      m_slider_FPS.setMaxValue(100);
+      m_slider_FPS.setValue(m_fps_value.load());
+      m_slider_FPS.setMarkerSize(agui::Dimension(10, 30));
+      m_slider_FPS.addActionListener(m_action_listeneer);
+      m_slider_FPS.setLocation(width[1], height);
+      m_slider_FPS.resizeToContents();
+      m_slider_FPS.setBackColor(agui::Color(0, 0, 0, 0));
+
+      height += 25;
+    }
+    { // PPS
+      m_main_frame.add(&m_title_pps_slider);
+      m_title_pps_slider.setText("PPS: ");
+      m_title_pps_slider.resizeToContents();
+      m_title_pps_slider.setLocation(width[0], height);
+
+      m_main_frame.add(&m_label_PPS);
+      m_label_PPS.setText("0.123456789");
+      m_label_PPS.setText(std::to_string(m_pps_value.load()).c_str());
+      m_label_PPS.resizeToContents();
+      m_label_PPS.setLocation(width[1] + 10, height + 10);
+
+      m_main_frame.add(&m_slider_PPS);
+      m_slider_PPS.setSize(100, 40);
+      m_slider_PPS.setMinValue(20);
+      m_slider_PPS.setMaxValue(100);
+      m_slider_PPS.setValue(m_pps_value.load());
+      m_slider_PPS.setMarkerSize(agui::Dimension(10, 30));
+      m_slider_PPS.addActionListener(m_action_listeneer);
+      m_slider_PPS.setLocation(width[1], height);
+      m_slider_PPS.resizeToContents();
+      m_slider_PPS.setBackColor(agui::Color(0, 0, 0, 0));
+
+      height += 25;
+    }
+
+    { // h
+      m_main_frame.add(&m_title_h_slider);
+      m_title_h_slider.setText("h: ");
+      m_title_h_slider.resizeToContents();
+      m_title_h_slider.setLocation(width[0], height);
+
+      m_main_frame.add(&m_label_h);
+      m_label_h.setText("0.123456789");
+      m_label_h.setText(std::to_string(m_h_value.load()).c_str());
+      m_label_h.resizeToContents();
+      m_label_h.setLocation(width[1] + 10, height + 10);
+
+      m_main_frame.add(&m_slider_h);
+      m_slider_h.setSize(100, 40);
+      m_slider_h.setMinValue(0);
+      m_slider_h.setMaxValue(100);
+      m_slider_h.setValue(m_h_value.load());
+      m_slider_h.setMarkerSize(agui::Dimension(10, 30));
+      m_slider_h.addActionListener(m_action_listeneer);
+      m_slider_h.setLocation(width[1], height);
+      m_slider_h.resizeToContents();
+      m_slider_h.setBackColor(agui::Color(0, 0, 0, 0));
+
+      height += 25;
+    }
+
+    { // ball power
+      m_main_frame.add(&m_title_white_ball_powerslider);
+      m_title_white_ball_powerslider.setText("BP: ");
+      m_title_white_ball_powerslider.resizeToContents();
+      m_title_white_ball_powerslider.setLocation(width[0], height);
+
+      m_main_frame.add(&m_label_white_ball_power);
+      m_label_white_ball_power.setText("0.123456789");
+      m_label_white_ball_power.setText(std::to_string(m_white_ball_power_value.load()).c_str());
+      m_label_white_ball_power.resizeToContents();
+      m_label_white_ball_power.setLocation(width[1] + 10, height + 10);
+
+      m_main_frame.add(&m_slider_white_ball_power);
+      m_slider_white_ball_power.setSize(100, 40);
+      m_slider_white_ball_power.setMinValue(0);
+      m_slider_white_ball_power.setMaxValue(800);
+      m_slider_white_ball_power.setValue(m_white_ball_power_value.load());
+      m_slider_white_ball_power.setMarkerSize(agui::Dimension(10, 30));
+      m_slider_white_ball_power.addActionListener(m_action_listeneer);
+      m_slider_white_ball_power.setLocation(width[1], height);
+      m_slider_white_ball_power.resizeToContents();
+      m_slider_white_ball_power.setBackColor(agui::Color(0, 0, 0, 0));
+
+      height += 25;
+    }
 
     m_main_frame.add(&m_voronoi_title);
     m_voronoi_title.setText("Voronoi noise");

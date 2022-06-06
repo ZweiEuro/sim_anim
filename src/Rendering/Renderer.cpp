@@ -131,7 +131,7 @@ namespace mg8
 
     spdlog::info("Renderer setupped");
 
-    m_display_refresh_timer = al_create_timer(1.0 / config_fps);
+    m_display_refresh_timer = al_create_timer(1.0 / config_default_fps);
     if (!m_display_refresh_timer)
     {
       spdlog::error("Could not create display refresh timer.");
@@ -279,6 +279,29 @@ namespace mg8
         {
           obj->draw();
         }
+
+        if (SettingsGUI::instance()->m_checkbox_forcefield.checked())
+        {
+          // draw the forcefield
+          PhysicsManager::instance()->l_forcefield.lock();
+          for (auto &row : PhysicsManager::instance()->m_forcefield)
+          {
+            for (auto &point : row)
+            {
+              auto &body = *dynamic_cast<RigidBody *>(point);
+
+              body.draw();
+
+              auto &circ = *dynamic_cast<circle *>(point);
+
+              auto destination = circ.pos + (body.m_velocity.dir() * 5) * std::min(10.0f, body.m_velocity.mag());
+
+              al_draw_line(circ.pos.x, circ.pos.y, destination.x, destination.y, body.m_color, 2);
+            }
+          }
+          PhysicsManager::instance()->l_forcefield.unlock();
+        }
+
         GameManager::instance()->releaseGameObjects();
         if (GameManager::instance()->debug_enabled)
         {

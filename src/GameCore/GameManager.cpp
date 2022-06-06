@@ -2,6 +2,7 @@
 #include "Rendering/Renderer.hpp"
 #include "Input/InputManager.hpp"
 #include "GameCore/PhysicsManager.hpp"
+#include "Rendering/SettingsGui.hpp"
 
 #include "enums.hpp"
 
@@ -18,6 +19,7 @@
 #include "GameObjects/Ball.hpp"
 #include "GameObjects/RigidBody.hpp"
 #include "GameObjects/Hole.hpp"
+#include "GameObjects/ParticleDynamics.hpp"
 
 #include "math/VoronoiFracture.hpp"
 
@@ -186,14 +188,19 @@ namespace mg8
 
     // shutdown renderer
     send_user_event(MG8_SUBSYSTEMS::RENDERER, CONTROL_SHUTDOWN);
+    spdlog::warn("Waiting for rendering");
     // Renderer::instance()->get_thread()->join();
 
     // shutdown physics
     send_user_event(MG8_SUBSYSTEMS::PHYSICS_MANAGER, CONTROL_SHUTDOWN);
+    spdlog::warn("Waiting for physics");
+
     PhysicsManager::instance()->get_thread()->join();
 
     // shutdown input
     send_user_event(MG8_SUBSYSTEMS::INPUT_MANAGER, CONTROL_SHUTDOWN);
+    spdlog::warn("Waiting for control");
+
     InputManager::instance()->get_thread()->join();
   }
   void GameManager::send_user_event(MG8_SUBSYSTEMS target_system, MG8_EVENTS event)
@@ -215,7 +222,9 @@ namespace mg8
     std::thread([=]() -> void
                 {
                   InputManager::instance()->wait_for_key(ALLEGRO_KEY_ESCAPE);
-                  send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN); })
+                  send_user_event(MG8_SUBSYSTEMS::GAMEMANAGER, CONTROL_SHUTDOWN);
+
+                  exit(0); })
         .detach();
 
     // Toggle GUI
@@ -257,6 +266,33 @@ namespace mg8
                   } })
         .detach();
 
+    // gravity well spawner
+    std::thread([=]() -> void
+                {
+                  static int spawned =0;
+                  while (true)
+                  {
+                    mg8::vec2i pos;
+                    auto ok = InputManager::instance()->wait_for_mouse_button(2, pos);
+                    if (!ok)
+                      return;
+                    auto &objects = getGameObjects(true);
+
+                    if (spawned >= config_max_number_grav_wells)
+                    {
+
+                    auto found =   std::find_if(objects.begin(), objects.end(),[](const GameObject* x) { return x->m_type == TYPE_GRAVITY_WELL;});
+
+                    objects.erase(std::remove(objects.begin(), objects.end(), found[0]), objects.end());
+                    }else{
+                      spawned++;
+                    }
+
+                    objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,pos,{0, 0}, 10));
+                    releaseGameObjects(true);
+                  } })
+        .detach();
+
     // control white ball
     std::thread([=]() -> void
                 {
@@ -280,8 +316,7 @@ namespace mg8
                       releaseGameObjects(true);*/
 
                       // if objects are not moving one player can play the white ball
-                      if (!objects_moving && (player_one_active || player_two_active))
-                      {
+              
                         vec2i dir;
                         //auto &objects = getGameObjects(true);
                         if (m_white_ball)
@@ -296,18 +331,15 @@ namespace mg8
                             //releaseGameObjects(true);
                             return;
                           }
-                          white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * (dir - white_ball->circle::pos).mag();
-                          objects_moving = true;
+                          white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * SettingsGUI::instance()->m_white_ball_power_value.load();
                         }
                         //releaseGameObjects(true);
-                      }
+                      
                       
                   } })
         .detach();
 
     spawnGame();
-
-    player_one_active = true;
   }
 
   bool GameManager::initializeAllegro()

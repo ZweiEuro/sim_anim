@@ -1,5 +1,7 @@
 #include "GameObjects/RigidBody.hpp"
 #include "GameCore/GameManager.hpp"
+#include "Rendering/SettingsGui.hpp"
+
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 
@@ -18,12 +20,10 @@ namespace mg8
       al_draw_filled_circle(circle::pos.x, circle::pos.y, rad, al_map_rgba(m_color.r, m_color.g, m_color.b, m_color.a));
       if (this->m_gameobject_type == TYPE_WHITE_BALL)
       {
-        if (!GameManager::instance()->objects_moving) // draw direction line for white ball when white ball can be played i.e. when no objects are moving
-        {
-          ALLEGRO_MOUSE_STATE state;
-          al_get_mouse_state(&state);
-          al_draw_line(circle::pos.x, circle::pos.y, state.x, state.y, al_map_rgb(255, 0, 0), 2);
-        }
+
+        ALLEGRO_MOUSE_STATE state;
+        al_get_mouse_state(&state);
+        al_draw_line(circle::pos.x, circle::pos.y, state.x, state.y, al_map_rgb(255, 0, 0), 2);
 
         ALLEGRO_FONT *font = al_create_builtin_font();
         std::string s = "x: ";
@@ -129,7 +129,7 @@ namespace mg8
           this->m_velocity = {0.0f, 0.0f};
         }
         circle::setPosition(circle::pos + delta_move);
-        this->m_velocity = this->m_velocity - (delta_move * table_friction);
+        this->m_velocity = this->m_velocity - (delta_move * (SettingsGUI::instance()->m_checkbox_table_friction.checked() ? table_friction : 0));
       }
     }
     if (this->m_rigid_body_type == TYPE_RECTANGLE)

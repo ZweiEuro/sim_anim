@@ -1,12 +1,11 @@
 #pragma once
 #include <stddef.h>
-
 // static configuration for some settings that are set by compile time
 
 namespace mg8
 {
   // display
-  const float config_fps = 60;
+  const float config_default_fps = 60;
   const int config_start_resolution_w = 1080;
   const int config_start_resolution_h = 720;
   const bool config_allow_resize = false;
@@ -14,9 +13,20 @@ namespace mg8
   const float config_mouse_position_refresh_per_second = 5;
 
   // Physics:
-  const float config_physics_updates_per_second = 80;
+  const float config_default_pps = 80;
   const float MOVEMENT_EPSILON = 1;
   const float table_friction = 0.75;
+
+  const float config_default_white_ball_power = 500;
+
+  const float config_default_h = 0.0025;
+  const bool config_default_gravity = true; // True = Euler, false = kutta
+
+  const float config_max_velocity_x = 200;
+  const float config_max_velocity_y = 200;
+
+  const float config_forcefield_grid_dims = 50;
+  const int config_max_number_grav_wells = 4;
 
   // Table Dimensions:
   const float hole_radius = 10.0;

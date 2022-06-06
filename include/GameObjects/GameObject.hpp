@@ -13,7 +13,8 @@ namespace mg8
   {
     TYPE_UNDEFINED = 0,
     TYPE_RIGID_BODY = 1 << 0,
-    TYPE_TABLE_HOLE = 1 << 1
+    TYPE_TABLE_HOLE = 1 << 1,
+    TYPE_GRAVITY_WELL = 1 << 2
   };
 
   enum MG8_PHYSICS_PROPERTY
@@ -27,6 +28,7 @@ namespace mg8
   {
   public:
     vec2f m_velocity = {0, 0}; // Object direction of movement in 2D space
+    float m_mass = 1.0;
 
     MG8_OBJECT_TYPES m_type = TYPE_UNDEFINED;
     uint32_t m_collision_mask = TYPE_UNDEFINED; // & of object types
