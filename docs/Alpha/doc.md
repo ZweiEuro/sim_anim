@@ -1,11 +1,8 @@
-
 # Magic Eight
 
+Dominik Völkel 11811035 d.voelkel@student.tugraz.at
 
-Dominik Völkel    11811035  d.voelkel@student.tugraz.at
-
-Phillip Stranger  11807773  phillip.stranger@student.tugraz.at
-
+Phillip Stranger 11807773 phillip.stranger@student.tugraz.at
 
 Notes from ass2:
 
@@ -25,9 +22,10 @@ Toggle box for euler / RK4
 
 Step size h slider for euler/RK4
 
-
+Voronoi - currently only 15 voronoi cells, as more cells need to much calculation time to be calculated dynamically (they stall the game)
 
 ## 0. Needed libraries:
+
 Firstly on ubuntu community repository (universe) need to be enabled. (Tutorial: https://www.linuxshelltips.com/enable-universe-repository-ubuntu/)
 
 Allegro needs to be installed:
@@ -46,18 +44,17 @@ sudo apt install libspdlog-dev
 
 ```
 
-
-
-
 ## 1. Excecution
 
 Next to this file in this filder is a shell script "start.sh" that links ./res for the game and starts it.
 With a terminal inside the extracted folder you can execute the game with:
+
 ```
 ./start.sh
 ```
 
 ## 2. Manual
+
 Clicking with the mouse onto the table will fire the white ball to the mouse with increasing speed the further the click is away from the white ball.
 Esc -> shutdown and exit
 P -> Pause physics and collision
@@ -68,7 +65,6 @@ The settings can change a time delta premultiplier to slow down the physics simu
 A debug view may be enabled to show collision bodies, past collision points and velocity vectors.
 Additionaly the view shows uninteractable Catmull-rom splines. These do not have a function yet.
 
-
 Settings:
 
 The FPS counter also affects the GUI rendering.
@@ -76,9 +72,8 @@ The PPS counter (phyics) also handles the GUI logic. (lowering the PPS too much 
 
 As our physics manager uses delta time h needs to be very small or else the calculation will have no impact.
 
-
-
 ## 3. Tech
+
 Rigid Body collision:
 GameObject/RigidBody.cpp implements rigid body collisions resolution.
 GameObject/GameObject.cpp implements collision detection.
@@ -90,5 +85,6 @@ WIP arc length parametrization not done yet.
 math/PathInterpol.cpp
 
 ## Note
-If you want to compile this yourself you will need 
+
+If you want to compile this yourself you will need
 allegro5 and spdlog as libraries in your system.

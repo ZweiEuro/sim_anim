@@ -192,14 +192,14 @@ namespace mg8
                 for (size_t i = 0; i < cells.size(); i++)
                 {
                     // calc distance between point and cell centers
-                    float distance = eucledianDistance(cells[i]->center, vec2f(x_pos, y_pos));
+                    float distance = eucledianDistance(cells[i]->center, vec2f(x_pos, y_pos)); // noise pixel position?
+
                     if (noised)
                     {
-                        float noise = perlinNoise(vec2f(x_pos, y_pos));
-                        // spdlog::info("noise: {}", noise);
-                        // spdlog::info("noise: {}", noise * 1000);
-                        distance += noise * 1000;
-                        // spdlog::info("distance: {}", distance);
+                        float noise = perlinNoise(cells[i]->center);
+                        distance = eucledianDistance(cells[i]->center, vec2f(x_pos + noise * 10, y_pos + noise * 10)); // noise pixel position?
+
+                        // spdlog::info("cell[{}], noise: {}", i, noise);
                     }
 
                     if (distance < min_distance)
@@ -243,33 +243,33 @@ namespace mg8
 
     void VoronoiFracture::draw()
     {
-        for (size_t i = 0; i < cells.size(); i++)
+        if (fractured)
         {
-            if (GameManager::instance()->debug_enabled)
+            for (size_t i = 0; i < cells.size(); i++)
             {
-                for (size_t j = 0; j < cells[i]->distanceField.size(); j++)
+                if (GameManager::instance()->debug_enabled)
                 {
+                    for (size_t j = 0; j < cells[i]->distanceField.size(); j++)
+                    {
 
-                    // draw distance field point
-
-                    // al_draw_filled_circle(cells[i]->distanceField[j]->point.x, cells[i]->distanceField[j]->point.y, 0.5, al_map_rgb(red, green, blue));
-
-                    al_draw_filled_circle(cells[i]->distanceField[j]->point.x, cells[i]->distanceField[j]->point.y, 0.8, cells[i]->distanceField[j]->color);
+                        // draw distance field point
+                        al_draw_filled_circle(cells[i]->distanceField[j]->point.x, cells[i]->distanceField[j]->point.y, 0.8, cells[i]->distanceField[j]->color);
+                    }
                 }
-            }
-            if (GameManager::instance()->debug_enabled)
-            {
-                al_draw_filled_circle(cells[i]->center.x, cells[i]->center.y, 2, al_map_rgb(0, 0, 0));
-            }
-            if (cells[i]->hull.size())
-            {
-                for (size_t j = 0; j < cells[i]->hull.size() - 1; j++)
+                if (GameManager::instance()->debug_enabled)
                 {
-                    al_draw_line(cells[i]->hull[j].x, cells[i]->hull[j].y, cells[i]->hull[j + 1].x, cells[i]->hull[j + 1].y, al_map_rgb(0, 0, 0), 1);
+                    al_draw_filled_circle(cells[i]->center.x, cells[i]->center.y, 2, al_map_rgb(0, 0, 0));
                 }
-            }
+                if (cells[i]->hull.size())
+                {
+                    for (size_t j = 0; j < cells[i]->hull.size() - 1; j++)
+                    {
+                        al_draw_line(cells[i]->hull[j].x, cells[i]->hull[j].y, cells[i]->hull[j + 1].x, cells[i]->hull[j + 1].y, al_map_rgb(135, 150, 150), 1);
+                    }
+                }
 
-            /**/
+                /**/
+            }
         }
     }
 }

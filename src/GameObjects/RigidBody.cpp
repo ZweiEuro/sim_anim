@@ -147,7 +147,6 @@ namespace mg8
       }
       if (this->m_gameobject_type == TYPE_ICE_RECTANGLE && !v)
       {
-        v = new VoronoiFracture(dynamic_cast<rect *>(this));
       }
 
       if (this->m_gameobject_type == TYPE_ICE_RECTANGLE && v)
@@ -242,6 +241,11 @@ namespace mg8
 
     if (border->m_gameobject_type == TYPE_ICE_RECTANGLE && v)
     {
+      v->fracture();
+    }
+    if (border->m_gameobject_type == TYPE_ICE_RECTANGLE && !v)
+    {
+      v = new VoronoiFracture(dynamic_cast<rect *>(this));
       v->fracture();
     }
 

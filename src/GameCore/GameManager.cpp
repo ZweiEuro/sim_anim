@@ -422,7 +422,7 @@ namespace mg8
     // Rotated test rectangle
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_OBSTACLE_RECTANGLE, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius + 6 * hole_radius, (float)config_start_resolution_h / 2}, {0, 0}, hole_radius * 4, table_border_width / 2, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
 
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_ICE_RECTANGLE, {(float)inner_border_x_offset * 2, (float)config_start_resolution_h / 2}, {0, 0}, 200, table_border_width * 3, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 220, 220)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_ICE_RECTANGLE, {(float)inner_border_x_offset * 2, (float)config_start_resolution_h / 2}, {0, 0}, 200, table_border_width * 3, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(100, 220, 220)));
     // rect r = rect({(float)inner_border_x_offset * 2, (float)config_start_resolution_h / 2}, 200, table_border_width * 3, 45.0f, LEFT_LOWER_CORNER);
     // VoronoiFracture *v = new VoronoiFracture(&r);
 
@@ -450,7 +450,7 @@ namespace mg8
     // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, {(float)config_start_resolution_w / 2.0f * 1.2f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {0, 0, 255, 255}));
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_WHITE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 255, 255, 255}));
     m_white_ball = objects.back(); // set white ball
-    s = new SceneHierarchy(m_white_ball);
+    /*s = new SceneHierarchy(m_white_ball);
     objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_SATELLITE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f - 55, (float)config_start_resolution_h / 2.0f}, {0, 0}, 6, {0.0f, 0.0f}, 0.2f, 0.93, {255, 255, 255, 255}));
     std::vector<GameObject *> tmp;
     tmp.push_back(objects.back());
@@ -465,7 +465,7 @@ namespace mg8
     std::vector<GameObject *> tmp__;
     tmp__.push_back(objects.back());
     s->addSatellites(tmp_[0], tmp__); // add L3
-
+*/
     // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_BLACK_BALL, {(float)config_start_resolution_w / 2.0f * 1.0f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {0, 0, 0, 255}));
     for (int i = 0; i < 5; i++)
     {
