@@ -206,6 +206,17 @@ namespace mg8
 
     this->circle::pos = otherBall->circle::pos + OtherCenterToThisCenterFixedOverlap;
 
+    if (this->m_gameobject_type == TYPE_SATELLITE_BALL)
+    {
+      otherBall->m_velocity = otherBall->m_velocity - vel2 * this->m_restitution_coeff;
+      return;
+    }
+    if (otherBall->m_gameobject_type == TYPE_SATELLITE_BALL)
+    {
+      this->m_velocity = this->m_velocity - vel1 * otherBall->m_restitution_coeff;
+      return;
+    }
+
     this->m_velocity = this->m_velocity - vel1 * otherBall->m_restitution_coeff;
     otherBall->m_velocity = otherBall->m_velocity - vel2 * this->m_restitution_coeff;
     // spdlog::info("after: velocity-this x: {}, y: {}, velocity-other x: {}, y: {}", this->m_velocity.x, this->m_velocity.y, otherBall->m_velocity.x, otherBall->m_velocity.y);
@@ -222,6 +233,12 @@ namespace mg8
     // rotate circle velocity vector back
     // calculate & resolve collision on axis aligned rectangle
     // rotate circle velocity vector back to its original direction
+
+    if (ball->m_gameobject_type == TYPE_SATELLITE_BALL)
+    {
+      // collision with rectangle not nice
+      return;
+    }
 
     if (border->m_gameobject_type == TYPE_ICE_RECTANGLE && v)
     {

@@ -29,6 +29,11 @@ namespace mg8
             auto obj = dynamic_cast<RigidBody *>(collider);
             if (obj->m_rigid_body_type == TYPE_BALL)
             {
+                if (obj->m_gameobject_type == TYPE_SATELLITE_BALL)
+                {
+                    return;
+                }
+
                 if (obj->m_gameobject_type == TYPE_WHITE_BALL)
                 {
                     obj->m_velocity = {0, 0};

@@ -57,9 +57,11 @@ namespace mg8
                 RigidBody *c = dynamic_cast<RigidBody *>(s->children[i]->obj);
 
                 vec2f v = c->circle::pos - p->circle::pos; // vector from p to c
-                vec2f v_ = v * (20.0f) / v.mag();
+                vec2f v_ = v * (55.0f) / v.mag();
+                vec2f pos_fix = v - v_;
+                c->circle::pos = c->circle::pos - (pos_fix);
                 vec2f v_rotated = vec2f(-v_.y, v_.x);
-                vec2f c_vel = v_rotated * 5;
+                vec2f c_vel = v_rotated * 2.5f;
 
                 s->children[i]->obj->m_velocity = c_vel + s->children[i]->parent->m_velocity; // set velocities L1
                 return;
@@ -73,9 +75,11 @@ namespace mg8
                     RigidBody *c = dynamic_cast<RigidBody *>(s->children[i]->children[j]->obj);
 
                     vec2f v = c->circle::pos - p->circle::pos; // vector from p to c
-                    vec2f v_ = v * (10.0f) / v.mag();
+                    vec2f v_ = v * (25.0f) / v.mag();
+                    vec2f pos_fix = v - v_;
+                    c->circle::pos = c->circle::pos - (pos_fix);
                     vec2f v_rotated = vec2f(v_.y, -v_.x);
-                    vec2f c_vel = v_rotated * 4.f;
+                    vec2f c_vel = v_rotated * 4.5f;
                     s->children[i]->children[j]->obj->m_velocity = c_vel + s->children[i]->children[j]->parent->m_velocity; // set velocities L2
                     return;
                 }
@@ -89,9 +93,11 @@ namespace mg8
                         RigidBody *c = dynamic_cast<RigidBody *>(s->children[i]->children[j]->children[k]->obj);
 
                         vec2f v = c->circle::pos - p->circle::pos; // vector from p to c
-                        vec2f v_ = v * (6.0f) / v.mag();
+                        vec2f v_ = v * (15.0f) / v.mag();
+                        vec2f pos_fix = v - v_;
+                        c->circle::pos = c->circle::pos - (pos_fix);
                         vec2f v_rotated = vec2f(-v_.y, v_.x);
-                        vec2f c_vel = v_rotated * 1.5f;
+                        vec2f c_vel = v_rotated * 5.5f;
                         s->children[i]->children[j]->children[k]->obj->m_velocity = c_vel + s->children[i]->children[j]->children[k]->parent->m_velocity; // set velocities L3
                         return;
                     }
