@@ -269,7 +269,6 @@ namespace mg8
     // gravity well spawner
     std::thread([=]() -> void
                 {
-                  static int spawned =0;
                   while (true)
                   {
                     mg8::vec2i pos;
@@ -278,14 +277,17 @@ namespace mg8
                       return;
                     auto &objects = getGameObjects(true);
 
-                    if (spawned >= config_max_number_grav_wells)
-                    {
-
                     auto found =   std::find_if(objects.begin(), objects.end(),[](const GameObject* x) { return x->m_type == TYPE_GRAVITY_WELL;});
 
+                    int count =0;
+                    for(auto c = found ; c != objects.end();c++)
+                    {
+                      count++;
+                    }
+
+                    if (count >= config_max_number_grav_wells)
+                    {
                     objects.erase(std::remove(objects.begin(), objects.end(), found[0]), objects.end());
-                    }else{
-                      spawned++;
                     }
 
                     objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,pos,{0, 0}, 10));

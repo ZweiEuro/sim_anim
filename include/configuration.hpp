@@ -28,6 +28,8 @@ namespace mg8
   const float config_forcefield_grid_dims = 50;
   const int config_max_number_grav_wells = 4;
 
+  const int config_show_last_X_positions = 10;
+
   // Table Dimensions:
   const float hole_radius = 10.0;
   const float table_border_width = 40;

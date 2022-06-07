@@ -44,6 +44,8 @@ namespace mg8
     bool is_moving() const;
     // virtual void handle_collision(GameObject *collision_with) = 0;
 
+    std::vector<vec2f> m_past_positions;
+
     GameObject(const MG8_OBJECT_TYPES type,
                const uint32_t collision = 0,
                const vec2f velocity = {0, 0});

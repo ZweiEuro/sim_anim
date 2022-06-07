@@ -115,7 +115,6 @@ namespace mg8
       {
         recalculate = false;
         auto &objects = GameManager::instance()->getGameObjects();
-        bool are_objects_moving = false;
 
         for (auto &row : m_forcefield)
         {

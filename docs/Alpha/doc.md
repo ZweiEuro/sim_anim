@@ -70,7 +70,9 @@ Settings:
 The FPS counter also affects the GUI rendering.
 The PPS counter (phyics) also handles the GUI logic. (lowering the PPS too much will make the system very unstable and increase the likelyhood of moving 2 objects into each other (as we calculate with delta time since last phyics update. This means that at sub 30 the system might crash as some objects are flung out of the playspace into nan)).
 
-As our physics manager uses delta time h needs to be very small or else the calculation will have no impact.
+As our physics manager uses delta time, h needs to be very small or else the calculation will has no impact.
+
+If PPS are too low objects clip into each other before the collision can catch which causes a numerical error that the collision normal doesn't exist.
 
 ## 3. Tech
 

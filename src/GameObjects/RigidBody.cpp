@@ -128,6 +128,7 @@ namespace mg8
       }
       else
       {
+        m_past_positions.emplace_back(circle::pos);
         if (abs(this->m_velocity.mag()) < MOVEMENT_EPSILON)
         {
           this->m_velocity = {0.0f, 0.0f};
