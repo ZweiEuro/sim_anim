@@ -1,5 +1,5 @@
 #include "Rendering/SettingsGui.hpp"
-#include "configuration.hpp"
+
 #include "Rendering/Renderer.hpp"
 
 #include <string>
@@ -213,6 +213,32 @@ namespace mg8
       m_slider_white_ball_power.setLocation(width[1], height);
       m_slider_white_ball_power.resizeToContents();
       m_slider_white_ball_power.setBackColor(agui::Color(0, 0, 0, 0));
+
+      height += 25;
+    }
+
+    { // num voronoi Cells
+      m_main_frame.add(&m_title_num_voronoi_cells_slider);
+      m_title_num_voronoi_cells_slider.setText("Num Voronoi Cells: ");
+      m_title_num_voronoi_cells_slider.resizeToContents();
+      m_title_num_voronoi_cells_slider.setLocation(width[0], height + 10);
+
+      m_main_frame.add(&m_label_num_voronoi_cells);
+      m_label_num_voronoi_cells.setText("0.123456789");
+      m_label_num_voronoi_cells.setText(std::to_string(m_num_voronoi_cells_value.load()).c_str());
+      m_label_num_voronoi_cells.resizeToContents();
+      m_label_num_voronoi_cells.setLocation(m_title_num_voronoi_cells_slider.getWidth() + 10, height + 10);
+
+      m_main_frame.add(&m_slider_num_voronoi_cells);
+      m_slider_num_voronoi_cells.setSize(100, 40);
+      m_slider_num_voronoi_cells.setMinValue(5);
+      m_slider_num_voronoi_cells.setMaxValue(30);
+      m_slider_num_voronoi_cells.setValue(m_num_voronoi_cells_value.load());
+      m_slider_num_voronoi_cells.setMarkerSize(agui::Dimension(10, 30));
+      m_slider_num_voronoi_cells.addActionListener(m_action_listeneer);
+      m_slider_num_voronoi_cells.setLocation(m_title_num_voronoi_cells_slider.getWidth(), height);
+      m_slider_num_voronoi_cells.resizeToContents();
+      m_slider_num_voronoi_cells.setBackColor(agui::Color(0, 0, 0, 0));
 
       height += 25;
     }

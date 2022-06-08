@@ -44,6 +44,6 @@ namespace mg8
   const float inner_border_y_offset = outer_border_y_offset + table_border_width;
 
   // Visual:
-  const int config_voronoi_cells = 15;
+  const int config_default_num_voronoi_cells = 15;
 
 }

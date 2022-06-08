@@ -56,6 +56,8 @@ namespace mg8
     int player1_ball_count;
     int player2_ball_count;
 
+    int num_voronoi_cells = config_default_num_voronoi_cells;
+
     splineCurve *curve = nullptr;
 
     static bool initializeAllegro();

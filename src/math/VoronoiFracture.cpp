@@ -2,6 +2,7 @@
 #include <allegro5/allegro_primitives.h>
 #include <spdlog/spdlog.h>
 #include "GameCore/GameManager.hpp"
+#include "configuration.hpp"
 
 #include "stack"
 
@@ -93,11 +94,11 @@ namespace mg8
 
     VoronoiFracture::VoronoiFracture(rect *fractureBody) : fractureBody(fractureBody)
     {
-        spdlog::info("VoronoiFracture called for (unrotated) rect with points lu: ({},{}), ru: ({},{}), ll: ({},{}), rl: ({},{})",
+        spdlog::info("Voronoi called for (unrotated) rect with points lu: ({},{}), ru: ({},{}), ll: ({},{}), rl: ({},{})",
                      fractureBody->pos.x, fractureBody->pos.y, fractureBody->pos.x + fractureBody->width, fractureBody->pos.y,
                      fractureBody->pos.x, fractureBody->pos.y + fractureBody->height, fractureBody->pos.x + fractureBody->width, fractureBody->pos.y + fractureBody->height);
-        int voronoiPoints = config_voronoi_cells;
-        for (size_t i = 0; i < voronoiPoints; i++)
+
+        for (size_t i = 0; i < GameManager::instance()->num_voronoi_cells; i++)
         {
             vec2f point = fractureBody->get_random_point_in_unrotated_rect();
             // spdlog::info("point[{}]: ({},{})", i, point.x, point.y);

@@ -424,9 +424,9 @@ namespace mg8
     objects.emplace_back(new Hole(MG8_OBJECT_TYPES::TYPE_TABLE_HOLE, {(float)config_start_resolution_w - inner_border_x_offset + hole_radius, (float)config_start_resolution_h - inner_border_y_offset + hole_radius}, {0, 0}, sqrtf(powf(hole_radius, 2) + powf(hole_radius, 2)) - 0.2));
 
     // Rotated test rectangle
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_OBSTACLE_RECTANGLE, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius + 6 * hole_radius, (float)config_start_resolution_h / 2}, {0, 0}, hole_radius * 4, table_border_width / 2, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
+    // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_OBSTACLE_RECTANGLE, {((float)config_start_resolution_w - (inner_border_x_offset + hole_radius * 2) * 2) / 2 + 3 * hole_radius + 6 * hole_radius, (float)config_start_resolution_h / 2}, {0, 0}, hole_radius * 4, table_border_width / 2, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(0, 0, 0)));
 
-    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_ICE_RECTANGLE, {(float)inner_border_x_offset * 2, (float)config_start_resolution_h / 2}, {0, 0}, 200, table_border_width * 3, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.6f, al_map_rgb(100, 220, 220)));
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_RECTANGLE, MG8_GAMEOBJECT_TYPES::TYPE_ICE_RECTANGLE, {(float)inner_border_x_offset * 2, (float)config_start_resolution_h / 2}, {0, 0}, 200, table_border_width * 3, 45.0f, LEFT_LOWER_CORNER, {0.0f, 0.0f}, 1.0f, 0.85f, al_map_rgb(100, 220, 220)));
     // rect r = rect({(float)inner_border_x_offset * 2, (float)config_start_resolution_h / 2}, 200, table_border_width * 3, 45.0f, LEFT_LOWER_CORNER);
     // VoronoiFracture *v = new VoronoiFracture(&r);
 
@@ -437,7 +437,7 @@ namespace mg8
     float center_offset_y = 50;
     float center_x = (float)config_start_resolution_w / 2;
     float center_y = (float)config_start_resolution_h / 2;
-    curve = new splineCurve();
+    /*curve = new splineCurve();
     curve->addControlPoint(vec2f(center_x - center_offset_x, center_y - center_offset_y));
     curve->addControlPoint(vec2f(center_x + center_offset_x * 2, center_y + center_offset_y));
     curve->addControlPoint(vec2f(center_x + center_offset_x * 2, center_y - center_offset_y));
@@ -447,6 +447,7 @@ namespace mg8
     curve->calcCurve();
 
     objects.back()->movementCurve = curve;
+    */
     // ball moving right
     // not moving
     // objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BALL, {(float)config_start_resolution_w / 2.0f * 1.5f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10));
@@ -473,9 +474,11 @@ namespace mg8
     // objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_BLACK_BALL, {(float)config_start_resolution_w / 2.0f * 1.0f, (float)config_start_resolution_h / 2.0f}, {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {0, 0, 0, 255}));
     for (int i = 0; i < 5; i++)
     {
-      objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, vec2f((float)config_start_resolution_w / 2.0f * 1.2f, (float)config_start_resolution_h / 2.0f) + vec2f(-30 * i, 0), {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {0, 0, 255, 255}));
-      objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER2_BALL, vec2f((float)config_start_resolution_w / 2.0f * 1.2f, (float)config_start_resolution_h / 2.0f) + vec2f(-30 * i, -30), {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 0, 0, 255}));
+      objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, vec2f((float)config_start_resolution_w / 2.0f * 1.2f, (float)config_start_resolution_h / 2.0f) + vec2f(-30 * i, 15), {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 180, 0, 255}));
+      objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER2_BALL, vec2f((float)config_start_resolution_w / 2.0f * 1.2f, (float)config_start_resolution_h / 2.0f) + vec2f(-30 * i, -15), {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {255, 0, 255, 255}));
     }
+
+    objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_BLACK_BALL, vec2f((float)config_start_resolution_w / 2.0f * 1.2f, (float)config_start_resolution_h / 2.0f) + vec2f(-30 * 5, 0), {0, 0}, 10, {0.0f, 0.0f}, 0.2f, 0.93, {0, 0, 0, 255}));
 
     player1_ball_count = 5;
     player2_ball_count = 5;

@@ -383,15 +383,23 @@ namespace mg8
       }
     }
 
-    if (std::isnan(BorderPenetration.x) || std::isnan(BorderPenetration.y))
+    if (std::isnan(BorderPenetration.x) || std::isnan(BorderPenetration.y)) // happens if the border penetration == ball radius i.e. when col point == ball center
     {
-      spdlog::info("[prior] ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}, collision normal: x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y, collision_plane_normal.x, collision_plane_normal.y);
+      // it is still possible for balls to skip into and through rectangles, but this seems unfixable in this implementation
+      spdlog::info("ball penetration == ball radius: ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}, collision normal: x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y, collision_plane_normal.x, collision_plane_normal.y);
+      if (!std::isnan(collision_plane_normal.x) && !std::isnan(collision_plane_normal.y))
+      {
+        // use the collision_plane_normal vector to move the ball away from the border by radius + 0.1
+        BorderPenetration = collision_plane_normal * ((ball->circle::rad + 0.1) / collision_plane_normal.mag());
+        BorderPenetration = BorderPenetration * -1; // as the normal points in the other direction as the usual borderPenetration vector
+      }
+      else
+      {
+        // use the velocity vector to move the ball away from the border by radius + 0.1
+        BorderPenetration = ball->m_velocity * ((ball->circle::rad + 0.1) / ball->m_velocity.mag());
+      }
 
-      // it is possible that velocity == (0,0) -> extra edgy case we need to catch
-
-      collision_plane_normal = ball->m_velocity * ((ball->circle::rad + 0.1) / ball->m_velocity.mag());
-      spdlog::info("[prior] ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}, collision normal: x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y, collision_plane_normal.x, collision_plane_normal.y);
-      ball->circle::pos = ball->circle::pos - (collision_plane_normal);
+      ball->circle::pos = ball->circle::pos - (BorderPenetration);
       ball->m_velocity = vec2f(0, 0);
       return;
     }

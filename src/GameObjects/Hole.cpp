@@ -58,7 +58,31 @@ namespace mg8
                 }
                 else if (obj->m_gameobject_type == TYPE_BLACK_BALL)
                 {
-                    /* code */
+                    auto &objects = GameManager::instance()->getGameObjects();
+                    objects.erase(std::remove(objects.begin(), objects.end(), collider), objects.end());
+                    GameManager::instance()->releaseGameObjects(true);
+                    if (GameManager::instance()->player1_active) // was switched after white ball has been played i.e. if player1_active = true -> last play was by player 2
+                    {
+                        if (GameManager::instance()->player2_ball_count == 0)
+                        {
+                            spdlog::info("Player 2 won");
+                        }
+                        else
+                        {
+                            spdlog::info("Player 2 lost");
+                        }
+                    }
+                    else
+                    {
+                        if (GameManager::instance()->player1_ball_count == 0)
+                        {
+                            spdlog::info("Player 1 won");
+                        }
+                        else
+                        {
+                            spdlog::info("Player 1 lost");
+                        }
+                    }
                 }
                 else
                 {

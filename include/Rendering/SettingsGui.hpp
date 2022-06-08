@@ -31,6 +31,7 @@
 #include "GameCore/GameManager.hpp"
 #include "GameCore/PhysicsManager.hpp"
 #include "Rendering/Renderer.hpp"
+#include "configuration.hpp"
 
 namespace mg8
 {
@@ -106,6 +107,11 @@ namespace mg8
 
     // voronoi
     agui::CheckBox m_checkbox_voronoi_recalc;
+
+    std::atomic<int> m_num_voronoi_cells_value = config_default_num_voronoi_cells;
+    agui::Label m_title_num_voronoi_cells_slider;
+    agui::Slider m_slider_num_voronoi_cells;
+    agui::Label m_label_num_voronoi_cells;
   };
 
   class SimpleActionListener : public agui::ActionListener
@@ -146,6 +152,13 @@ namespace mg8
         auto &val = SettingsGUI::instance()->m_white_ball_power_value;
         val = ((float)slider->getValue());
         SettingsGUI::instance()->m_label_white_ball_power.setText(std::to_string(val.load()).c_str());
+      }
+      else if (slider == &SettingsGUI::instance()->m_slider_num_voronoi_cells)
+      {
+        auto &val = SettingsGUI::instance()->m_num_voronoi_cells_value;
+        val = (slider->getValue());
+        GameManager::instance()->num_voronoi_cells = val.load();
+        SettingsGUI::instance()->m_label_num_voronoi_cells.setText(std::to_string(val.load()).c_str());
       }
     }
 

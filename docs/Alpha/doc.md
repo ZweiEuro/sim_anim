@@ -24,6 +24,10 @@ Step size h slider for euler/RK4
 
 Voronoi - currently only 15 voronoi cells, as more cells need to much calculation time to be calculated dynamically (they stall the game)
 
+It can happen that a ball bugs into or through a rectangle. This happens when the ball is faster than the Physics Engine can handle the collision i.e. the ball is already fully into or though the rectangle when the Physics Engine handles the collision. This happens most commonly when the ball gets pushed through the rectangle i.e. it cannot escape the acceleration, so it bugs into/through the rectangle.
+
+It can happen sometimes, that the visualization of the voronoi diagram fails for cells, as we have to generate the visualization via calculating the convex hull of the points residing in one cell. As points in the cells, especially in rotated rectangles, can have offsets to the actual pixel location (floating point offsets) this can lead to difficulties when generating the convex hull.
+
 ## 0. Needed libraries:
 
 Firstly on ubuntu community repository (universe) need to be enabled. (Tutorial: https://www.linuxshelltips.com/enable-universe-repository-ubuntu/)

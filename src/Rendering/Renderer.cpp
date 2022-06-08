@@ -53,8 +53,8 @@ namespace mg8
 
   void Renderer::draw_scoreboard()
   {
-    std::string s = "Player 1: BLUE Balls";
-    std::string s_ = "Player 2: RED Balls";
+    std::string s = "Player 1: ORANGE Balls";
+    std::string s_ = "Player 2: PINK Balls";
     std::string s1 = "Player 1 Ball Count: ";
     s1 = s1 + std::to_string(GameManager::instance()->player1_ball_count);
     std::string s2 = "Player 2 Ball Count: ";
