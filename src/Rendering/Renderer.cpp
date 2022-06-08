@@ -51,62 +51,30 @@ namespace mg8
       this->render_loop(); });
   }
 
-  void Renderer::draw_table()
+  void Renderer::draw_scoreboard()
   {
-    /*
-     *  image coodinate axis
-     * (0,0)---------------> x-axis
-     *     |
-     *     |
-     *     |
-     *     |
-     *     v
-     *     y-axis
-     */
-
-    float hole_radius = 10.0;
-    float table_border_width = 20;
-
-    float outer_border_x_offset = 20;
-    float inner_border_x_offset = outer_border_x_offset + table_border_width;
-
-    float pool_table_width = (float)config_start_resolution_w - 2 * outer_border_x_offset;
-    float pool_table_height = pool_table_width / 2.0;
-
-    float outer_border_y_offset = ((float)config_start_resolution_h - pool_table_height) / 2.0;
-    float inner_border_y_offset = outer_border_y_offset + table_border_width;
-
-    _TestBilliardTable.left_border_pos = inner_border_x_offset + _TestBall.radius / 2;
-    _TestBilliardTable.right_border_pos = (float)config_start_resolution_w - inner_border_x_offset - _TestBall.radius / 2;
-    _TestBilliardTable.upper_border_pos = inner_border_y_offset + _TestBall.radius / 2;
-    _TestBilliardTable.lower_border_pos = (float)config_start_resolution_h - inner_border_y_offset - _TestBall.radius / 2;
-
-    // outer brown border of table
-    al_draw_filled_rounded_rectangle(outer_border_x_offset, outer_border_y_offset, (float)config_start_resolution_w - outer_border_x_offset,
-                                     (float)config_start_resolution_h - outer_border_y_offset, hole_radius, hole_radius, al_map_rgb(102, 51, 0));
-
-    // inner green field of the table
-    al_draw_filled_rectangle(inner_border_x_offset, inner_border_y_offset, (float)config_start_resolution_w - inner_border_x_offset,
-                             (float)config_start_resolution_h - inner_border_y_offset, al_map_rgb(0, 102, 0));
-
-    // left upper hole
-    al_draw_filled_circle(inner_border_x_offset + hole_radius / 4, inner_border_y_offset + hole_radius / 4, hole_radius, al_map_rgb(0, 0, 0));
-
-    // left lower hole
-    al_draw_filled_circle(inner_border_x_offset + hole_radius / 4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius / 4, hole_radius, al_map_rgb(0, 0, 0));
-
-    // right upper hole
-    al_draw_filled_circle((float)config_start_resolution_w - inner_border_x_offset - hole_radius / 4, inner_border_y_offset + hole_radius / 4, hole_radius, al_map_rgb(0, 0, 0));
-
-    // right lower hole
-    al_draw_filled_circle((float)config_start_resolution_w - inner_border_x_offset - hole_radius / 4, (float)config_start_resolution_h - inner_border_y_offset - hole_radius / 4, hole_radius, al_map_rgb(0, 0, 0));
-
-    // center upper hole
-    al_draw_filled_circle((float)config_start_resolution_w / 2.0, inner_border_y_offset, hole_radius, al_map_rgb(0, 0, 0));
-
-    // center lower hole
-    al_draw_filled_circle((float)config_start_resolution_w / 2.0, (float)config_start_resolution_h - inner_border_y_offset, hole_radius, al_map_rgb(0, 0, 0));
-  };
+    std::string s = "Player 1: BLUE Balls";
+    std::string s_ = "Player 2: RED Balls";
+    std::string s1 = "Player 1 Ball Count: ";
+    s1 = s1 + std::to_string(GameManager::instance()->player1_ball_count);
+    std::string s2 = "Player 2 Ball Count: ";
+    s2 = s2 + std::to_string(GameManager::instance()->player2_ball_count);
+    std::string t1 = "Player 1's turn...";
+    std::string t2 = "Player 2's turn...";
+    ALLEGRO_FONT *font = al_create_builtin_font();
+    al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.8, 10, 0, s.c_str());
+    al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.8, 25, 0, s_.c_str());
+    al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.8, 45, 0, s1.c_str());
+    al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.8, 60, 0, s2.c_str());
+    if (GameManager::instance()->player1_active)
+    {
+      al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.8, 75, 0, t1.c_str());
+    }
+    else
+    {
+      al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.8, 75, 0, t2.c_str());
+    }
+  }
 
   void Renderer::unsetup()
   {
@@ -237,31 +205,6 @@ namespace mg8
       {
         redraw = false;
 
-        // Redraw
-        /*  _TestBall.x += _TestBall.dx;
-          _TestBall.y += _TestBall.dy;
-
-          if (_TestBall.x < _TestBilliardTable.left_border_pos)
-          {
-            _TestBall.x = _TestBilliardTable.left_border_pos + (_TestBilliardTable.left_border_pos - _TestBall.x);
-            _TestBall.dx *= -1;
-          }
-          if (_TestBall.x > _TestBilliardTable.right_border_pos)
-          {
-            _TestBall.x = _TestBilliardTable.right_border_pos - (_TestBall.x - _TestBilliardTable.right_border_pos);
-            _TestBall.dx *= -1;
-          }
-          if (_TestBall.y < _TestBilliardTable.upper_border_pos)
-          {
-            _TestBall.y = _TestBilliardTable.upper_border_pos + (_TestBilliardTable.upper_border_pos - _TestBall.y);
-            _TestBall.dy *= -1;
-          }
-          if (_TestBall.y > _TestBilliardTable.lower_border_pos)
-          {
-            _TestBall.y = _TestBilliardTable.lower_border_pos - (_TestBall.y - _TestBilliardTable.lower_border_pos);
-            _TestBall.dy *= -1;
-          }        */
-
         al_clear_to_color(al_map_rgb(100, 100, 100));
         // al_clear_to_color(al_map_rgb(240, 240, 240));
         al_draw_filled_rounded_rectangle(outer_border_x_offset - table_border_width / 2, outer_border_y_offset - table_border_width / 2, (float)config_start_resolution_w - outer_border_x_offset + table_border_width / 2,
@@ -340,6 +283,7 @@ namespace mg8
 
           GameManager::instance()->curve->drawCurve();
         }
+        draw_scoreboard();
         Renderer::instance()->logicGUI();
         renderGUI();
         al_flip_display();

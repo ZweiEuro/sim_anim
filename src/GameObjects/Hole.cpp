@@ -43,7 +43,16 @@ namespace mg8
                 else if (obj->m_gameobject_type == TYPE_PLAYER1_BALL || obj->m_gameobject_type == TYPE_PLAYER2_BALL)
                 {
                     auto &objects = GameManager::instance()->getGameObjects();
-                    spdlog::info("erasing object.");
+                    spdlog::info("Player {} Ball fell into hole - erasing object", obj->m_gameobject_type == TYPE_PLAYER1_BALL ? 1 : 2);
+                    if (obj->m_gameobject_type == TYPE_PLAYER1_BALL)
+                    {
+                        GameManager::instance()->player1_ball_count--;
+                    }
+                    else
+                    {
+                        GameManager::instance()->player2_ball_count--;
+                    }
+
                     objects.erase(std::remove(objects.begin(), objects.end(), collider), objects.end());
                     GameManager::instance()->releaseGameObjects(true);
                 }

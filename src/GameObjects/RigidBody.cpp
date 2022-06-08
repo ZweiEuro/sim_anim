@@ -307,8 +307,6 @@ namespace mg8
     vec2f BallCenterToBallBorder = BallCenterToColPoint * ((ball->circle::rad + 0.1) / BallCenterToColPoint.mag());
     // spdlog::info("ball center length {}, ball border length {}", BallCenterToColPoint.mag(), BallCenterToBallBorder.mag());
     vec2f BorderPenetration = BallCenterToBallBorder - BallCenterToColPoint;
-    ball->circle::pos = ball->circle::pos - (BorderPenetration);
-    spdlog::info("ball pos x: {}, y: {}", ball->circle::pos.x, ball->circle::pos.y);
 
     vec2f collided_corner(-1, -1); // none
 
@@ -385,6 +383,15 @@ namespace mg8
       }
     }
 
+    if (std::isnan(BorderPenetration.x) || std::isnan(BorderPenetration.y))
+    {
+      spdlog::info("[prior] ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y);
+      BorderPenetration = collision_plane_normal * ball->circle::rad;
+    }
+
+    ball->circle::pos = ball->circle::pos - (BorderPenetration);
+    spdlog::info("ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y);
+
     if (collided_corner != vec2f(-1, -1))
     {
       spdlog::info("direct corner collision");
@@ -395,6 +402,8 @@ namespace mg8
 
     if (collision_plane_normal.x == 0 && collision_plane_normal.y == 0)
     {
+      ball->m_velocity = vec2f(0, 0); // ball might clip into rectangle
+      return;
       assert(false && "normal is zero");
     }
 

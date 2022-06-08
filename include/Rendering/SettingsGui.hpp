@@ -105,7 +105,7 @@ namespace mg8
     agui::RadioButtonGroup m_group_radio_kutta_euler;
 
     // voronoi
-    agui::Button m_button_voronoi_recalc;
+    agui::CheckBox m_checkbox_voronoi_recalc;
   };
 
   class SimpleActionListener : public agui::ActionListener
@@ -167,6 +167,13 @@ namespace mg8
 
         //  GameManager::instance()->object_path_enabled = checkbox->checked();
       }
+      else if (checkbox == &SettingsGUI::instance()->m_checkbox_voronoi_recalc)
+      {
+        printf("Recalc Voronoi %s noise\n", checkbox->checked() ? "With" : "Without");
+
+        //  GameManager::instance()->object_path_enabled = checkbox->checked();
+        GameManager::instance()->voronoi_recalc = true;
+      }
     }
 
     virtual void actionPerformed(const agui::ActionEvent &evt)
@@ -184,7 +191,7 @@ namespace mg8
         return;
       }
 
-      agui::Button *btn = dynamic_cast<agui::Button *>(evt.getSource());
+      /*agui::Button *btn = dynamic_cast<agui::Button *>(evt.getSource());
       if (btn)
       {
         if (btn->getText() == "enable")
@@ -199,7 +206,7 @@ namespace mg8
         }
 
         GameManager::instance()->voronoi_recalc = true;
-      }
+      }*/
 
       /*   al_show_native_message_box(al_get_current_display(),
                                     "Agui Action Listener",

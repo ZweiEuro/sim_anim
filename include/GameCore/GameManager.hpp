@@ -52,6 +52,10 @@ namespace mg8
 
     SceneHierarchy *s = nullptr;
 
+    bool player1_active = true;
+    int player1_ball_count;
+    int player2_ball_count;
+
     splineCurve *curve = nullptr;
 
     static bool initializeAllegro();

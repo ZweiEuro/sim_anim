@@ -88,6 +88,13 @@ namespace mg8
     m_checkbox_table_friction.addActionListener(m_action_listeneer);
     m_checkbox_table_friction.setLocation(width[0], height += 20);
 
+    m_main_frame.add(&m_checkbox_voronoi_recalc);
+    m_checkbox_voronoi_recalc.setAutosizing(true);
+    m_checkbox_voronoi_recalc.setText("Enable Voronoi Noise-Overlay");
+    m_checkbox_voronoi_recalc.setChecked(false);
+    m_checkbox_voronoi_recalc.addActionListener(m_action_listeneer);
+    m_checkbox_voronoi_recalc.setLocation(width[0], height += 20);
+
     m_group_radio_kutta_euler.add(&m_radio_kutta_euler[0]);
     m_radio_kutta_euler[0].setText("Euler");
     m_radio_kutta_euler[0].setLocation(width[0], height += 20);
@@ -199,7 +206,7 @@ namespace mg8
       m_main_frame.add(&m_slider_white_ball_power);
       m_slider_white_ball_power.setSize(100, 40);
       m_slider_white_ball_power.setMinValue(0);
-      m_slider_white_ball_power.setMaxValue(800);
+      m_slider_white_ball_power.setMaxValue(5);
       m_slider_white_ball_power.setValue(m_white_ball_power_value.load());
       m_slider_white_ball_power.setMarkerSize(agui::Dimension(10, 30));
       m_slider_white_ball_power.addActionListener(m_action_listeneer);
@@ -209,7 +216,7 @@ namespace mg8
 
       height += 25;
     }
-    {
+    /*{
       m_main_frame.add(&m_voronoi_title);
       m_voronoi_title.setText("Voronoi noise");
       m_voronoi_title.resizeToContents();
@@ -224,7 +231,7 @@ namespace mg8
       m_button_voronoi_recalc.setBackColor({0, 255, 255});
       m_button_voronoi_recalc.addActionListener(m_action_listeneer);
       height += 25;
-    }
+    }*/
 
     /*std::stringstream ss;
     for (int i = 0; i < 3; ++i)

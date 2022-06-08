@@ -59,7 +59,7 @@ namespace mg8
     void setup(); // called first by the main render thread
     void render_loop();
     void unsetup();
-    void draw_table();
+    void draw_scoreboard();
     Renderer();
 
     // testing stuff

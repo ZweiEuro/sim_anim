@@ -194,7 +194,7 @@ namespace mg8
         {
           // auto a = dynamic_cast<RigidBody *>(A);
           h->handle_collision(A);
-          spdlog::info("hole collision");
+          // spdlog::info("hole collision");
           return true;
         }
       }
