@@ -331,7 +331,7 @@ namespace mg8
                             //releaseGameObjects(true);
                             return;
                           }
-                          white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * (dir - white_ball->circle::pos).mag() * SettingsGUI::instance()->m_white_ball_power_value.load();
+                          white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * (dir - white_ball->circle::pos).mag() * (SettingsGUI::instance()->m_white_ball_power_value.load() / 10.f);
                           spdlog::info("white ball velocity x: {}, y: {}", white_ball->m_velocity.x, white_ball->m_velocity.y);
                           player1_active = !player1_active;
                         }

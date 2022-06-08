@@ -143,8 +143,9 @@ namespace mg8
       }
       else if (slider == &SettingsGUI::instance()->m_slider_white_ball_power)
       {
-        SettingsGUI::instance()->m_white_ball_power_value = slider->getValue();
-        SettingsGUI::instance()->m_label_white_ball_power.setText(std::to_string(slider->getValue()).c_str());
+        auto &val = SettingsGUI::instance()->m_white_ball_power_value;
+        val = ((float)slider->getValue());
+        SettingsGUI::instance()->m_label_white_ball_power.setText(std::to_string(val.load()).c_str());
       }
     }
 

@@ -385,8 +385,15 @@ namespace mg8
 
     if (std::isnan(BorderPenetration.x) || std::isnan(BorderPenetration.y))
     {
-      spdlog::info("[prior] ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y);
-      BorderPenetration = collision_plane_normal * ball->circle::rad;
+      spdlog::info("[prior] ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}, collision normal: x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y, collision_plane_normal.x, collision_plane_normal.y);
+
+      // it is possible that velocity == (0,0) -> extra edgy case we need to catch
+
+      collision_plane_normal = ball->m_velocity * ((ball->circle::rad + 0.1) / ball->m_velocity.mag());
+      spdlog::info("[prior] ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}, collision normal: x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y, collision_plane_normal.x, collision_plane_normal.y);
+      ball->circle::pos = ball->circle::pos - (collision_plane_normal);
+      ball->m_velocity = vec2f(0, 0);
+      return;
     }
 
     ball->circle::pos = ball->circle::pos - (BorderPenetration);

@@ -17,7 +17,7 @@ namespace mg8
   const float MOVEMENT_EPSILON = 1;
   const float table_friction = 0.75;
 
-  const float config_default_white_ball_power = 2.5;
+  const float config_default_white_ball_power = 10.f;
 
   const float config_default_h = 0.0025;
   const bool config_default_gravity = true; // True = Euler, false = kutta

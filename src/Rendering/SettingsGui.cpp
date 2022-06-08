@@ -206,7 +206,7 @@ namespace mg8
       m_main_frame.add(&m_slider_white_ball_power);
       m_slider_white_ball_power.setSize(100, 40);
       m_slider_white_ball_power.setMinValue(0);
-      m_slider_white_ball_power.setMaxValue(5);
+      m_slider_white_ball_power.setMaxValue(20);
       m_slider_white_ball_power.setValue(m_white_ball_power_value.load());
       m_slider_white_ball_power.setMarkerSize(agui::Dimension(10, 30));
       m_slider_white_ball_power.addActionListener(m_action_listeneer);
