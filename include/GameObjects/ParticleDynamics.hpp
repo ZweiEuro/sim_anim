@@ -14,7 +14,7 @@ namespace mg8
     vec2f euler(const GameObject &obj, float dt) const;
     vec2f kutta(const GameObject &obj, float dt) const;
 
-    public:
+  public:
     ALLEGRO_COLOR m_color = {0, 0, 0, 255};
 
     time_t creation_time;
@@ -24,7 +24,7 @@ namespace mg8
         vec2f position = {0, 0},
         vec2f velocity = {0, 0},
         float radius = hole_radius,
-        ALLEGRO_COLOR color = {0, 255 / 2, 0, 255},
+        ALLEGRO_COLOR color = al_map_rgba(255, 75, 0, 255),
         uint32_t collision = 0);
 
     ~GravityWell();

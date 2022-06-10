@@ -215,6 +215,17 @@ namespace mg8
     }
   }
 
+  vec2f GameManager::getGravityWellRandomPosition()
+  {
+    std::random_device r;
+    std::mt19937 gen(r());
+    std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+    float x = inner_border_x_offset + ((pool_table_width - 2 * table_border_width) - inner_border_x_offset) * dis(gen);
+    float y = inner_border_y_offset + ((pool_table_height - 2 * table_border_width) - inner_border_y_offset) * dis(gen);
+    return vec2f(x, y);
+  }
+
   void GameManager::setup_game()
   {
 
@@ -285,12 +296,22 @@ namespace mg8
                       count++;
                     }
 
-                    if (count >= config_max_number_grav_wells)
+                    /*if (count >= config_max_number_grav_wells)
                     {
                       objects.erase(std::remove(objects.begin(), objects.end(), found[0]), objects.end());
                     }
 
-                    objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,pos,{0, 0}, 10));
+                    objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,pos,{0, 0}, 10));*/
+                    if (count < 1)
+                    {
+                      //1st is positioned at mouse pos - others are randomly positioned on the table
+                      objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,pos,{0, 0}, 10));
+                      objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,getGravityWellRandomPosition(),{0, 0}, 10));
+                      objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,getGravityWellRandomPosition(),{0, 0}, 10));
+                      objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,getGravityWellRandomPosition(),{0, 0}, 10));
+
+                    }
+                    
                     releaseGameObjects(true);
                   } })
         .detach();
