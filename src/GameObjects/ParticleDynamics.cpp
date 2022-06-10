@@ -122,6 +122,7 @@ namespace mg8
                                                  circle(position, radius),
                                                  m_color(color)
   {
+    creation_time = std::time(nullptr);
   }
 
   void GravityWell::draw() const

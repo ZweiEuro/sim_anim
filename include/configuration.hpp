@@ -46,4 +46,7 @@ namespace mg8
   // Visual:
   const int config_default_num_voronoi_cells = 15;
 
+  // Gravity Well:
+  const int config_default_gravity_well_despawn_time = 10;
+
 }

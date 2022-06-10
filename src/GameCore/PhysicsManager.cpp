@@ -133,6 +133,13 @@ namespace mg8
             const auto *grav = dynamic_cast<const GravityWell *>(A);
             assert(grav && "Grav well cast failed");
 
+            if ((std::time(nullptr) - grav->creation_time) > gravity_well_despawn_time)
+            {
+              spdlog::info("erasing old gravity well -> age > {} seconds", gravity_well_despawn_time);
+              objects.erase(std::remove(objects.begin(), objects.end(), A), objects.end());
+              continue;
+            }
+
             grav->apply(objects, delta_ms);
 
             for (auto &row : m_forcefield)

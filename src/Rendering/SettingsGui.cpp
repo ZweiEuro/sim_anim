@@ -242,6 +242,31 @@ namespace mg8
 
       height += 25;
     }
+    { // Gravity Well despawn Time
+      m_main_frame.add(&m_title_gravity_well_despawn_time_slider);
+      m_title_gravity_well_despawn_time_slider.setText("Gravity Well Despawn Time (sec): ");
+      m_title_gravity_well_despawn_time_slider.resizeToContents();
+      m_title_gravity_well_despawn_time_slider.setLocation(width[0], height + 10);
+
+      m_main_frame.add(&m_label_gravity_well_despawn_time);
+      m_label_gravity_well_despawn_time.setText("0.123456789");
+      m_label_gravity_well_despawn_time.setText(std::to_string(m_gravity_well_despawn_time_value.load()).c_str());
+      m_label_gravity_well_despawn_time.resizeToContents();
+      m_label_gravity_well_despawn_time.setLocation(m_title_gravity_well_despawn_time_slider.getWidth() + 10, height + 10);
+
+      m_main_frame.add(&m_slider_gravity_well_despawn_time);
+      m_slider_gravity_well_despawn_time.setSize(100, 40);
+      m_slider_gravity_well_despawn_time.setMinValue(1);
+      m_slider_gravity_well_despawn_time.setMaxValue(30);
+      m_slider_gravity_well_despawn_time.setValue(m_gravity_well_despawn_time_value.load());
+      m_slider_gravity_well_despawn_time.setMarkerSize(agui::Dimension(10, 30));
+      m_slider_gravity_well_despawn_time.addActionListener(m_action_listeneer);
+      m_slider_gravity_well_despawn_time.setLocation(m_title_gravity_well_despawn_time_slider.getWidth(), height);
+      m_slider_gravity_well_despawn_time.resizeToContents();
+      m_slider_gravity_well_despawn_time.setBackColor(agui::Color(0, 0, 0, 0));
+
+      height += 25;
+    }
     /*{
       m_main_frame.add(&m_voronoi_title);
       m_voronoi_title.setText("Voronoi noise");

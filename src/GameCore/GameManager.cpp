@@ -287,7 +287,7 @@ namespace mg8
 
                     if (count >= config_max_number_grav_wells)
                     {
-                    objects.erase(std::remove(objects.begin(), objects.end(), found[0]), objects.end());
+                      objects.erase(std::remove(objects.begin(), objects.end(), found[0]), objects.end());
                     }
 
                     objects.emplace_back(new GravityWell(MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,pos,{0, 0}, 10));
@@ -299,45 +299,20 @@ namespace mg8
     std::thread([=]() -> void
                 {
                     while(true) {
-                      /*vec2i pos;
-                      vec2i dir;
-
-                      auto ok = InputManager::instance()->wait_for_mouse_button(1, pos);
-                      if(!ok){
-                        return;
-                      }
-
-                      ok = InputManager::instance()->wait_for_mouse_button(1, dir);
-                      if (!ok)
-                      {
-                        return;
-                      }
-                      auto &objects = getGameObjects(true);
-                      //objects.emplace_back(new Ball(MG8_OBJECT_TYPES::TYPE_BALL, pos, (dir - pos).dir() * 100, 10));
-                      objects.emplace_back(new RigidBody(MG8_RIGID_BODY_OBJECT_TYPES::TYPE_BALL, MG8_GAMEOBJECT_TYPES::TYPE_PLAYER1_BALL, pos, (dir - pos).dir() * 100, 10));
-                      releaseGameObjects(true);*/
                       
                         vec2i dir;
-                        //auto &objects = getGameObjects(true);
                         if (m_white_ball && m_white_ball->m_velocity.mag() == 0)
                         {
-                          //ALLEGRO_MOUSE_STATE state;
 
-                          //al_get_mouse_state(&state);
                           auto white_ball = dynamic_cast<RigidBody *>(m_white_ball);
-                          //al_draw_line(white_ball->circle::pos.x, white_ball->circle::pos.y, state.x, state.y, al_map_rgb(255,0,0),2);
                           auto ok = InputManager::instance()->wait_for_mouse_button(1, dir);
                           if(!ok){
-                            //releaseGameObjects(true);
                             return;
                           }
                           white_ball->m_velocity = (dir - white_ball->circle::pos).dir() * (dir - white_ball->circle::pos).mag() * (SettingsGUI::instance()->m_white_ball_power_value.load() / 10.f);
                           spdlog::info("white ball velocity x: {}, y: {}", white_ball->m_velocity.x, white_ball->m_velocity.y);
                           player1_active = !player1_active;
-                        }
-                        //releaseGameObjects(true);
-                      
-                      
+                        }                      
                   } })
         .detach();
 

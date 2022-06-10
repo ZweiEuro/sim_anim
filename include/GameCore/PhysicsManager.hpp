@@ -18,6 +18,8 @@ namespace mg8
     std::thread m_collision_check_thread;
     std::atomic<bool> running = false;
 
+    int gravity_well_despawn_time = config_default_gravity_well_despawn_time;
+
     void physics_loop();
     PhysicsManager();
     bool collide(GameObject *&A, GameObject *&B);
@@ -44,6 +46,10 @@ namespace mg8
       al_set_timer_speed(m_physics_refresh_timer, 1.0 / PPS);
     }
 
+    void setGravityWellDespawnTime(int time)
+    {
+      gravity_well_despawn_time = time;
+    }
     std::mutex l_forcefield;
 
     std::vector<std::vector<GameObject *>> m_forcefield;

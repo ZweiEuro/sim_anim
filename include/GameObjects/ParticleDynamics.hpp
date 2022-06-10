@@ -14,8 +14,10 @@ namespace mg8
     vec2f euler(const GameObject &obj, float dt) const;
     vec2f kutta(const GameObject &obj, float dt) const;
 
-  public:
+    public:
     ALLEGRO_COLOR m_color = {0, 0, 0, 255};
+
+    time_t creation_time;
 
     GravityWell(
         MG8_OBJECT_TYPES type = MG8_OBJECT_TYPES::TYPE_GRAVITY_WELL,

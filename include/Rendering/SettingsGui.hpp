@@ -105,6 +105,11 @@ namespace mg8
     agui::RadioButton m_radio_kutta_euler[2];
     agui::RadioButtonGroup m_group_radio_kutta_euler;
 
+    std::atomic<int> m_gravity_well_despawn_time_value = config_default_gravity_well_despawn_time;
+    agui::Label m_title_gravity_well_despawn_time_slider;
+    agui::Slider m_slider_gravity_well_despawn_time;
+    agui::Label m_label_gravity_well_despawn_time;
+
     // voronoi
     agui::CheckBox m_checkbox_voronoi_recalc;
 
@@ -159,6 +164,13 @@ namespace mg8
         val = (slider->getValue());
         GameManager::instance()->num_voronoi_cells = val.load();
         SettingsGUI::instance()->m_label_num_voronoi_cells.setText(std::to_string(val.load()).c_str());
+      }
+      else if (slider == &SettingsGUI::instance()->m_slider_gravity_well_despawn_time)
+      {
+        auto &val = SettingsGUI::instance()->m_gravity_well_despawn_time_value;
+        val = (slider->getValue());
+        PhysicsManager::instance()->setGravityWellDespawnTime(val.load());
+        SettingsGUI::instance()->m_label_gravity_well_despawn_time.setText(std::to_string(val.load()).c_str());
       }
     }
 
