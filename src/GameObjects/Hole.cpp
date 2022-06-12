@@ -66,10 +66,12 @@ namespace mg8
                         if (GameManager::instance()->player2_ball_count == 0)
                         {
                             spdlog::info("Player 2 won");
+                            GameManager::instance()->player2_ball_count = -1;
                         }
                         else
                         {
                             spdlog::info("Player 2 lost");
+                            GameManager::instance()->player2_ball_count = -2;
                         }
                     }
                     else
@@ -77,10 +79,12 @@ namespace mg8
                         if (GameManager::instance()->player1_ball_count == 0)
                         {
                             spdlog::info("Player 1 won");
+                            GameManager::instance()->player1_ball_count = -1;
                         }
                         else
                         {
                             spdlog::info("Player 1 lost");
+                            GameManager::instance()->player1_ball_count = -2;
                         }
                     }
                 }

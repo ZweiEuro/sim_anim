@@ -53,7 +53,35 @@ namespace mg8
 
   void Renderer::draw_scoreboard()
   {
-    std::string s = "Player 1: ORANGE Balls";
+    ALLEGRO_FONT *font = al_create_builtin_font();
+    if (GameManager::instance()->player1_ball_count == -1 && GameManager::instance()->player2_ball_count != -1) // won
+    {
+      std::string s = "Player 1 WON - Finished all balls first.";
+      al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.6, 50, 0, s.c_str());
+      return;
+    }
+    if (GameManager::instance()->player2_ball_count == -1 && GameManager::instance()->player1_ball_count != -1) // won
+    {
+      std::string s = "Player 2 WON - Finished all balls first.";
+      al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.6, 50, 0, s.c_str());
+      return;
+    }
+
+    if (GameManager::instance()->player1_ball_count == -2) // won
+    {
+      std::string s = "Player 2 WON - Player 1 played the Black ball too early.";
+      al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.58, 50, 0, s.c_str());
+      return;
+    }
+
+    if (GameManager::instance()->player2_ball_count == -2) // won
+    {
+      std::string s = "Player 1 WON - Player 2 played the Black ball too early.";
+      al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.58, 50, 0, s.c_str());
+      return;
+    }
+
+    std::string s = "Player 1: YELLOW Balls";
     std::string s_ = "Player 2: PINK Balls";
     std::string s1 = "Player 1 Ball Count: ";
     s1 = s1 + std::to_string(GameManager::instance()->player1_ball_count);
@@ -61,7 +89,7 @@ namespace mg8
     s2 = s2 + std::to_string(GameManager::instance()->player2_ball_count);
     std::string t1 = "Player 1's turn...";
     std::string t2 = "Player 2's turn...";
-    ALLEGRO_FONT *font = al_create_builtin_font();
+
     al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.8, 10, 0, s.c_str());
     al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.8, 25, 0, s_.c_str());
     al_draw_text(font, al_map_rgb(255, 255, 255), m_display_width * 0.8, 45, 0, s1.c_str());
@@ -278,11 +306,11 @@ namespace mg8
         }
 
         GameManager::instance()->releaseGameObjects();
-        if (GameManager::instance()->debug_enabled)
+        /*if (GameManager::instance()->debug_enabled)
         {
 
           GameManager::instance()->curve->drawCurve();
-        }
+        }*/
         draw_scoreboard();
         Renderer::instance()->logicGUI();
         renderGUI();

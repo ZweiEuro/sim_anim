@@ -123,7 +123,7 @@ namespace mg8
         // move according to hierarchical transformation
 
         circle::setPosition(circle::pos + delta_move);
-        GameManager::instance()->s->updateVelocity(this);
+        GameManager ::instance()->s->updateVelocity(this);
         // this->m_velocity = this->m_velocity - (delta_move * (SettingsGUI::instance()->m_checkbox_table_friction.checked() ? table_friction : 0));
       }
       else
@@ -135,6 +135,10 @@ namespace mg8
         }
         circle::setPosition(circle::pos + delta_move);
         this->m_velocity = this->m_velocity - (delta_move * (SettingsGUI::instance()->m_checkbox_table_friction.checked() ? table_friction : 0));
+        if (this->circle::pos.x < inner_border_x_offset - this->circle::rad / 2 || this->circle::pos.x > (outer_border_x_offset + pool_table_width - table_border_width + this->circle::rad / 2) || this->circle::pos.y < inner_border_y_offset - this->circle::rad / 2 || this->circle::pos.y > (outer_border_y_offset + pool_table_height - table_border_width + this->circle::rad / 2))
+        {
+          // ball outside of table
+        }
       }
     }
     if (this->m_rigid_body_type == TYPE_RECTANGLE)
@@ -185,7 +189,6 @@ namespace mg8
 
   void RigidBody::handle_ball_ball_collision(RigidBody *otherBall)
   {
-
     //⟨v1−v2,x1−x2⟩ = (v1.x - v2.x) * (x1.x - x2.x) + (v1.y - v2.y) * (x1.y - x2.y)
     //⟨v2−v1,x2−x1⟩ = (v2.x - v1.x) * (x2.x - x1.x) + (v2.y - v1.y) * (x2.y - x1.y)
 
@@ -193,15 +196,13 @@ namespace mg8
 
     //||x2 - x1||² = ⟨x2−x1,x2−x1⟩ = (x2.x - x1.x) * (x2.x - x1.x) + (x2.y - x1.y) * (x2.y - x1.y)
 
-    // vec2f vel1 = (this->circle::pos - otherBall->circle::pos) * (2 * otherBall->m_mass) / (this->m_mass + otherBall->m_mass) * ((this->m_velocity.x - otherBall->m_velocity.x) * (this->circle::pos.x - otherBall->circle::pos.x) + (this->m_velocity.y - otherBall->m_velocity.y) * (this->circle::pos.y - otherBall->circle::pos.y)) / ((this->circle::pos.x - otherBall->circle::pos.x) * (this->circle::pos.x - otherBall->circle::pos.x) + (this->circle::pos.y - otherBall->circle::pos.y) * (this->circle::pos.y - otherBall->circle::pos.y));
-    // vec2f vel2 = (otherBall->circle::pos - this->circle::pos) * (2 * this->m_mass) / (this->m_mass + otherBall->m_mass) * ((otherBall->m_velocity.x - this->m_velocity.x) * (otherBall->circle::pos.x - this->circle::pos.x) + (otherBall->m_velocity.y - this->m_velocity.y) * (otherBall->circle::pos.y - this->circle::pos.y)) / ((otherBall->circle::pos.x - this->circle::pos.x) * (otherBall->circle::pos.x - this->circle::pos.x) + (otherBall->circle::pos.y - this->circle::pos.y) * (otherBall->circle::pos.y - this->circle::pos.y));
     vec2f vel1 = (this->circle::pos - otherBall->circle::pos) * (2 * otherBall->m_mass) / (this->m_mass + otherBall->m_mass) * ((this->m_velocity - otherBall->m_velocity).dot(this->circle::pos - otherBall->circle::pos)) / ((this->circle::pos - otherBall->circle::pos).dot(this->circle::pos - otherBall->circle::pos));
     vec2f vel2 = (otherBall->circle::pos - this->circle::pos) * (2 * this->m_mass) / (this->m_mass + otherBall->m_mass) * ((otherBall->m_velocity - this->m_velocity).dot(otherBall->circle::pos - this->circle::pos)) / ((otherBall->circle::pos - this->circle::pos).dot(otherBall->circle::pos - this->circle::pos));
     // spdlog::info("prior: velocity-this x: {}, y: {}, velocity-other x: {}, y: {}, vel1 x: {}, y: {}, vel2 x: {}, y: {}", this->m_velocity.x, this->m_velocity.y, otherBall->m_velocity.x, otherBall->m_velocity.y, vel1.x, vel1.y, vel2.x, vel2.y);
 
     vec2f OtherCenterToThisCenter = this->circle::pos - otherBall->circle::pos;
     // fix the penetration of the one ball into the other -> leads to constant collision
-    // fix penetration by increasing the ball center - ball center distance to 2 * ball radius
+    // fix by increasing the ball center - ball center distance to 2 * ball radius
     vec2f OtherCenterToThisCenterFixedOverlap = OtherCenterToThisCenter * ((this->circle::rad * 2.0f) / OtherCenterToThisCenter.mag());
 
     this->circle::pos = otherBall->circle::pos + OtherCenterToThisCenterFixedOverlap;
@@ -284,13 +285,6 @@ namespace mg8
     vec2f unrotatedCircle = rotatePoint(ball->circle::pos, rotation_anchor, circle_rotation_angle);
     vec2f unrotatedVelocityVec = rotatePoint(ball->m_velocity, rotation_anchor, circle_rotation_angle);
 
-    vec2f normal_directions[] = {
-        vec2f(0.0f, 1.0f),  // down = 0
-        vec2f(1.0f, 0.0f),  // right = 1
-        vec2f(0.0f, -1.0f), // up = 2
-        vec2f(-1.0f, 0.0f)  // left = 3
-    };
-
     float x_near = std::clamp(unrotatedCircle.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
     float y_near = std::clamp(unrotatedCircle.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
 
@@ -313,11 +307,11 @@ namespace mg8
     if ((col_point.x == left_upper().x || is_val_within_bound(col_point.x, left_lower().x, left_upper().x) || is_val_within_bound(col_point.x, left_upper().x, left_lower().x)) && (is_val_within_bound(col_point.y, left_upper().y, left_lower().y) || is_val_within_bound(col_point.y, left_lower().y, left_upper().y)))
     {
       // left edge
-      spdlog::info("left edge collision" /*, al_keycode_to_name(keycode)*/);
+      // spdlog::info("left edge collision" /*, al_keycode_to_name(keycode)*/);
       float dx = border->rect::left_upper().x - border->rect::left_lower().x;
       float dy = border->rect::left_upper().y - border->rect::left_lower().y;
       collision_plane_normal = vec2f(dy * -1, dx);
-      spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; left lower x: {}, y: {}", col_point.x, col_point.y, left_upper().x, left_upper().y, left_lower().x, left_lower().y);
+      // spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; left lower x: {}, y: {}", col_point.x, col_point.y, left_upper().x, left_upper().y, left_lower().x, left_lower().y);
 
       if (ball->circle::point_inside(border->rect::left_upper()))
       {
@@ -331,11 +325,11 @@ namespace mg8
     else if ((col_point.x == right_upper().x || is_val_within_bound(col_point.x, right_lower().x, right_upper().x) || is_val_within_bound(col_point.x, right_upper().x, right_lower().x)) && (is_val_within_bound(col_point.y, right_upper().y, right_lower().y) || is_val_within_bound(col_point.y, right_lower().y, right_upper().y)))
     {
       // right edge
-      spdlog::info("right edge collision" /*, al_keycode_to_name(keycode)*/);
+      // spdlog::info("right edge collision" /*, al_keycode_to_name(keycode)*/);
       float dx = border->rect::right_upper().x - border->rect::right_lower().x;
       float dy = border->rect::right_upper().y - border->rect::right_lower().y;
       collision_plane_normal = vec2f(dy * -1, dx);
-      spdlog::info("col point x: {}, y: {}; right upper x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, right_upper().x, right_upper().y, right_lower().x, right_lower().y);
+      // spdlog::info("col point x: {}, y: {}; right upper x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, right_upper().x, right_upper().y, right_lower().x, right_lower().y);
 
       if (ball->circle::point_inside(border->rect::right_upper()))
       {
@@ -349,11 +343,11 @@ namespace mg8
     else if ((col_point.y == left_upper().y || is_val_within_bound(col_point.y, right_upper().y, left_upper().y) || is_val_within_bound(col_point.y, left_upper().y, right_upper().y)) && (is_val_within_bound(col_point.x, right_upper().x, left_upper().x) || is_val_within_bound(col_point.x, left_upper().x, right_upper().x)))
     {
       // upper edge
-      spdlog::info("upper edge collision" /*, al_keycode_to_name(keycode)*/);
+      // spdlog::info("upper edge collision" /*, al_keycode_to_name(keycode)*/);
       float dx = border->rect::left_upper().x - border->rect::right_upper().x;
       float dy = border->rect::left_upper().y - border->rect::right_upper().y;
       collision_plane_normal = vec2f(dy * -1, dx);
-      spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; right upper x: {}, y: {}", col_point.x, col_point.y, left_upper().x, left_upper().y, right_upper().x, right_upper().y);
+      // spdlog::info("col point x: {}, y: {}; left upper x: {}, y: {}; right upper x: {}, y: {}", col_point.x, col_point.y, left_upper().x, left_upper().y, right_upper().x, right_upper().y);
 
       if (ball->circle::point_inside(border->rect::left_upper()))
       {
@@ -367,11 +361,11 @@ namespace mg8
     else if ((col_point.y == left_lower().y || is_val_within_bound(col_point.y, right_lower().y, left_lower().y) || is_val_within_bound(col_point.y, left_lower().y, right_lower().y)) && (is_val_within_bound(col_point.x, right_lower().x, left_lower().x) || is_val_within_bound(col_point.x, left_lower().x, right_lower().x)))
     {
       // lower edge
-      spdlog::info("lower edge collision" /*, al_keycode_to_name(keycode)*/);
+      // spdlog::info("lower edge collision" /*, al_keycode_to_name(keycode)*/);
       float dx = border->rect::left_lower().x - border->rect::right_lower().x;
       float dy = border->rect::left_lower().y - border->rect::right_lower().y;
       collision_plane_normal = vec2f(dy * -1, dx);
-      spdlog::info("col point x: {}, y: {}; left lower x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, left_lower().x, left_lower().y, right_lower().x, right_lower().y);
+      // spdlog::info("col point x: {}, y: {}; left lower x: {}, y: {}; right lower x: {}, y: {}", col_point.x, col_point.y, left_lower().x, left_lower().y, right_lower().x, right_lower().y);
 
       if (ball->circle::point_inside(border->rect::left_lower()))
       {
@@ -386,7 +380,7 @@ namespace mg8
     if (std::isnan(BorderPenetration.x) || std::isnan(BorderPenetration.y)) // happens if the border penetration == ball radius i.e. when col point == ball center
     {
       // it is still possible for balls to skip into and through rectangles, but this seems unfixable in this implementation
-      spdlog::info("ball penetration == ball radius: ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}, collision normal: x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y, collision_plane_normal.x, collision_plane_normal.y);
+      spdlog::info("clipping: ball penetration == ball radius: ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}, collision normal: x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y, collision_plane_normal.x, collision_plane_normal.y);
       if (!std::isnan(collision_plane_normal.x) && !std::isnan(collision_plane_normal.y))
       {
         // use the collision_plane_normal vector to move the ball away from the border by radius + 0.1
@@ -401,11 +395,54 @@ namespace mg8
 
       ball->circle::pos = ball->circle::pos - (BorderPenetration);
       ball->m_velocity = vec2f(0, 0);
+      if (ball->m_gameobject_type == TYPE_BLACK_BALL)
+      {
+        spdlog::info("Black ball clipped through table border - removing object");
+        if (GameManager::instance()->player1_active) // was switched after white ball has been played i.e. if player1_active = true -> last play was by player 2
+        {
+          if (GameManager::instance()->player2_ball_count == 0)
+          {
+            spdlog::info("Player 2 won");
+            GameManager::instance()->player2_ball_count = -1;
+          }
+          else
+          {
+            spdlog::info("Player 2 lost");
+            GameManager::instance()->player2_ball_count = -2;
+          }
+        }
+        else
+        {
+          if (GameManager::instance()->player1_ball_count == 0)
+          {
+            spdlog::info("Player 1 won");
+            GameManager::instance()->player1_ball_count = -1;
+          }
+          else
+          {
+            spdlog::info("Player 1 lost");
+            GameManager::instance()->player1_ball_count = -2;
+          }
+        }
+      }
+      else if (ball->m_gameobject_type == TYPE_PLAYER1_BALL)
+      {
+        spdlog::info("Player 1 ball clipped through table border - removing object");
+        GameManager::instance()->player1_ball_count--;
+      }
+      else
+      {
+        spdlog::info("Player 2 ball clipped through table border - removing object");
+        GameManager::instance()->player2_ball_count--;
+      }
+      auto &objects = GameManager::instance()->getGameObjects();
+      objects.erase(std::remove(objects.begin(), objects.end(), ball), objects.end());
+      GameManager::instance()->releaseGameObjects(true);
       return;
     }
 
     ball->circle::pos = ball->circle::pos - (BorderPenetration);
-    spdlog::info("ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y);
+    // spdlog::info("ball pos x: {}, y: {}, borderPenetration x: {}, y:{}, col point x: {}, y:{}", ball->circle::pos.x, ball->circle::pos.y, BorderPenetration.x, BorderPenetration.y, col_point.x, col_point.y);
 
     if (collided_corner != vec2f(-1, -1))
     {
@@ -417,7 +454,6 @@ namespace mg8
 
     if (collision_plane_normal.x == 0 && collision_plane_normal.y == 0)
     {
-      ball->m_velocity = vec2f(0, 0); // ball might clip into rectangle
       return;
       assert(false && "normal is zero");
     }
@@ -425,89 +461,6 @@ namespace mg8
     collision_plane_normal = collision_plane_normal.dir();
     vec2f velocity_ = ball->m_velocity - collision_plane_normal * (ball->m_velocity.dot(collision_plane_normal)) * 2 * border->m_restitution_coeff;
     ball->m_velocity = velocity_;
-
-    /*vec2f v = vec2f(x_near - unrotatedCircle.x, y_near - unrotatedCircle.y);
-    float border_penetration = ball->circle::rad - v.mag();
-    vec2f r = v.dir() * border_penetration;
-
-    float max = 0.0f;
-    int best_match = -1;
-    for (size_t i = 0; i < 4; i++)
-    {
-      float dot_prod = r.dir().dot(normal_directions[i]);
-      if (dot_prod > max)
-      {
-        max = dot_prod;
-        best_match = i;
-      }
-    }
-
-    if (best_match == 1 || best_match == 3) // horizontal collision
-    {
-      // unrotatedVelocityVec.x = unrotatedVelocityVec.x * -1 * border->m_restitution_coeff;
-      // unrotatedVelocityVec.y = unrotatedVelocityVec.y * border->m_restitution_coeff;
-      if (best_match == 1) // right collision - move ball left
-      {
-        unrotatedCircle.x -= border_penetration;
-      }
-      else // left collision - move ball right
-      {
-        // unrotatedCircle.x += border_penetration;
-      }
-    }
-    else // vertical collision
-    {
-      // unrotatedVelocityVec.y = unrotatedVelocityVec.y * -1 * border->m_restitution_coeff;
-      // unrotatedVelocityVec.x = unrotatedVelocityVec.x * border->m_restitution_coeff;
-      if (best_match == 0) // down collision - move ball up
-      {
-        unrotatedCircle.y -= border_penetration;
-      }
-      else // up collision - move ball down
-      {
-        unrotatedCircle.y += border_penetration;
-      }
-    }
-
-     ball->circle::pos = rotatePoint(unrotatedCircle, rotation_anchor, -circle_rotation_angle);
-
-    */
-    //  vec2f realVelocityVec = rotatePoint(unrotatedVelocityVec, vec2f(x_near, y_near), -circle_rotation_angle);
-    //  ball->m_velocity = realVelocityVec;
-
-    /*
-float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
-float y_near = std::clamp(ball->circle::pos.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
-
-vec2f ball_border_dist = vec2f(ball->circle::pos.x - x_near, ball->circle::pos.y - y_near);
-vec2f ball_border_dist_normalized = ball_border_dist.dir();
-vec2f ball_border_dist_perpendicular = vec2f(-ball_border_dist_normalized.y, ball_border_dist_normalized.x);
-
-if (ball->m_velocity.dot(ball_border_dist) < 0)
-{
-  vec2f normal_vec_len = ball_border_dist_normalized.dot(ball->m_velocity);
-  vec2f tangental_vec_len = ball_border_dist_perpendicular.dot(ball->m_velocity);
-
-  vec2f part1 = (tangental_vec_len * border->m_restitution_coeff).dot(ball_border_dist_perpendicular);
-  vec2f part2 = ((ball_border_dist_normalized * -1.0f) * ball->m_restitution_coeff).dot(normal_vec_len);
-
-  ball->m_velocity = part1 + part2;
-}*/
-
-    /*float x_near = std::clamp(ball->circle::pos.x, border->rect::pos.x, border->rect::pos.x + border->rect::width);
-    float y_near = std::clamp(ball->circle::pos.y, border->rect::pos.y, border->rect::pos.y + border->rect::height);
-
-    vec2f ball_border_dist = vec2f(ball->circle::pos.x - x_near, ball->circle::pos.y - y_near);
-
-    if (ball->m_velocity.dot(ball_border_dist) < 0)
-    { // ball is moving towards border
-      vec2f tangent_velocity = ball_border_dist.dir().dot(ball->m_velocity);
-      ball->m_velocity = ball->m_velocity - tangent_velocity * 2;
-    }
-
-    float border_penetration = ball->circle::rad - ball_border_dist.mag();
-    vec2f border_penetration_vector = ball_border_dist.dir() * border_penetration;
-    ball->circle::pos = ball->circle::pos - border_penetration_vector;*/
   }
 
   // BilliardBall constructor

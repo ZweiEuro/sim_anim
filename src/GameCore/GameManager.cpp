@@ -479,6 +479,8 @@ namespace mg8
     player1_ball_count = 5;
     player2_ball_count = 5;
 
+    player1_active = true;
+
     releaseGameObjects(true);
   }
 

@@ -27,7 +27,7 @@ namespace mg8
     add(&m_main_frame);
     m_main_frame.setSize(500, 120);
     m_main_frame.setLocation(config_start_resolution_w / 10, 10);
-    m_main_frame.setText("Settings frame - Drag lower right corner to resize");
+    m_main_frame.setText("Settings frame - Drag low right corner to resize");
 
     // Time delta slider
 
@@ -114,7 +114,6 @@ namespace mg8
     height += 20;
 
     { // FPS
-
       m_main_frame.add(&m_title_fps_slider);
       m_title_fps_slider.setText("FPS: ");
       m_title_fps_slider.resizeToContents();

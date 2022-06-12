@@ -15,6 +15,7 @@ namespace mg8
         // return (int)(value - oldIntervalMin) * (newIntervalMax - newIntervalMin) / (int)(oldIntervalMax - oldIntervalMin) + newIntervalMin;
     }
 
+    // the pseudo random vecRandom is based on the rand2D function found at http://www.science-and-fiction.org/rendering/noise.html
     float vecRandom(vec2f v)
     {
         float r = sinf(v.dot(vec2f(12.9898f, 78.233f))) * 43758.5453123f;
@@ -27,11 +28,8 @@ namespace mg8
         return x * (1.0f - a) + y * a;
     }
 
-    float perlinNoise(vec2f v)
+    float perlinNoise(vec2f v) // the perlin noise function is based on the function provided in the lecture slides
     {
-        // int n = v.x + v.y * 57;
-        // n = pow(n << 13, n);
-        // return (1.0f - ((n * ((n * n * 15731) + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0f);
         vec2f fl = vec2f(floor(v.x), floor(v.y));
         vec2f fr = v - fl; // fract is calculated as v - floor(v)
 
@@ -45,11 +43,21 @@ namespace mg8
         return mix(a, b, u.x) + (c - a) * u.y * (1.0f - u.x) + (d - b) * u.x * u.y;
     }
 
-    bool ccw(DistanceFieldPoint *a, DistanceFieldPoint *b, DistanceFieldPoint *c)
+    bool isCounterClockWise(DistanceFieldPoint *a, DistanceFieldPoint *b, DistanceFieldPoint *c)
     {
         return (b->point.x - a->point.x) * (c->point.y - a->point.y) < (b->point.y - a->point.y) * (c->point.x - a->point.x);
     }
 
+    bool compare(DistanceFieldPoint *a, DistanceFieldPoint *b)
+    {
+        if (a->point.x < b->point.x)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    // this convex hull implementation is based on the implementation found on https://rosettacode.org/wiki/Convex_hull
     void VoronoiFracture::calcConvexHull(int cell)
     {
         // spdlog::info("calc convex hull for cell[{}]\n", cell);
@@ -60,25 +68,24 @@ namespace mg8
             return;
         }
 
-        std::sort(cells[cell]->distanceField.begin(), cells[cell]->distanceField.end(), [](DistanceFieldPoint *a, DistanceFieldPoint *b)
-                  {if (a->point.x < b->point.x){return true;} return false; });
+        std::sort(cells[cell]->distanceField.begin(), cells[cell]->distanceField.end(), compare);
 
         std::vector<DistanceFieldPoint *> tmp;
 
-        for (DistanceFieldPoint *point : cells[cell]->distanceField)
+        for (DistanceFieldPoint *dp : cells[cell]->distanceField)
         {
-            while (tmp.size() >= 2 && !ccw(tmp[tmp.size() - 2], tmp[tmp.size() - 1], point))
+            while (tmp.size() >= 2 && !isCounterClockWise(tmp[tmp.size() - 2], tmp[tmp.size() - 1], dp))
             {
                 tmp.pop_back();
             }
-            tmp.push_back(point);
+            tmp.push_back(dp);
         }
 
         int tmp_dp = tmp.size() + 1;
-        for (auto rit = cells[cell]->distanceField.crbegin(); rit != cells[cell]->distanceField.crend(); ++rit)
+        for (auto reverse_it = cells[cell]->distanceField.crbegin(); reverse_it != cells[cell]->distanceField.crend(); ++reverse_it)
         {
-            auto dp = *rit;
-            while (tmp.size() >= tmp_dp && !ccw(tmp[tmp.size() - 2], tmp[tmp.size() - 1], dp))
+            auto dp = *reverse_it;
+            while (tmp.size() >= tmp_dp && !isCounterClockWise(tmp[tmp.size() - 2], tmp[tmp.size() - 1], dp))
             {
                 tmp.pop_back();
             }

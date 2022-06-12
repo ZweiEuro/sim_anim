@@ -33,7 +33,7 @@ namespace mg8
     MG8_OBJECT_TYPES m_type = TYPE_UNDEFINED;
     uint32_t m_collision_mask = TYPE_UNDEFINED; // & of object types
 
-    splineCurve *movementCurve = nullptr;
+    // splineCurve *movementCurve = nullptr;
 
     virtual void draw() const = 0;
     virtual void move(vec2f delta_position) = 0;
