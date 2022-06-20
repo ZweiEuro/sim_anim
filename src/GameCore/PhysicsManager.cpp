@@ -116,6 +116,7 @@ namespace mg8
         recalculate = false;
         auto &objects = GameManager::instance()->getGameObjects();
 
+        l_forcefield.lock();
         for (auto &row : m_forcefield)
         {
           for (auto &point : row)
@@ -125,7 +126,7 @@ namespace mg8
         }
 
         // first all the gravity
-        l_forcefield.lock();
+
         for (auto &A : objects)
         {
           if (A->m_type == TYPE_GRAVITY_WELL)
